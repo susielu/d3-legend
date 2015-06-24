@@ -1,0 +1,27 @@
+{
+  "name": "d3-svg-legend",
+  "version": "1.0.0",
+  "description": "Test",
+  "main": "legend.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.2.5"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/susielu/d3-svg-legend.git"
+  },
+  "author": "Susie Lu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/susielu/d3-svg-legend/issues"
+  },
+  "homepage": "https://github.com/susielu/d3-svg-legend"
+}
