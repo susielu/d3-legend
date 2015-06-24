@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<style>
+
+text {
+  font: 12px sans-serif;
+}
+
+
+.q0-9 { fill:rgb(247,251,255); }
+.q1-9 { fill:rgb(222,235,247); }
+.q2-9 { fill:rgb(198,219,239); }
+.q3-9 { fill:rgb(158,202,225); }
+.q4-9 { fill:rgb(107,174,214); }
+.q5-9 { fill:rgb(66,146,198); }
+.q6-9 { fill:rgb(33,113,181); }
+.q7-9 { fill:rgb(8,81,156); }
+.q8-9 { fill:rgb(8,48,107); }
+
+
+</style>
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="../../legend.js"></script>
+
+<script>
+
+var width = 960,
+    height = 600;
+
+var quantize = d3.scale.quantize()
+    .domain([0, .15])
+    .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+var ordinal = d3.scale.category10().domain(["a", "b", "c", "d", "e", "f", "g", "h"]);
+
+var linear = d3.scale.linear().domain([0,10]).range(["blue", "red"])
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+svg.append("g")
+  .attr("class", "legendQuant")
+  .attr("transform", "translate(20,20)")
+
+  var legend = d3.svg.legend()
+      .labelFormat(d3.format(".2f"))
+      .attribute("class")
+      .scale(quantize);
+
+  svg.select(".legendQuant")
+    .call(legend);
+
+svg.append("g")
+  .attr("class", "legendOrdinal")
+  .attr("transform", "translate(20,180)")
+
+  var legendOrdinal = d3.svg.legend()
+      .scale(ordinal);
+
+svg.select(".legendOrdinal")
+  .call(legendOrdinal);
+
+svg.append("g")
+  .attr("class", "legendLinear")
+  .attr("transform", "translate(140,20)")
+
+  var legendOrdinal = d3.svg.legend()
+      .cells(10)
+      .scale(linear);
+
+svg.select(".legendLinear")
+  .call(legendOrdinal);
+
+
+</script>
