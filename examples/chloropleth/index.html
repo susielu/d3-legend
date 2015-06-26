@@ -48,13 +48,13 @@ svg.append("g")
   .attr("class", "legendQuant")
   .attr("transform", "translate(20,20)")
 
-  var legend = d3.svg.legend()
-      .labelFormat(d3.format(".2f"))
-      .attribute("class")
-      .scale(quantize);
+var legend = d3.svg.legend()
+    .labelFormat(d3.format(".2f"))
+    .attribute("class")
+    .scale(quantize);
 
-  svg.select(".legendQuant")
-    .call(legend);
+svg.select(".legendQuant")
+  .call(legend);
 
 svg.append("g")
   .attr("class", "legendOrdinal")
@@ -79,6 +79,15 @@ svg.append("g")
 
 svg.select(".legendLinear")
   .call(legendOrdinal);
+
+svg.append("g")
+  .attr("class", "legendLinearCircle")
+  .attr("transform", "translate(140,90)")
+
+legendOrdinal.shape("circle");
+
+  svg.select(".legendLinearCircle")
+    .call(legendOrdinal);
 
 
 </script>

@@ -5,6 +5,7 @@ d3.svg.legend = function() {
     shape = "rect", //options rect circle or line
     shapeWidth = 15, //think about these
     shapeHeight = 15, //think about these
+    shapeRadius = 10,
     shapePadding = 2,
     cells = [5], //array or value?
     labels = [],
@@ -21,37 +22,51 @@ d3.svg.legend = function() {
       //cellExit,
       //cellUpdate
 
-    cellEnter.append("rect").attr("class", "swatch")
-      .attr("height", shapeHeight) //think about this more turn into if statement
-      .attr("width", shapeWidth);
+    if (shape === "rect"){
+      cellEnter.append("rect").attr("class", "swatch")
+        .attr("height", shapeHeight) //think about this more turn into if statement
+        .attr("width", shapeWidth);
+
+    } else if (shape === "circle") {
+      cellEnter.append("circle").attr("class", "swatch")
+        .attr("r", shapeRadius) //think about this more turn into if statement
+        .attr("cx", shapeRadius)
+        .attr("cy", 0);
+
+    } else {
+
+    }
+
 
     cellEnter.append("text").attr("class", "label")
       .text(function(d) { return d; });
 
-    var swatchEnter = cellEnter.select("rect"),
-      textEnter = cellEnter.select("text");
+    var swatchEnter = cellEnter.select(shape),
+      textEnter = cellEnter.select("text"),
+      size = swatchEnter[0].map(function(d){ return d.getBBox() });
 
     // sets placement
     if (orient === "vertical"){
       cellEnter.attr("transform",
         function(d,i) {
-          return "translate(0, " + (i * (shapeHeight + shapePadding)) + ")";
+          console.log(d)
+          return "translate(0, " + (i * (size[i].height + shapePadding)) + ")";
         })
 
       textEnter.attr("transform",
         function(d,i) {
-          return "translate(" + (shapeWidth + labelOffset) + "," +
+          return "translate(" + (size[i].width + labelOffset) + "," +
             shapeHeight * .75 + ")";
         })
     } else if (orient === "horizontal"){
       cellEnter.attr("transform",
         function(d,i) {
-          return "translate(" + (i * (shapeWidth + shapePadding)) + ",0)";
+          return "translate(" + (i * (size[i].width + shapePadding)) + ",0)";
         })
 
       textEnter.attr("transform",
         function(d,i) {
-          return "translate(" + shapeWidth/2 + "," + (shapeHeight +
+          return "translate(" + size[i].width/2 + "," + (size[i].height +
               labelOffset + 5) + ")";
         })
         .style("text-anchor", "middle")
@@ -112,11 +127,11 @@ d3.svg.legend = function() {
     return legend;
   }
 
-  // legend.shape = function(_) {
-  //   if (!arguments.length) return legend;
-  //   shape = _;
-  //   return shape;
-  // };
+  legend.shape = function(_) {
+    if (!arguments.length) return legend;
+    shape = _;
+    return shape;
+  };
 
   legend.shapeWidth = function(_) {
     if (!arguments.length) return legend;
