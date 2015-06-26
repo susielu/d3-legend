@@ -61,6 +61,8 @@ svg.append("g")
   .attr("transform", "translate(20,180)")
 
   var legendOrdinal = d3.svg.legend()
+      .shapeWidth(20)
+      .shapeHeight(20)
       .scale(ordinal);
 
 svg.select(".legendOrdinal")
@@ -71,7 +73,8 @@ svg.append("g")
   .attr("transform", "translate(140,20)")
 
   var legendOrdinal = d3.svg.legend()
-      .cells(10)
+      .shapeWidth(30)
+      .orient('horizontal')
       .scale(linear);
 
 svg.select(".legendLinear")

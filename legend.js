@@ -1,43 +1,68 @@
 
-d3.svg.legend = function(){
+d3.svg.legend = function() {
   //default settings
-  var  scale = d3.scale.linear()/*.domain([0,1]).range([0,1])*/,
-  shape = "rect", //options rect circle or line
-  shapeWidth = 15,
-  shapeHeight = 15,
-  shapePadding = 2,
-  cells = 5,
-  labels = [],
-  attribute = "fill",
-  labelFormat = d3.format(".01f"),
-  orientation = "horizontal";
+  var scale = d3.scale.linear(),
+    shape = "rect", //options rect circle or line
+    shapeWidth = 15, //think about these
+    shapeHeight = 15, //think about these
+    shapePadding = 2,
+    cells = [5], //array or value?
+    labels = [],
+    attribute = "fill",
+    labelFormat = d3.format(".01f"),
+    labelOffset = 10,
+    orient = "vertical";
 
-  var legend = function (svg){
+  function legend(svg){
 
-    var l = svg.append("g").attr("class", "lCells").selectAll(".lCells"),
-    type = scale.ticks ? linear() : scale.invertExtent ? quant() : ordinal();
+    var type = scale.ticks ? linear() : scale.invertExtent ? quant() : ordinal(),
+      cell = svg.selectAll(".cell").data(type.data),
+      cellEnter = cell.enter().insert("g", ".lgdCells").attr("class", "cell");
+      //cellExit,
+      //cellUpdate
 
-    l.data(type.data)
-      .enter()
-      .append(shape)
-      .attr("class", "lCell")
-      .attr("height", shapeHeight)
-      .attr("width", shapeWidth)
-      .attr("transform", function(d,i){
-        return "translate(0," + (i * (shapeWidth + shapePadding)) + ")"; })
-      .call(type.fill)
+    cellEnter.append("rect").attr("class", "swatch")
+      .attr("height", shapeHeight) //think about this more turn into if statement
+      .attr("width", shapeWidth);
 
+    cellEnter.append("text").attr("class", "label")
+      .text(function(d) { return d; });
 
-    var t = svg.append("g").attr("class", "lLabels").selectAll(".lLabels");
+    var swatchEnter = cellEnter.select("rect"),
+      textEnter = cellEnter.select("text");
 
-    t.data(type.labels)
-      .enter()
-      .append("text")
-      .attr("class", "lLabel")
-      .attr("transform", function(d,i){
-        return "translate(" + (shapeWidth + 10) + "," +
-          ((i + .8) * (shapeWidth + shapePadding)) + ")"; })
-      .text(function(d){ return d; })
+    // sets placement
+    if (orient === "vertical"){
+      cellEnter.attr("transform",
+        function(d,i) {
+          return "translate(0, " + (i * (shapeHeight + shapePadding)) + ")";
+        })
+
+      textEnter.attr("transform",
+        function(d,i) {
+          return "translate(" + (shapeWidth + labelOffset) + "," +
+            shapeHeight * .75 + ")";
+        })
+    } else if (orient === "horizontal"){
+      cellEnter.attr("transform",
+        function(d,i) {
+          return "translate(" + (i * (shapeWidth + shapePadding)) + ",0)";
+        })
+
+      textEnter.attr("transform",
+        function(d,i) {
+          return "translate(" + shapeWidth/2 + "," + (shapeHeight +
+              labelOffset + 5) + ")";
+        })
+        .style("text-anchor", "middle")
+    }
+
+    // sets color
+    if (attribute === "fill"){
+      swatchEnter.style("fill", type.fill)
+    } else {
+      swatchEnter.attr("class", function(d){ return "swatch " + type.fill(d); });
+    }
 
   };
 
@@ -45,16 +70,15 @@ d3.svg.legend = function(){
     var data = [],
     domain = scale.domain(),
     increment = (domain[1] - domain[0])/(cells - 1),
-    i;
+    i = 0;
 
-    for (i=0; i < (cells); i++){
+    for (; i < cells; i++){
       data.push(labelFormat(domain[0] + i*increment));
     }
 
     return {data: data,
             labels: data,
-            fill: function(el){
-              fillOrClass(el, function(d){ return scale(d); })}};
+            fill: function(d){ return scale(d); }};
   };
 
   function quant() {
@@ -64,24 +88,14 @@ d3.svg.legend = function(){
     })
     return {data: scale.range(),
             labels: labels,
-            fill: function(el){
-              fillOrClass(el, function(d){ return d; })}};
+            fill: function(d){ return d; }};
   };
 
   function ordinal() {
     return {data: scale.domain(),
             labels: scale.domain(),
-            fill: function(el){
-              fillOrClass(el, function(d){ return scale(d); })}};
+            fill: function(d){ return scale(d); }};
   };
-
-  function fillOrClass(el, fill) {
-    if (attribute === "fill"){
-      el.style("fill", fill);
-    } else {
-      el.attr("class", fill);
-    }
-  }
 
   //updating settings
   legend.scale = function(_) {
@@ -149,10 +163,11 @@ d3.svg.legend = function(){
     return legend;
   };
 
-  legend.orientation = function(_){
+  legend.orient = function(_){
     if (!arguments.length) return legend;
+    _ = _.toLowerCase();
     if (_ == "horizontal" || _ == "vertical") {
-      orientation = _;
+      orient = _;
     }
     return legend;
   }
