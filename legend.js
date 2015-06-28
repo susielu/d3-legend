@@ -22,6 +22,8 @@ d3.svg.legend = function() {
       //cellExit,
       //cellUpdate
 
+    //cellEnter.append(shape).attr("class", "swatch")
+
     if (shape === "rect"){
       cellEnter.append("rect").attr("class", "swatch")
         .attr("height", shapeHeight) //think about this more turn into if statement
@@ -43,7 +45,7 @@ d3.svg.legend = function() {
 
     var swatchEnter = cellEnter.select(shape),
       textEnter = cellEnter.select("text"),
-      size = swatchEnter[0].map(function(d){ return d.getBBox() });
+      size = swatchEnter[0].map(function(d){ return d.getBBox(); });
 
     // sets placement
     if (orient === "vertical"){
@@ -162,7 +164,6 @@ d3.svg.legend = function() {
     labels = _;
     return legend;
   };
-
 
   legend.labelFormat = function(_) {
     if (!arguments.length) return legend;
