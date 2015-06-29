@@ -7,7 +7,7 @@ d3.svg.legend = function() {
     shapeHeight = 15, //think about these
     shapeRadius = 10,
     shapePadding = 2,
-    cells = [5], //array or value?
+    cells = [5],
     labels = [],
     attribute = "fill",
     labelFormat = d3.format(".01f"),
@@ -16,103 +16,122 @@ d3.svg.legend = function() {
 
   function legend(svg){
 
-    var type = scale.ticks ? linear() : scale.invertExtent ? quant() : ordinal(),
-      cell = svg.selectAll(".cell").data(type.data),
-      cellEnter = cell.enter().insert("g", ".lgdCells").attr("class", "cell");
-      //cellExit,
-      //cellUpdate
+    var type = scale.ticks ? linear() : scale.invertExtent ? quant() : ordinal();
+    type.labels = mergeLabels(type.labels);
 
-    //cellEnter.append(shape).attr("class", "swatch")
+    var cell = svg.selectAll(".cell"),
+      cellEnter = cell.data(type.data).enter().insert("g", ".lgdCells").attr("class", "cell"),
+      shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
+      shapes = cellEnter.select(shape);
 
+      //cellExit, needs to be added
+      //cellUpdate, needs to be added
+
+    //creates shape
     if (shape === "rect"){
-      cellEnter.append("rect").attr("class", "swatch")
-        .attr("height", shapeHeight) //think about this more turn into if statement
-        .attr("width", shapeWidth);
+        shapes.attr("height", shapeHeight).attr("width", shapeWidth);
 
     } else if (shape === "circle") {
-      cellEnter.append("circle").attr("class", "swatch")
-        .attr("r", shapeRadius) //think about this more turn into if statement
-        .attr("cx", shapeRadius)
-        .attr("cy", 0);
+        shapes.attr("r", shapeRadius).attr("cx", shapeRadius).attr("cy", 0);
 
-    } else {
-
+    } else if (shape === "line") {
+        shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0)
     }
 
-
-    cellEnter.append("text").attr("class", "label")
+    //adds text
+    cellEnter.append("text").attr("class", "label");
+    svg.selectAll("g.cell text").data(type.labels)
       .text(function(d) { return d; });
 
+    // sets placement
     var swatchEnter = cellEnter.select(shape),
       textEnter = cellEnter.select("text"),
       size = swatchEnter[0].map(function(d){ return d.getBBox(); });
 
-    // sets placement
     if (orient === "vertical"){
       cellEnter.attr("transform",
         function(d,i) {
-          console.log(d)
           return "translate(0, " + (i * (size[i].height + shapePadding)) + ")";
-        })
+        });
 
       textEnter.attr("transform",
         function(d,i) {
           return "translate(" + (size[i].width + labelOffset) + "," +
-            shapeHeight * .75 + ")";
-        })
+            size[i].height * .75 + ")";
+        });
+
     } else if (orient === "horizontal"){
       cellEnter.attr("transform",
         function(d,i) {
           return "translate(" + (i * (size[i].width + shapePadding)) + ",0)";
-        })
+        });
 
       textEnter.attr("transform",
         function(d,i) {
           return "translate(" + size[i].width/2 + "," + (size[i].height +
               labelOffset + 5) + ")";
         })
-        .style("text-anchor", "middle")
+        .style("text-anchor", "middle");
     }
 
     // sets color
     if (attribute === "fill"){
-      swatchEnter.style("fill", type.fill)
-    } else {
+      swatchEnter.style("fill", type.fill);
+    } else if (attribute === "class"){
       swatchEnter.attr("class", function(d){ return "swatch " + type.fill(d); });
+    } else if (attribute === "stroke"){
+      swatchEnter.style("stroke", type.fill);
     }
 
-  };
+  }
+
+  function mergeLabels(gen) {
+    if(labels.length === 0) return gen;
+
+    var i = labels.length;
+    for (; i < gen.length; i++) {
+      labels.push(gen[i]);
+    }
+    return labels;
+  }
 
   function linear() {
-    var data = [],
-    domain = scale.domain(),
-    increment = (domain[1] - domain[0])/(cells - 1),
-    i = 0;
+    var data = [];
 
-    for (; i < cells; i++){
-      data.push(labelFormat(domain[0] + i*increment));
+    if (cells.length > 1){
+      data = cells;
+
+    } else {
+      var domain = scale.domain(),
+      increment = (domain[1] - domain[0])/(cells - 1),
+      i = 0;
+
+      for (; i < cells; i++){
+        data.push(labelFormat(domain[0] + i*increment));
+      }
+
     }
 
     return {data: data,
             labels: data,
             fill: function(d){ return scale(d); }};
-  };
+  }
 
   function quant() {
     var labels = scale.range().map(function(d){
       var invert = scale.invertExtent(d);
       return labelFormat(invert[0]) + " to " + labelFormat(invert[1]);
-    })
+    });
     return {data: scale.range(),
             labels: labels,
             fill: function(d){ return d; }};
-  };
+  }
 
   function ordinal() {
     return {data: scale.domain(),
             labels: scale.domain(),
             fill: function(d){ return scale(d); }};
-  };
+  }
 
   //updating settings
   legend.scale = function(_) {
@@ -123,16 +142,16 @@ d3.svg.legend = function() {
 
   legend.cells = function(_) {
     if (!arguments.length) return legend;
-    if (_ >= 2){
+    if (_.length > 1 || _ >= 2 ){
       cells = _;
     }
     return legend;
-  }
+  };
 
   legend.shape = function(_) {
     if (!arguments.length) return legend;
     shape = _;
-    return shape;
+    return legend;
   };
 
   legend.shapeWidth = function(_) {
@@ -153,12 +172,6 @@ d3.svg.legend = function() {
     return legend;
   };
 
-  legend.textAlign = function(_) {
-    if (!arguments.length) return legend;
-    textAlign = _;
-    return legend;
-  };
-
   legend.labels = function(_) {
     if (!arguments.length) return legend;
     labels = _;
@@ -171,9 +184,15 @@ d3.svg.legend = function() {
     return legend;
   };
 
+  legend.labelOffset = function(_) {
+    if (!arguments.length) return legend;
+    labelOffset = +_;
+    return legend;
+  };
+
   legend.attribute = function(_) {
     if (!arguments.length) return legend;
-    if (_ == "fill" || _ == "class"){
+    if (_ == "fill" || _ == "class" || _ == "stroke"){
       attribute = _;
     }
     return legend;
