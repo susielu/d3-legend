@@ -26,17 +26,14 @@ text {
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="../../legend.js"></script>
-
+<script src="../../color.js"></script>
+<script src="../../size.js"></script>
 <script>
+
 
 var width = 960,
     height = 600;
 
-var quantize = d3.scale.quantize()
-    .domain([ 0, 0.15 ])
-    .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
-
-var ordinal = d3.scale.category10().domain(["a", "b", "c", "d", "e", "f", "g", "h"]);
 
 var linear = d3.scale.linear().domain([0,10]).range(["blue", "red"]);
 
@@ -44,23 +41,33 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
+//Quantile
+//blue to white color scale, class
+var quantize = d3.scale.quantize()
+    .domain([ 0, 0.15 ])
+    .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
 svg.append("g")
   .attr("class", "legendQuant")
   .attr("transform", "translate(20,20)");
 
-var legend = d3.svg.legend()
+var legend = d3.legend.color()
     .labelFormat(d3.format(".2f"))
-    .attribute("class")
+    .useClass(true)
     .scale(quantize);
 
 svg.select(".legendQuant")
   .call(legend);
 
+//Ordinal
+//category scales
+var ordinal = d3.scale.category10().domain(["a", "b", "c", "d", "e", "f", "g", "h"]);
+
 svg.append("g")
   .attr("class", "legendOrdinal")
   .attr("transform", "translate(20,180)");
 
-var legendOrdinal = d3.svg.legend()
+var legendOrdinal = d3.legend.color()
     .shapeWidth(20)
     .shapeHeight(20)
     .scale(ordinal);
@@ -68,45 +75,63 @@ var legendOrdinal = d3.svg.legend()
 svg.select(".legendOrdinal")
   .call(legendOrdinal);
 
-svg.append("g")
-  .attr("class", "legendLinear")
-  .attr("transform", "translate(140,20)");
-
-  var legendOrdinal = d3.svg.legend()
-      .shapeWidth(30)
-      .cells([1, 2, 3, 6, 8])
-      .orient('horizontal')
-      .scale(linear);
-
-svg.select(".legendLinear")
-  .call(legendOrdinal);
-
-svg.append("g")
-  .attr("class", "legendLinearCircle")
-  .attr("transform", "translate(140,90)");
-
-legendOrdinal.shape("circle")
-  .shapePadding(20)
-  .labelOffset(5);
-
-  svg.select(".legendLinearCircle")
-    .call(legendOrdinal);
-
-  var legendLine = d3.svg.legend()
+var legendLine = d3.legend.color()
       .shapeWidth(25)
       .shapeHeight(20)
       .scale(ordinal)
       .shape("line")
       .labels(["this", "is", "a", "legend"])
-      .attribute("stroke")
       .shapePadding(25);
 
   svg.append("g")
     .attr("class", "legendLine")
-    .attr("transform", "translate(140,250)");
+    .attr("transform", "translate(140,180)");
 
   svg.select(".legendLine")
     .call(legendLine);
+
+//Linear
+//Blue to red fill scale
+svg.append("g")
+  .attr("class", "legendLinear")
+  .attr("transform", "translate(140,20)");
+
+var legendLinear = d3.legend.color()
+    .shapeWidth(30)
+    //.cells([1, 2, 3, 6, 8])
+    .cells(10)
+    .orient('horizontal')
+    .scale(linear);
+
+svg.select(".legendLinear")
+  .call(legendLinear);
+
+svg.append("g")
+  .attr("class", "legendLinearCircle")
+  .attr("transform", "translate(140,90)");
+
+legendLinear.shape("circle")
+  .shapePadding(20)
+  .labelOffset(5);
+
+  svg.select(".legendLinearCircle")
+    .call(legendLinear);
+
+// Linear
+// size scale
+svg.append("g")
+  .attr("class", "legendSize")
+  .attr("transform", "translate(250, 180)");
+
+var linearSize = d3.scale.linear().domain([0,10]).range([10, 20]);
+
+var legendSize = d3.legend.size()
+    .scale(linearSize)
+    //.labels([1,2,3,4,5]);
+
+svg.select(".legendSize")
+  .call(legendSize);
+
 
 
 </script>
