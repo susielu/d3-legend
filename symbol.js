@@ -2,11 +2,11 @@
 d3.legend.symbol = function(){
 
   var scale = d3.scale.linear(),
-    shape = "rect", //options rect circle or line
-    shapeWidth = 15, //think about these
-    shapeHeight = 15, //think about these
+    shape = "path",
+    shapeWidth = 15,
+    shapeHeight = 15,
     shapeRadius = 10,
-    shapePadding = 2,
+    shapePadding = 5,
     cells = [5],
     labels = [],
     useClass = false,
@@ -24,22 +24,14 @@ d3.legend.symbol = function(){
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
-        shapeEnter = cell.append(shape).attr("class", "swatch"),
-        shapes = cell.select(shape);
+        shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
+        shapes = cell.select("g.cell " + shape).data(type.data);
 
+      //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
 
-
       //creates shape
-      if (shape === "rect"){
-          shapes.attr("height", shapeHeight).attr("width", shapeWidth);
-
-      } else if (shape === "circle") {
-          shapes.attr("r", shapeRadius).attr("cx", shapeRadius).attr("cy", 0);
-
-      } else if (shape === "line") {
-          shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0);
-      }
+      d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
 
       //adds text
       cellEnter.append("text").attr("class", "label");
@@ -47,37 +39,55 @@ d3.legend.symbol = function(){
         .text(function(d) { return d; });
 
       // sets placement
-      var  text = cellEnter.select("text"),
+      var  text = cell.select("text"),
         shapeSize = shapes[0].map(
           function(d, i){
             return d.getBBox();
         });
 
+      console.log(shapeSize)
+      //sets scale
+      //everything is fill except for line which is stroke,
+      // if (!useClass){
+      //   if (shape == "line"){
+      //     shapes.style("stroke", type.feature);
+      //   } else {
+      //     shapes.style("fill", type.feature);
+      //   }
+      // } else {
+      //   shapes.attr("class", function(d){ return "swatch " + type.feature(d); });
+      // }
+
+      var sHeight = d3.max(shapeSize, function(d){ return d.height; }),
+      sWidth = d3.max(shapeSize, function(d){ return d.width; });
+
+
+      console.log(sHeight)
       //positions cells
       if (orient === "vertical"){
-        cellEnter.attr("transform",
+        cell.attr("transform",
           function(d,i) {
-            return "translate(0, " + (i * (shapeSize[i].height + shapePadding)) + ")";
+            return "translate(0, " + (i * (sHeight + shapePadding)) + ")";
           })
          .transition().style("opacity", 1);
 
         text.attr("transform",
           function(d,i) {
-            return "translate(" + (shapeSize[i].width + labelOffset) + "," +
-              shapeSize[i].height * .75 + ")";
+            return "translate(" + (sWidth + labelOffset) + "," +
+              (shapeSize[i].y + shapeSize[i].height) * .75 + ")";
           });
 
       } else if (orient === "horizontal"){
-        cellEnter.attr("transform",
+        cell.attr("transform",
           function(d,i) {
-            return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)";
+            return "translate(" + (i * (sWidth + shapePadding)) + ",0)";
           })
          .transition().style("opacity", 1);
 
         text.attr("transform",
           function(d,i) {
-            return "translate(" + shapeSize[i].width/2 + "," + (shapeSize[i].height +
-                labelOffset + 5) + ")";
+            return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," +
+              (sHeight + labelOffset ) + ")";
           })
           .style("text-anchor", "middle");
       }
@@ -141,6 +151,13 @@ d3.legend.symbol = function(){
     return legend;
   };
 
+  legend.useClass = function(_) {
+    if (!arguments.length) return legend;
+    if (_ === true || _ === false){
+      useClass = _;
+    }
+    return legend;
+  };
 
   legend.orient = function(_){
     if (!arguments.length) return legend;

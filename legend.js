@@ -31,7 +31,7 @@ function d3_linearLegend(scale, cells, labelFormat) {
 
   return {data: data,
           labels: data,
-          fill: function(d){ return scale(d); }};
+          feature: function(d){ return scale(d); }};
 }
 
 function d3_quantLegend(scale, labelFormat) {
@@ -41,23 +41,26 @@ function d3_quantLegend(scale, labelFormat) {
   });
   return {data: scale.range(),
           labels: labels,
-          fill: function(d){ return d; }};
+          feature: function(d){ return d; }};
 }
 
 function d3_ordinalLegend(scale) {
   return {data: scale.domain(),
           labels: scale.domain(),
-          fill: function(d){ return scale(d); }};
+          feature: function(d){ return scale(d); }};
 }
 
-function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius) {
+function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
   if (shape === "rect"){
       shapes.attr("height", shapeHeight).attr("width", shapeWidth);
 
   } else if (shape === "circle") {
-      shapes.attr("r", shapeRadius).attr("cx", shapeRadius).attr("cy", 0);
+      shapes.attr("r", shapeRadius).attr("cx", shapeRadius).attr("cy", shapeRadius);
 
   } else if (shape === "line") {
       shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0);
+
+  } else if (shape === "path") {
+    shapes.attr("d", path);
   }
 }

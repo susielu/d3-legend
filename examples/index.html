@@ -7,6 +7,23 @@ text {
   font: 12px sans-serif;
 }
 
+.legendSize rect, .legendSize circle{
+  fill: rgb(46, 73, 123);
+}
+
+
+.legendSizeHorz circle{
+  stroke: rgb(221, 74, 47);
+  fill: none;
+}
+
+ .legendSizeHorz line {
+  stroke: rgb(46, 73, 123);
+ }
+
+ .legendPath path {
+  fill: rgb(221, 74, 47);
+ }
 
 .q0-9 { fill:rgb(247,251,255); }
 .q1-9 { fill:rgb(222,235,247); }
@@ -28,6 +45,7 @@ text {
 <script src="../../legend.js"></script>
 <script src="../../color.js"></script>
 <script src="../../size.js"></script>
+<script src="../../symbol.js"></script>
 <script>
 
 
@@ -35,7 +53,7 @@ var width = 960,
     height = 600;
 
 
-var linear = d3.scale.linear().domain([0,10]).range(["blue", "red"]);
+var linear = d3.scale.linear().domain([0,10]).range(["rgb(46, 73, 123)", "rgb(221, 74, 47)"]);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -123,15 +141,47 @@ svg.append("g")
   .attr("class", "legendSize")
   .attr("transform", "translate(250, 180)");
 
-var linearSize = d3.scale.linear().domain([0,10]).range([10, 20]);
+var linearSize = d3.scale.linear().domain([0,10]).range([10, 30]);
 
 var legendSize = d3.legend.size()
     .scale(linearSize)
-    //.labels([1,2,3,4,5]);
+    .cells(8)
+    .shape('circle')
+    .labels(["test", "labels"]);
 
 svg.select(".legendSize")
   .call(legendSize);
 
+svg.append("g")
+  .attr("class", "legendSizeHorz")
+  .attr("transform", "translate(320, 180)");
+
+var legendSizeLine = d3.legend.size()
+      .scale(d3.scale.linear().domain([0,10]).range([2, 10]))
+      .shape("line")
+      .orient("horizontal")
+      .shapeWidth(30)
+      .shapePadding(10)
+      .useStroke(true);
+
+svg.select(".legendSizeHorz")
+  .call(legendSizeLine);
+
+// svg.append("g")
+//   .attr("class", "legendSizeOrdinal")
+
+svg.append("g")
+  .attr("class", "legendPath")
+  .attr("transform", "translate(350, 220)");
+
+var legendPath = d3.legend.symbol()
+     .scale(d3.scale.ordinal().domain(['a','b','c', 'd', 'e']).range([d3.svg.symbol().type('triangle-up')(), d3.svg.symbol().type('circle')(), d3.svg.symbol().type('cross')(),
+      d3.svg.symbol().type('diamond')(), d3.svg.symbol().type('triangle-down')()] ))
+      //.shapePadding(20)
+      .orient("horizontal");
+
+svg.select(".legendPath")
+  .call(legendPath);
 
 
 </script>

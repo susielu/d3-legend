@@ -24,8 +24,8 @@ d3.legend.color = function(){
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
-        shapeEnter = cell.append(shape).attr("class", "swatch"),
-        shapes = cell.select(shape);
+        shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
+        shapes = cell.select("g.cell " + shape).data(type.data);
 
       //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
@@ -39,7 +39,7 @@ d3.legend.color = function(){
         .text(function(d) { return d; });
 
       // sets placement
-      var  text = cellEnter.select("text"),
+      var  text = cell.select("text"),
         shapeSize = shapes[0].map(
           function(d, i){
             return d.getBBox();
@@ -50,17 +50,17 @@ d3.legend.color = function(){
       //everything is fill except for line which is stroke,
       if (!useClass){
         if (shape == "line"){
-          shapes.style("stroke", type.fill);
+          shapes.style("stroke", type.feature);
         } else {
-          shapes.style("fill", type.fill);
+          shapes.style("fill", type.feature);
         }
       } else {
-        shapes.attr("class", function(d){ return "swatch " + type.fill(d); });
+        shapes.attr("class", function(d){ return "swatch " + type.feature(d); });
       }
 
       //positions cells
       if (orient === "vertical"){
-        cellEnter.attr("transform",
+        cell.attr("transform",
           function(d,i) {
             return "translate(0, " + (i * (shapeSize[i].height + shapePadding)) + ")";
           })
@@ -73,7 +73,7 @@ d3.legend.color = function(){
           });
 
       } else if (orient === "horizontal"){
-        cellEnter.attr("transform",
+        cell.attr("transform",
           function(d,i) {
             return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)";
           })
@@ -82,7 +82,7 @@ d3.legend.color = function(){
         text.attr("transform",
           function(d,i) {
             return "translate(" + shapeSize[i].width/2 + "," + (shapeSize[i].height +
-                labelOffset + 5) + ")";
+                labelOffset + 8) + ")";
           })
           .style("text-anchor", "middle");
       }
