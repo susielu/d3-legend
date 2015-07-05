@@ -45,7 +45,6 @@ d3.legend.symbol = function(){
             return d.getBBox();
         });
 
-      console.log(shapeSize)
       //sets scale
       //everything is fill except for line which is stroke,
       // if (!useClass){
@@ -62,7 +61,6 @@ d3.legend.symbol = function(){
       sWidth = d3.max(shapeSize, function(d){ return d.width; });
 
 
-      console.log(sHeight)
       //positions cells
       if (orient === "vertical"){
         cell.attr("transform",
@@ -109,23 +107,23 @@ d3.legend.symbol = function(){
     return legend;
   };
 
-  legend.shape = function(_) {
-    if (!arguments.length) return legend;
-    shape = _;
-    return legend;
-  };
+  // legend.shape = function(_) {
+  //   if (!arguments.length) return legend;
+  //   shape = _;
+  //   return legend;
+  // };
 
-  legend.shapeWidth = function(_) {
-    if (!arguments.length) return legend;
-    shapeWidth = +_;
-    return legend;
-  };
+  // legend.shapeWidth = function(_) {
+  //   if (!arguments.length) return legend;
+  //   shapeWidth = +_;
+  //   return legend;
+  // };
 
-  legend.shapeHeight = function(_) {
-    if (!arguments.length) return legend;
-    shapeHeight = +_;
-    return legend;
-  };
+  // legend.shapeHeight = function(_) {
+  //   if (!arguments.length) return legend;
+  //   shapeHeight = +_;
+  //   return legend;
+  // };
 
   legend.shapePadding = function(_) {
     if (!arguments.length) return legend;
@@ -151,13 +149,13 @@ d3.legend.symbol = function(){
     return legend;
   };
 
-  legend.useClass = function(_) {
-    if (!arguments.length) return legend;
-    if (_ === true || _ === false){
-      useClass = _;
-    }
-    return legend;
-  };
+  // legend.useClass = function(_) {
+  //   if (!arguments.length) return legend;
+  //   if (_ === true || _ === false){
+  //     useClass = _;
+  //   }
+  //   return legend;
+  // };
 
   legend.orient = function(_){
     if (!arguments.length) return legend;

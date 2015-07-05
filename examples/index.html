@@ -72,6 +72,7 @@ svg.append("g")
 var legend = d3.legend.color()
     .labelFormat(d3.format(".2f"))
     .useClass(true)
+ //   .shape('circle')
     .scale(quantize);
 
 svg.select(".legendQuant")
@@ -139,7 +140,7 @@ legendLinear.shape("circle")
 // size scale
 svg.append("g")
   .attr("class", "legendSize")
-  .attr("transform", "translate(250, 180)");
+  .attr("transform", "translate(250, 280)");
 
 var linearSize = d3.scale.linear().domain([0,10]).range([10, 30]);
 
@@ -147,7 +148,8 @@ var legendSize = d3.legend.size()
     .scale(linearSize)
     .cells(8)
     .shape('circle')
-    .labels(["test", "labels"]);
+    .labels(["test", "labels"])
+   .orient('horizontal');
 
 svg.select(".legendSize")
   .call(legendSize);

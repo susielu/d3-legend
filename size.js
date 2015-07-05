@@ -26,8 +26,7 @@ d3.legend.size = function(){
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
         shapes = cell.select("g.cell " + shape).data(type.data);
-      console.log(shape)
-      console.log(shapes)
+
       cell.exit().transition().style("opacity", 0).remove();
 
       //creates shape
@@ -61,8 +60,6 @@ d3.legend.size = function(){
             return bbox;
         });
 
-      console.log(shapeSize)
-
       //positions cells
       if (orient === "vertical"){
         cell.attr("transform",
@@ -75,8 +72,8 @@ d3.legend.size = function(){
         text.attr("transform",
           function(d,i) {
 
-            return "translate(" + (shapeSize[i].width + labelOffset) + "," +
-              shapeSize[i].height * .75 + ")";
+            return "translate(" + (shapeSize[i].width + shapeSize[i].x + labelOffset) + "," +
+              (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")";
           });
 
       } else if (orient === "horizontal"){
@@ -89,8 +86,8 @@ d3.legend.size = function(){
 
         text.attr("transform",
           function(d,i) {
-            return "translate(" + shapeSize[i].width/2 + "," + (shapeSize[i].height +
-                labelOffset + 5) + ")";
+            return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," + (shapeSize[i].height +
+                + shapeSize[i].y + labelOffset + 8) + ")";
           })
           .style("text-anchor", "middle");
       }
@@ -135,6 +132,12 @@ d3.legend.size = function(){
   legend.shapeHeight = function(_) {
     if (!arguments.length) return legend;
     shapeHeight = +_;
+    return legend;
+  };
+
+  legend.shapeRadius = function(_) {
+    if (!arguments.length) return legend;
+    shapeRadius = +_;
     return legend;
   };
 

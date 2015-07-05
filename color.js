@@ -68,8 +68,8 @@ d3.legend.color = function(){
 
         text.attr("transform",
           function(d,i) {
-            return "translate(" + (shapeSize[i].width + labelOffset) + "," +
-              shapeSize[i].height * .75 + ")";
+            return "translate(" + (shapeSize[i].width + shapeSize[i].x + labelOffset) + "," +
+              (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")" ;
           });
 
       } else if (orient === "horizontal"){
@@ -81,8 +81,8 @@ d3.legend.color = function(){
 
         text.attr("transform",
           function(d,i) {
-            return "translate(" + shapeSize[i].width/2 + "," + (shapeSize[i].height +
-                labelOffset + 8) + ")";
+            return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," + (shapeSize[i].height +
+                + shapeSize[i].y + labelOffset + 8) + ")";
           })
           .style("text-anchor", "middle");
       }
@@ -119,6 +119,12 @@ d3.legend.color = function(){
   legend.shapeHeight = function(_) {
     if (!arguments.length) return legend;
     shapeHeight = +_;
+    return legend;
+  };
+
+  legend.shapeRadius = function(_) {
+    if (!arguments.length) return legend;
+    shapeRadius = +_;
     return legend;
   };
 

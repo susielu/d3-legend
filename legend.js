@@ -55,7 +55,7 @@ function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path
       shapes.attr("height", shapeHeight).attr("width", shapeWidth);
 
   } else if (shape === "circle") {
-      shapes.attr("r", shapeRadius).attr("cx", shapeRadius).attr("cy", shapeRadius);
+      shapes.attr("r", shapeRadius)//.attr("cx", shapeRadius).attr("cy", shapeRadius);
 
   } else if (shape === "line") {
       shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0);
