@@ -12,37 +12,30 @@ d3.legend.size = function(){
     useStroke = false,
     labelFormat = d3.format(".01f"),
     labelOffset = 10,
-    orient = "vertical";
+    orient = "vertical",
+    path;
 
 
     function legend(svg){
 
-      var type = scale.ticks ?
-          d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          d3_quantLegend(scale, labelFormat) : d3_ordinalLegend(scale);
-      type.labels = d3_mergeLabels(type.labels, labels); //no support for ordinal?
+      var type = d3_calcType(scale, cells, labels, labelFormat);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
-        shapes = cell.select("g.cell " + shape).data(type.data);
+        shapes = cell.select("g.cell " + shape);
 
       cell.exit().transition().style("opacity", 0).remove();
 
       //creates shape
       if (useStroke){
-        d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius);
-
+        d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
         shapes.attr("stroke-width", type.feature);
       } else {
-        d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature);
+        d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
       }
 
-
-      //adds text
-      cellEnter.append("text").attr("class", "label");
-      svg.selectAll("g.cell text").data(type.labels)
-        .text(function(d) { return d; });
+      d3_addText(svg, cellEnter, type.labels)
 
       // sets placement
       var text = cell.select("text"),
@@ -60,37 +53,31 @@ d3.legend.size = function(){
             return bbox;
         });
 
-      //positions cells
+      var cellTrans,
+      textTrans;
+
+      //positions cells and text
       if (orient === "vertical"){
-        cell.attr("transform",
-          function(d,i) {
+
+        cellTrans = function(d,i) {
             var height = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.height; });
-            return "translate(0, " + (height + i*shapePadding) + ")";
-          })
-         .transition().style("opacity", 1);
+            return "translate(0, " + (height + i*shapePadding) + ")"; };
 
-        text.attr("transform",
-          function(d,i) {
-
-            return "translate(" + (shapeSize[i].width + shapeSize[i].x + labelOffset) + "," +
-              (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")";
-          });
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width +
+              shapeSize[i].x + labelOffset) + "," + (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
 
       } else if (orient === "horizontal"){
-        cell.attr("transform",
-          function(d,i) {
+        cellTrans = function(d,i) {
             var width = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.width; });
-            return "translate(" + (width + i*shapePadding) + ",0)";
-          })
-         .transition().style("opacity", 1);
+            return "translate(" + (width + i*shapePadding) + ",0)"; };
 
-        text.attr("transform",
-          function(d,i) {
-            return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," + (shapeSize[i].height +
-                + shapeSize[i].y + labelOffset + 8) + ")";
-          })
-          .style("text-anchor", "middle");
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) +
+          "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
       }
+
+      d3_placement(orient, cell, cellTrans, text, textTrans);
+      cell.transition().style("opacity", 1);
+
     }
 
 
@@ -117,9 +104,12 @@ d3.legend.size = function(){
     return legend;
   };
 
-  legend.shape = function(_) {
+  legend.shape = function(_, d) {
     if (!arguments.length) return legend;
-    shape = _;
+    if (_ == "rect" || _ == "circle" || _ == "line" || (_ == "path" && (typeof d === 'string')) ){
+      shape = _;
+      path = d;
+    }
     return legend;
   };
 

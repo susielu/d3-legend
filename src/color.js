@@ -12,39 +12,28 @@ d3.legend.color = function(){
     useClass = false,
     labelFormat = d3.format(".01f"),
     labelOffset = 10,
-    orient = "vertical";
+    orient = "vertical",
+    path;
 
 
     function legend(svg){
 
-      var type = scale.ticks ?
-          d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          d3_quantLegend(scale, labelFormat) : d3_ordinalLegend(scale);
-      type.labels = d3_mergeLabels(type.labels, labels);
+      var type = d3_calcType(scale, cells, labels, labelFormat);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
-        shapes = cell.select("g.cell " + shape).data(type.data);
+        shapes = cell.select("g.cell " + shape);
 
-      //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
 
-      //creates shape
-      d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius);
+      d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
 
-      //adds text
-      cellEnter.append("text").attr("class", "label");
-      svg.selectAll("g.cell text").data(type.labels)
-        .text(function(d) { return d; });
+      d3_addText(svg, cellEnter, type.labels)
 
       // sets placement
-      var  text = cell.select("text"),
-        shapeSize = shapes[0].map(
-          function(d, i){
-            return d.getBBox();
-        });
-
+      var text = cell.select("text"),
+        shapeSize = shapes[0].map( function(d){ return d.getBBox(); });
 
       //sets scale
       //everything is fill except for line which is stroke,
@@ -58,34 +47,24 @@ d3.legend.color = function(){
         shapes.attr("class", function(d){ return "swatch " + type.feature(d); });
       }
 
-      //positions cells
-      if (orient === "vertical"){
-        cell.attr("transform",
-          function(d,i) {
-            return "translate(0, " + (i * (shapeSize[i].height + shapePadding)) + ")";
-          })
-         .transition().style("opacity", 1);
+      var cellTrans,
+      textTrans;
 
-        text.attr("transform",
-          function(d,i) {
-            return "translate(" + (shapeSize[i].width + shapeSize[i].x + labelOffset) + "," +
-              (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")" ;
-          });
+      //positions cells and text
+      if (orient === "vertical"){
+        cellTrans = function(d,i) { return "translate(0, " + (i * (shapeSize[i].height + shapePadding)) + ")"; };
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width + shapeSize[i].x +
+          labelOffset) + "," + (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
 
       } else if (orient === "horizontal"){
-        cell.attr("transform",
-          function(d,i) {
-            return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)";
-          })
-         .transition().style("opacity", 1);
-
-        text.attr("transform",
-          function(d,i) {
-            return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," + (shapeSize[i].height +
-                + shapeSize[i].y + labelOffset + 8) + ")";
-          })
-          .style("text-anchor", "middle");
+        cellTrans = function(d,i) { return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)"; }
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) +
+          "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
       }
+
+      d3_placement(orient, cell, cellTrans, text, textTrans);
+      cell.transition().style("opacity", 1);
+
     }
 
 
@@ -104,9 +83,12 @@ d3.legend.color = function(){
     return legend;
   };
 
-  legend.shape = function(_) {
+  legend.shape = function(_, d) {
     if (!arguments.length) return legend;
-    shape = _;
+    if (_ == "rect" || _ == "circle" || _ == "line" || (_ == "path" && (typeof d === 'string')) ){
+      shape = _;
+      path = d;
+    }
     return legend;
   };
 

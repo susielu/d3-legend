@@ -17,80 +17,46 @@ d3.legend.symbol = function(){
 
     function legend(svg){
 
-      var type = scale.ticks ?
-          d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          d3_quantLegend(scale, labelFormat) : d3_ordinalLegend(scale);
-      type.labels = d3_mergeLabels(type.labels, labels);
+      var type = d3_calcType(scale, cells, labels, labelFormat);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
-        shapes = cell.select("g.cell " + shape).data(type.data);
+        shapes = cell.select("g.cell " + shape);
 
       //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
 
-      //creates shape
       d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-
-      //adds text
-      cellEnter.append("text").attr("class", "label");
-      svg.selectAll("g.cell text").data(type.labels)
-        .text(function(d) { return d; });
+      d3_addText(svg, cellEnter, type.labels)
 
       // sets placement
-      var  text = cell.select("text"),
-        shapeSize = shapes[0].map(
-          function(d, i){
-            return d.getBBox();
-        });
-
-      //sets scale
-      //everything is fill except for line which is stroke,
-      // if (!useClass){
-      //   if (shape == "line"){
-      //     shapes.style("stroke", type.feature);
-      //   } else {
-      //     shapes.style("fill", type.feature);
-      //   }
-      // } else {
-      //   shapes.attr("class", function(d){ return "swatch " + type.feature(d); });
-      // }
-
-      var sHeight = d3.max(shapeSize, function(d){ return d.height; }),
-      sWidth = d3.max(shapeSize, function(d){ return d.width; });
+      var text = cell.select("text"),
+        shapeSize = shapes[0].map( function(d){ return d.getBBox(); });
 
 
-      //positions cells
+      var maxH = d3.max(shapeSize, function(d){ return d.height; }),
+      maxW = d3.max(shapeSize, function(d){ return d.width; });
+
+      var cellTrans,
+      textTrans;
+
+      //positions cells and text
       if (orient === "vertical"){
-        cell.attr("transform",
-          function(d,i) {
-            return "translate(0, " + (i * (sHeight + shapePadding)) + ")";
-          })
-         .transition().style("opacity", 1);
-
-        text.attr("transform",
-          function(d,i) {
-            return "translate(" + (sWidth + labelOffset) + "," +
-              (shapeSize[i].y + shapeSize[i].height) * .75 + ")";
-          });
+        cellTrans = function(d,i) { return "translate(0, " + (i * (maxH + shapePadding)) + ")"; };
+        textTrans = function(d,i) { return "translate(" + (maxW + labelOffset) + "," +
+              (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
 
       } else if (orient === "horizontal"){
-        cell.attr("transform",
-          function(d,i) {
-            return "translate(" + (i * (sWidth + shapePadding)) + ",0)";
-          })
-         .transition().style("opacity", 1);
-
-        text.attr("transform",
-          function(d,i) {
-            return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," +
-              (sHeight + labelOffset ) + ")";
-          })
-          .style("text-anchor", "middle");
+        cellTrans = function(d,i) { return "translate(" + (i * (maxW + shapePadding)) + ",0)"; };
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," +
+              (maxH + labelOffset ) + ")"; };
       }
-    }
 
+      d3_placement(orient, cell, cellTrans, text, textTrans);
+      cell.transition().style("opacity", 1);
+
+    }
 
 
   legend.scale = function(_) {
@@ -149,14 +115,6 @@ d3.legend.symbol = function(){
     return legend;
   };
 
-  // legend.useClass = function(_) {
-  //   if (!arguments.length) return legend;
-  //   if (_ === true || _ === false){
-  //     useClass = _;
-  //   }
-  //   return legend;
-  // };
-
   legend.orient = function(_){
     if (!arguments.length) return legend;
     _ = _.toLowerCase();
@@ -165,6 +123,8 @@ d3.legend.symbol = function(){
     }
     return legend;
   };
+
+
 
   return legend;
 
