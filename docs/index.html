@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <link href='http://fonts.googleapis.com/css?family=Cardo:400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="minimal-ui.min.css">
+  <link rel="stylesheet" href="prism.css">
+
+  <style>
+  svg {
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    display: block;
+    background: white;
+    border: 1px solid $grey;
+  }
+
+  pre[class*="language-"]{
+    margin-top: 0px;
+    margin-bottom: 30px;
+    border: 1px solid #E4E4E4;
+  }
+
+  :not(pre) > code[class*="language-"], pre[class*="language-"] {
+    background: #FFFFFF;
+  }
+
+  .token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted {
+    color: #323232;
+  }
+
+  .token.function {
+    color: #989898;
+  }
+
+  .token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.deleted {
+    color: #00993C;
+  }
+
+  h4 {
+    display: inline-block;
+  }
+
+  strong {
+    color: #272727;
+  }
+
+  text {
+    font: 12px sans-serif;
+  }
+
+  hr {
+    border-top: 1px solid #999;
+  }
+
+  #contents ul li a {
+    font-size: 16px;
+  }
+
+  .legendSize rect, .legendSize circle{
+    fill: rgb(46, 73, 123);
+  }
+
+
+  .legendSizeHorz circle{
+    stroke: rgb(71, 187, 94);
+    fill: none;
+  }
+
+   .legendSizeLine line {
+    stroke: rgb(46, 73, 123);
+   }
+
+   .legendSymbol path {
+    fill: rgb(64, 108, 189);
+   }
+
+
+  .q0-9 { fill:rgb(247,251,255); }
+  .q1-9 { fill:rgb(222,235,247); }
+  .q2-9 { fill:rgb(198,219,239); }
+  .q3-9 { fill:rgb(158,202,225); }
+  .q4-9 { fill:rgb(107,174,214); }
+  .q5-9 { fill:rgb(66,146,198); }
+  .q6-9 { fill:rgb(33,113,181); }
+  .q7-9 { fill:rgb(8,81,156); }
+  .q8-9 { fill:rgb(8,48,107); }
+  </style>
+
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="txt-center">
+        <h1 class="column12">d3 Legend</h1>
+        <div class="column12">
+          <p>Tired of making legends for your data visualizations? Me too, please enjoy.</p>
+          <p>By <a href="http://www.susielu.com">Susie Lu</a></p>
+        </div>
+        <nav class="column6 prefix3 nav nav-small">
+          <a href="#usage">Usage</a>
+          <a href="#contents">Contents</a>
+          <a href="#color">Color</a>
+          <a href="#size">Size</a>
+          <a href="#symbol">Symbol</a>
+        </nav>
+      </div>
+    </div>
+
+  </header>
+
+
+  <section id="usage">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Usage</h2>
+
+        <h3>Client-side</h3>
+        <p>You must inclue the <a href="http://d3js.org/">d3 library</a> before including the legend file. Then you can simply add the compiled js file to your website:</p>
+        <ul>
+          <li><a href="https://raw.githubusercontent.com/susielu/d3-legend/master/d3-legend-all.min.js">All legends</a></li>
+          <li><a href="https://github.com/susielu/d3-legend/blob/master/d3-legend-all.js">All legends - human readable</a></li>
+
+        </ul>
+
+        <h3>npm</h3>
+        <p>You can add the d3 legend as a node module by running:<p>
+        <code>npm install --save d3-svg-legend</code>
+
+
+        <h3>Github + feedback</h3>
+        <p>The full source code is available on <a href="https://github.com/susielu/d3-legend">github</a>. I would love to hear from you about any additional features that would be useful, please say hi on twitter <a href="https://www.twitter.com/DataToViz">@DataToViz</a>.</p>
+      </div>
+    </div>
+  </section>
+  <section class="bg-light" id="contents">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Contents</h2>
+          <ul>
+          <li><a href="#color">Color Legend</a>
+          <ul><li><a href="#color-doc">Documentation</a></li>
+          <li><a href="#color-examples">Examples</a></li>
+          <ul>
+          <li><a href="#color-quant">Quantile Scale Legend</a></li>
+          <li><a href="#color-linear">Linear Scale Legend - Horizontal</a></li>
+          <li><a href="#color-linear-10">Linear Scale Legend - 10 cells</a></li>
+          <li><a href="#color-linear-custom">Linear Scale Legend - Custom cells</a></li>
+          <li><a href="#color-ordinal">Ordinal Scale Legend - Custom shape</a></li></ul></ul></li>
+          <li><a href="#size">Size Legend</a>
+          <ul><li><a href="#size-doc">Documentation</a></li>
+          <li><a href="#size-examples">Examples</a></li>
+          <ul>
+          <li><a href="#size-linear">Linear Scale Legend - Circles</a></li>
+          <li><a href="#size-line">Linear Scale Legend - Lines</a></li></ul></ul></li>
+          <li><a href="#symbol">Symbol Legend</a>
+          <ul><li><a href="#symbol-doc">Documentation</a></li>
+          <li><a href="#symbol-examples">Examples</a></li>
+          <ul><li><a href="#symbol-ordinal">Ordinal Scale Legend - Custom Symbols</a></li></ul></ul></li>
+          </ul>
+
+
+      </div>
+    </div>
+  </section>
+
+  <section class="" id="color">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Color</h2>
+
+        <h3 id="color-doc">Documentation</h3>
+
+        <p>d3.legend.<strong>color()</strong></p>
+
+        <p>Constructs a new color legend. The legend component expects a d3 scale as the basic input, but also has a number of optional parameters for changing the default display such as vertical or horizontal orientation, shape of the symbol next to the label, symbol sizing, and label formatting.</p>
+
+        <p>color.<strong>scale(d3.scale)</strong></p>
+
+        <p>Creates a new d3 legend based on the scale. The code determines the type of scale and generates the appropriate symbol and label pairs.</p>
+
+        <p>color.<strong>cells(number or [numbers])</strong></p>
+
+        <p>This parameter is only valid for <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative">quantitative scales</a> (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
+
+        <p>color.<strong>orient(string)</strong></p>
+
+        <p>Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."</p>
+
+        <p>color.<strong>shape(string[, path-string])</strong></p>
+
+        <p>Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string, <a href="#color-ordinal">an example</a>. Defaults to "rect."</p>
+
+        <p>color.<strong>shapeWidth(number)</strong></p>
+
+        <p>Only applies to shape of "rect" or "line." Default set to 15px.</p>
+
+        <p>color.<strong>shapeHeight(number)</strong></p>
+
+        <p>Only applies to shape of "rect." Default set to 15px.</p>
+
+        <p>color.<strong>shapeRadius(number)</strong></p>
+
+        <p>Only applies to shape of "circle." Default set to 10px.</p>
+
+        <p>color.<strong>shapePadding(number)</strong></p>
+
+        <p>Applies to all shapes. Determines vertical or horizontal spacing between shapes depending on the respective orient setting. Default set to 2px.</p>
+
+        <p>color.<strong>useClass(boolean)</strong></p>
+
+        <p>The default behavior is for the legend to set the fill of the legend's symbols (except for the "line" shape which uses stroke). If you set useClass to <code>true</code> then it will apply the scale's output as classes to the shapes instead of the fill or stroke, <a href="#color-quant">an example</a>.</p>
+
+        <p>color.<strong>labels([string])</strong></p>
+
+        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, <a href="#size-line">an example</a>.</p>
+
+        <p>color.<strong>labelAlign(string)</strong></p>
+
+        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, <a href="#size-line">an example</a>.</p>
+
+        <p>color.<strong>labelFormat(d3.format)</strong></p>
+
+        <p>Takes a <a href="https://github.com/mbostock/d3/wiki/Formatting">d3.format</a> and applies that styling to the legend labels. Default is set to <code>d3.format(".01f")</code>.</p>
+
+        <p>color.<strong>labelOffset(number)</strong></p>
+
+        <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
+
+    </div>
+  </div>
+</section>
+<section class="bg-light" id="color-examples">
+  <div class="container">
+    <div class="column6 prefix3">
+        <h3 >Examples</h3>
+
+        <h4 id="color-quant">Quantile Scale Legend</h4>
+        <svg height=200 width=160  id="svg-color-quant"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var quantize = d3.scale.quantize()
+  .domain([ 0, 0.15 ])
+  .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendQuant")
+  .attr("transform", "translate(20,20)");
+
+var legend = d3.legend.color()
+  .labelFormat(d3.format(".2f"))
+  .useClass(true)
+  .scale(quantize);
+
+svg.select(".legendQuant")
+  .call(legend);
+          </code>
+        </pre>
+
+        <h4 id="color-linear">Linear Scale Legend - Horizontal</h4>
+        <svg height=60 width=200  id="svg-color-linear"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var linear = d3.scale.linear()
+  .domain([0,10])
+  .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendLinear")
+  .attr("transform", "translate(20,20)");
+
+var legendLinear = d3.legend.color()
+  .shapeWidth(30)
+  .orient('horizontal')
+  .scale(linear);
+
+svg.select(".legendLinear")
+  .call(legendLinear);
+          </code>
+        </pre>
+
+        <h4 id="color-linear-10">Linear Scale Legend - 10 cells</h4>
+        <svg height=60 width=360  id="svg-color-linear-10"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var linear = d3.scale.linear()
+  .domain([0,10])
+  .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendLinear")
+  .attr("transform", "translate(20,20)");
+
+var legendLinear = d3.legend.color()
+  .shapeWidth(30)
+  .cells(10)
+  .orient('horizontal')
+  .scale(linear);
+
+svg.select(".legendLinear")
+  .call(legendLinear);
+          </code>
+        </pre>
+
+        <h4 id="color-linear-custom">Linear Scale Legend - Custom cells</h4>
+        <svg height=60 width=200  id="svg-color-linear-custom"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var linear = d3.scale.linear()
+  .domain([0,10])
+  .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendLinear")
+  .attr("transform", "translate(20,20)");
+
+var legendLinear = d3.legend.color()
+  .shapeWidth(30)
+  .cells([1, 2, 3, 6, 8])
+  .orient('horizontal')
+  .scale(linear);
+
+svg.select(".legendLinear")
+  .call(legendLinear);
+          </code>
+        </pre>
+
+        <h4 id="color-ordinal">Ordinal Scale Legend - Custom shape</h4>
+        <svg height=150 width=70  id="svg-color-ordinal"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var ordinal = d3.scale.ordinal()
+  .domain(["a", "b", "c", "d", "e"])
+  .range([ "rgb(153, 107, 195)", "rgb(56, 106, 197)", "rgb(93, 199, 76)", "rgb(223, 199, 31)", "rgb(234, 118, 47)"]);
+
+var svg = d3.select("svg");
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendOrdinal")
+  .attr("transform", "translate(20,20)");
+
+var legendOrdinal = d3.legend.color()
+  //d3 symbol creates a path-string, for example
+  //"M0,-8.059274488676564L9.306048591020996,
+  //8.059274488676564 -9.306048591020996,8.059274488676564Z"
+  .shape("path", d3.svg.symbol().type("triangle-up").size(150)())
+  .shapePadding(10)
+  .scale(ordinal);
+
+svg.select(".legendOrdinal")
+  .call(legendOrdinal);
+          </code>
+        </pre>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="" id="size">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Size</h2>
+
+        <h3 id="size-doc">Documentation</h3>
+
+        <p>d3.legend.<strong>size()</strong></p>
+
+        <p>Constructs a new size legend. The legend component expects a d3 scale as the basic input, but also has a number of optional parameters for changing the default display such as vertical or horizontal orientation, shape of the symbol next to the label, symbol sizing, and label formatting.</p>
+
+        <p>size.<strong>scale(d3.scale)</strong></p>
+
+        <p>Creates a new d3 legend based on the scale. The code determines the type of scale and generates the different symbol and label pairs. Expects a scale that has a numerical range.</p>
+
+        <p>size.<strong>cells(number or [numbers])</strong></p>
+
+        <p>This parameter is only valid for <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative">quantitative scales</a> (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
+
+        <p>size.<strong>orient(string)</strong></p>
+
+        <p>Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."</p>
+
+        <p>size.<strong>shape(string[, path-string])</strong></p>
+
+        <p>Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string, <a href="#color-ordinal">an example</a>. Defaults to "rect."</p>
+
+        <p>size.<strong>shapeWidth(number)</strong></p>
+
+        <p>Only applies to shape "line." Default set to 15px.</p>
+
+        <p>size.<strong>shapePadding(number)</strong></p>
+
+        <p>Applies to all shapes. Determines vertical or horizontal spacing between shapes depending on the respective orient setting. Default set to 2px.</p>
+
+        <p>size.<strong>labels([string])</strong></p>
+
+        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, <a href="#size-line">an example</a>.</p>
+
+        <p>size.<strong>labelAlign(string)</strong></p>
+
+        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, <a href="#size-line">an example</a>.</p>
+
+        <p>size.<strong>labelFormat(d3.format)</strong></p>
+
+        <p>Takes a <a href="https://github.com/mbostock/d3/wiki/Formatting">d3.format</a> and applies that styling to the legend labels. Default is set to <code>d3.format(".01f")</code>.</p>
+
+        <p>size.<strong>labelOffset(number)</strong></p>
+
+        <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
+
+       </div>
+    </div>
+  </section>
+  <section class="bg-light" id="size-examples">
+    <div class="container">
+      <div class="column6 prefix3">
+
+       <h3>Examples</h3>
+       <h4 id="size-linear">Linear Scale Legend - Circles</h4>
+       <svg height=100 width=350  id="svg-size-linear"></svg>
+       <pre class="column6 left-margin right-margin">
+         <code class="language-javascript">
+
+var linearSize = d3.scale.linear().domain([0,10]).range([10, 30]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendSize")
+  .attr("transform", "translate(20, 40)");
+
+var legendSize = d3.legend.size()
+  .scale(linearSize)
+  .shape('circle')
+  .shapePadding(15)
+  .labelOffset(20)
+  .orient('horizontal');
+
+svg.select(".legendSize")
+  .call(legendSize);
+         </code>
+       </pre>
+
+       <h4 id="size-line">Linear Scale Legend - Lines</h4>
+       <svg height=60 width=380  id="svg-size-line"></svg>
+       <pre class="column6 left-margin right-margin">
+         <code class="language-javascript">
+
+var lineSize = d3.scale.linear().domain([0,10]).range([2, 10]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendSizeLine")
+  .attr("transform", "translate(0, 20)");
+
+var legendSizeLine = d3.legend.size()
+      .scale(lineSize)
+      .shape("line")
+      .orient("horizontal")
+      //otherwise labels would have displayed:
+      // 0, 2.5, 5, 10
+      .labels(["tiny", "small", "medium", "large", "grand"])
+      .shapeWidth(40)
+      .labelAlign("start")
+      .shapePadding(10);
+
+svg.select(".legendSizeLine")
+  .call(legendSizeLine);
+         </code>
+       </pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="" id="symbol">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Symbol</h2>
+
+        <h3 id="symbol-doc">Documentation</h3>
+
+        <p>d3.legend.<strong>symbol()</strong></p>
+
+        <p>Constructs a new symbol legend. The legend component expects a d3 scale as the basic input, but also has a number of optional parameters for changing the default display such as vertical or horizontal orientation, shape of the symbol next to the label, symbol sizing, and label formatting.</p>
+
+        <p>symbol.<strong>scale()</strong></p>
+
+        <p>Creates a new d3 legend based on the scale. The code determines the type of scale and generates the different symbol and label pairs.</p>
+
+        <p>symbol.<strong>cells()</strong></p>
+
+        <p>This parameter is only valid for <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative">quantitative scales</a> (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
+
+        <p>symbol.<strong>orient(string)</strong></p>
+
+        <p>Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."</p>
+
+        <p>symbol.<strong>shapePadding()</strong></p>
+
+        <p>Applies to all shapes. Determines vertical or horizontal spacing between shapes depending on the respective orient setting. Default set to 2px.</p>
+
+        <p>symbol.<strong>labels([string])</strong></p>
+
+        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, <a href="#size-line">an example</a>.</p>
+
+        <p>symbol.<strong>labelAlign(string)</strong></p>
+
+        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, <a href="#size-line">an example</a>.</p>
+
+        <p>symbol.<strong>labelFormat(d3.format)</strong></p>
+
+        <p>Takes a <a href="https://github.com/mbostock/d3/wiki/Formatting">d3.format</a> and applies that styling to the legend labels. Default is set to <code>d3.format(".01f")</code>.</p>
+
+        <p>symbol.<strong>labelOffset(number)</strong></p>
+
+        <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
+
+
+
+       </div>
+    </div>
+  </section>
+  <section class="bg-light" id="symbol-examples">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h3>Examples</h3>
+       <h4 id="symbol-ordinal">Ordinal Scale Legend - Custom symbols</h4>
+       <svg height=60 width=110  id="svg-symbol-ordinal"></svg>
+       <pre class="column6 left-margin right-margin">
+         <code class="language-javascript">
+
+var triangleU = d3.svg.symbol().type('triangle-up')(),
+  circle = d3.svg.symbol().type('circle')(),
+  cross = d3.svg.symbol().type('cross')(),
+  diamond = d3.svg.symbol().type('diamond')(),
+  triangleD = d3.svg.symbol().type('triangle-down')();
+
+//example output of d3.svg.symbol().type('circle')();
+//"M0,4.51351666838205A4.51351666838205,4.51351666838205 0 1,1 0,
+//-4.51351666838205A4.51351666838205,4.51351666838205 0 1,1 0,4.51351666838205Z"
+
+var symbolScale =  d3.scale.ordinal()
+  .domain(['a','b','c', 'd', 'e'])
+  .range([ triangleU, circle, cross, diamond, triangleD] );
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendSymbol")
+  .attr("transform", "translate(20, 20)");
+
+var legendPath = d3.legend.symbol()
+  .scale(symbolScale)
+  .orient("horizontal");
+
+svg.select(".legendSymbol")
+  .call(legendPath);
+         </code>
+       </pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-light">
+    <div class="container">
+      <div class="column6 prefix3">
+
+        <hr />
+        <p>NOTES</p>
+
+        <p>Huge thanks to <a href="http://elijahmeeks.com/">Elijah Meeks</a> for discussing ideas and encouragning me to complete this project.</p>
+        <p>The styling and layout of this page is made with another project of mine, <a href="http://minimal-ui.susielu.com">minimal-ui.</a></p>
+        <p>The fonts on this page are provided by Google Fonts, and created by <a href="https://www.google.com/fonts/specimen/Montserrat">Julieta Ulanovsky</a> and <a href="https://www.google.com/fonts/specimen/Cardo">David Perry</a>.</p>
+        <p>Using <a href="http://prismjs.com/">Prism</a> for syntax highlighting.</p>
+        <p>And of course, thanks <a href="http://d3js.org/">d3.js</a> for creating such a lovely project and <a href="http://bost.ocks.org/mike/">Mike Bostock</a> for providing <a href="http://bost.ocks.org/mike/chart/">examples</a> on how to make your own components.</p>
+
+      </div>
+    </div>
+  </section>
+<script src="prism.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+<script src="d3-legend.min.js"></script>
+
+<script src="legends.js"></script>
+</body>

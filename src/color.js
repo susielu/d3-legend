@@ -1,5 +1,6 @@
+var helper = require('./legend');
 
-d3.legend.color = function(){
+module.exports = function(){
 
   var scale = d3.scale.linear(),
     shape = "rect",
@@ -12,13 +13,14 @@ d3.legend.color = function(){
     useClass = false,
     labelFormat = d3.format(".01f"),
     labelOffset = 10,
+    labelAlign = "middle",
     orient = "vertical",
     path;
 
 
     function legend(svg){
 
-      var type = d3_calcType(scale, cells, labels, labelFormat);
+      var type = helper.d3_calcType(scale, cells, labels, labelFormat);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -27,9 +29,9 @@ d3.legend.color = function(){
 
       cell.exit().transition().style("opacity", 0).remove();
 
-      d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
+      helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
 
-      d3_addText(svg, cellEnter, type.labels)
+      helper.d3_addText(svg, cellEnter, type.labels)
 
       // sets placement
       var text = cell.select("text"),
@@ -48,7 +50,8 @@ d3.legend.color = function(){
       }
 
       var cellTrans,
-      textTrans;
+      textTrans,
+      textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
 
       //positions cells and text
       if (orient === "vertical"){
@@ -58,11 +61,11 @@ d3.legend.color = function(){
 
       } else if (orient === "horizontal"){
         cellTrans = function(d,i) { return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)"; }
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) +
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) +
           "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
       }
 
-      d3_placement(orient, cell, cellTrans, text, textTrans);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       cell.transition().style("opacity", 1);
 
     }
@@ -119,6 +122,14 @@ d3.legend.color = function(){
   legend.labels = function(_) {
     if (!arguments.length) return legend;
     labels = _;
+    return legend;
+  };
+
+  legend.labelAlign = function(_) {
+    if (!arguments.length) return legend;
+    if (_ == "start" || _ == "end" || _ == "middle") {
+      labelAlign = _;
+    }
     return legend;
   };
 

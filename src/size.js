@@ -1,24 +1,24 @@
+var helper = require('./legend');
 
-d3.legend.size = function(){
+module.exports =  function(){
 
   var scale = d3.scale.linear(),
     shape = "rect",
     shapeWidth = 15,
-    shapeHeight = 15,
-    shapeRadius = 10,
     shapePadding = 2,
     cells = [5],
     labels = [],
     useStroke = false,
     labelFormat = d3.format(".01f"),
     labelOffset = 10,
+    labelAlign = "middle",
     orient = "vertical",
     path;
 
 
     function legend(svg){
 
-      var type = d3_calcType(scale, cells, labels, labelFormat);
+      var type = helper.d3_calcType(scale, cells, labels, labelFormat);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -28,33 +28,37 @@ d3.legend.size = function(){
       cell.exit().transition().style("opacity", 0).remove();
 
       //creates shape
-      if (useStroke){
-        d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
+      if (shape === "line"){
+        helper.d3_drawShapes(shape, shapes, 0, shapeWidth);
         shapes.attr("stroke-width", type.feature);
       } else {
-        d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
+        helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
       }
 
-      d3_addText(svg, cellEnter, type.labels)
+      helper.d3_addText(svg, cellEnter, type.labels)
 
-      // sets placement
+      //sets placement
       var text = cell.select("text"),
         shapeSize = shapes[0].map(
           function(d, i){
             var bbox = d.getBBox()
             var stroke = scale(type.data[i]);
 
-            if (useStroke && orient === "horizontal") {
-              bbox.height = bbox.height + stroke/2;
-            } else if (useStroke && orient === "vertical"){
-              bbox.width = bbox.width + stroke/2;
+            if (shape === "line" && orient === "horizontal") {
+              bbox.height = bbox.height + stroke;
+            } else if (shape === "line" && orient === "vertical"){
+              bbox.width = bbox.width;
             }
 
             return bbox;
         });
 
+      var maxH = d3.max(shapeSize, function(d){ return d.height + d.y; }),
+      maxW = d3.max(shapeSize, function(d){ return d.width + d.x; });
+
       var cellTrans,
-      textTrans;
+      textTrans,
+      textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
 
       //positions cells and text
       if (orient === "vertical"){
@@ -63,19 +67,19 @@ d3.legend.size = function(){
             var height = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.height; });
             return "translate(0, " + (height + i*shapePadding) + ")"; };
 
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width +
-              shapeSize[i].x + labelOffset) + "," + (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
+        textTrans = function(d,i) { return "translate(" + (maxW + labelOffset) + "," +
+          (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
 
       } else if (orient === "horizontal"){
         cellTrans = function(d,i) {
             var width = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.width; });
             return "translate(" + (width + i*shapePadding) + ",0)"; };
 
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) +
-          "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) + "," +
+              (maxH + labelOffset ) + ")"; };
       }
 
-      d3_placement(orient, cell, cellTrans, text, textTrans);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       cell.transition().style("opacity", 1);
 
     }
@@ -96,13 +100,6 @@ d3.legend.size = function(){
     return legend;
   };
 
-  legend.useStroke = function(_){
-    if (!arguments.length) return legend;
-    if (_ === true || _ === false){
-      useStroke = _;
-    }
-    return legend;
-  };
 
   legend.shape = function(_, d) {
     if (!arguments.length) return legend;
@@ -119,18 +116,6 @@ d3.legend.size = function(){
     return legend;
   };
 
-  legend.shapeHeight = function(_) {
-    if (!arguments.length) return legend;
-    shapeHeight = +_;
-    return legend;
-  };
-
-  legend.shapeRadius = function(_) {
-    if (!arguments.length) return legend;
-    shapeRadius = +_;
-    return legend;
-  };
-
   legend.shapePadding = function(_) {
     if (!arguments.length) return legend;
     shapePadding = +_;
@@ -140,6 +125,14 @@ d3.legend.size = function(){
   legend.labels = function(_) {
     if (!arguments.length) return legend;
     labels = _;
+    return legend;
+  };
+
+  legend.labelAlign = function(_) {
+    if (!arguments.length) return legend;
+    if (_ == "start" || _ == "end" || _ == "middle") {
+      labelAlign = _;
+    }
     return legend;
   };
 

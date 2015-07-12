@@ -1,10 +1,10 @@
-d3.legend = {};
+module.exports = {
 
-function d3_identity(d) {
+d3_identity: function (d) {
   return d;
-};
+},
 
-function d3_mergeLabels(gen, labels) {
+d3_mergeLabels: function (gen, labels) {
 
     if(labels.length === 0) return gen;
 
@@ -15,9 +15,9 @@ function d3_mergeLabels(gen, labels) {
       labels.push(gen[i]);
     }
     return labels;
-  }
+  },
 
-function d3_linearLegend(scale, cells, labelFormat) {
+d3_linearLegend: function (scale, cells, labelFormat) {
   var data = [];
 
   if (cells.length > 1){
@@ -36,26 +36,26 @@ function d3_linearLegend(scale, cells, labelFormat) {
   return {data: data,
           labels: data,
           feature: function(d){ return scale(d); }};
-}
+},
 
-function d3_quantLegend(scale, labelFormat) {
+d3_quantLegend: function (scale, labelFormat) {
   var labels = scale.range().map(function(d){
     var invert = scale.invertExtent(d);
     return labelFormat(invert[0]) + " to " + labelFormat(invert[1]);
   });
   return {data: scale.range(),
           labels: labels,
-          feature: d3_identity
+          feature: this.d3_identity
         };
-}
+},
 
-function d3_ordinalLegend(scale) {
+d3_ordinalLegend: function (scale) {
   return {data: scale.domain(),
           labels: scale.domain(),
           feature: function(d){ return scale(d); }};
-}
+},
 
-function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
+d3_drawShapes: function (shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
   if (shape === "rect"){
       shapes.attr("height", shapeHeight).attr("width", shapeWidth);
 
@@ -68,27 +68,30 @@ function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path
   } else if (shape === "path") {
     shapes.attr("d", path);
   }
-}
+},
 
-function d3_addText(svg, enter, labels){
+d3_addText: function (svg, enter, labels){
   enter.append("text").attr("class", "label");
-  svg.selectAll("g.cell text").data(labels).text(d3_identity);
-}
+  svg.selectAll("g.cell text").data(labels).text(this.d3_identity);
+},
 
-function d3_calcType(scale, cells, labels, labelFormat){
+d3_calcType: function (scale, cells, labels, labelFormat){
   var type = scale.ticks ?
-          d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          d3_quantLegend(scale, labelFormat) : d3_ordinalLegend(scale);
+          this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
+          this.d3_quantLegend(scale, labelFormat) :this. d3_ordinalLegend(scale);
 
-  type.labels = d3_mergeLabels(type.labels, labels);
+  type.labels = this.d3_mergeLabels(type.labels, labels);
 
   return type;
-}
+},
 
-function d3_placement(orient, cell, cellTrans, text, textTrans) {
+d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
   cell.attr("transform", cellTrans);
   text.attr("transform", textTrans);
   if (orient === "horizontal"){
-    text.style("text-anchor", "middle");
+    text.style("text-anchor", labelAlign);
   }
+}
+
+
 }

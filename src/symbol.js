@@ -1,5 +1,6 @@
+var helper = require('./legend');
 
-d3.legend.symbol = function(){
+module.exports = function(){
 
   var scale = d3.scale.linear(),
     shape = "path",
@@ -11,13 +12,14 @@ d3.legend.symbol = function(){
     labels = [],
     useClass = false,
     labelFormat = d3.format(".01f"),
+    labelAlign = "middle",
     labelOffset = 10,
     orient = "vertical";
 
 
     function legend(svg){
 
-      var type = d3_calcType(scale, cells, labels, labelFormat);
+      var type = helper.d3_calcType(scale, cells, labels, labelFormat);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -27,19 +29,19 @@ d3.legend.symbol = function(){
       //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
 
-      d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-      d3_addText(svg, cellEnter, type.labels)
+      helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
+      helper.d3_addText(svg, cellEnter, type.labels)
 
       // sets placement
       var text = cell.select("text"),
         shapeSize = shapes[0].map( function(d){ return d.getBBox(); });
 
-
       var maxH = d3.max(shapeSize, function(d){ return d.height; }),
       maxW = d3.max(shapeSize, function(d){ return d.width; });
 
       var cellTrans,
-      textTrans;
+      textTrans,
+      textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
 
       //positions cells and text
       if (orient === "vertical"){
@@ -49,11 +51,11 @@ d3.legend.symbol = function(){
 
       } else if (orient === "horizontal"){
         cellTrans = function(d,i) { return "translate(" + (i * (maxW + shapePadding)) + ",0)"; };
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width/2  + shapeSize[i].x) + "," +
+        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) + "," +
               (maxH + labelOffset ) + ")"; };
       }
 
-      d3_placement(orient, cell, cellTrans, text, textTrans);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       cell.transition().style("opacity", 1);
 
     }
@@ -85,6 +87,14 @@ d3.legend.symbol = function(){
     return legend;
   };
 
+  legend.labelAlign = function(_) {
+    if (!arguments.length) return legend;
+    if (_ == "start" || _ == "end" || _ == "middle") {
+      labelAlign = _;
+    }
+    return legend;
+  };
+
   legend.labelFormat = function(_) {
     if (!arguments.length) return legend;
     labelFormat = _;
@@ -105,8 +115,6 @@ d3.legend.symbol = function(){
     }
     return legend;
   };
-
-
 
   return legend;
 

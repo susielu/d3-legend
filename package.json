@@ -1,16 +1,22 @@
 {
   "name": "d3-svg-legend",
-  "version": "1.0.0",
-  "description": "Test",
-  "main": "legend.js",
+  "version": "1.0.1",
+  "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
+  "main": "index.js",
+  "keywords": [
+    "d3",
+    "legend"
+  ],
   "directories": {
     "example": "examples",
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "d3": "^3.5.6"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
-    "grunt-contrib-concat": "^0.5.1",
+    "grunt-browserify": "^3.8.0",
     "grunt-contrib-uglify": "^0.9.1",
     "mocha": "^2.2.5"
   },
@@ -19,12 +25,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/susielu/d3-svg-legend.git"
+    "url": "https://github.com/susielu/d3-legend.git"
   },
-  "author": "Susie Lu",
+  "author": {
+    "name":"Susie Lu",
+    "url":"http://www.susielu.com"
+  },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/susielu/d3-svg-legend/issues"
+    "url": "https://github.com/susielu/d3-legend/issues"
   },
-  "homepage": "https://github.com/susielu/d3-svg-legend"
+  "homepage": "http://d3-legend.susielu.com"
 }
