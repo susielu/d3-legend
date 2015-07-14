@@ -31,7 +31,7 @@ Creates a new d3 legend based on the scale. The code determines the type of scal
 
 color.**cells(number or [numbers])**
 
-This parameter is only valid for [quantitative scales](https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative) (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
+This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
 
 color.**orient(string)**
 
@@ -39,7 +39,7 @@ Accepts "vertical" or "horizontal" for legend orientation. Default set to "verti
 
 color.**shape(string[, path-string])**
 
-Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string, [an example](#color-ordinal). Defaults to "rect."
+Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string. Defaults to "rect." An example: [Color - Ordinal Scale Legend, custom shape](#color-ordinal).
 
 color.**shapeWidth(number)**
 
@@ -59,15 +59,15 @@ Applies to all shapes. Determines vertical or horizontal spacing between shapes 
 
 color.**useClass(boolean)**
 
-The default behavior is for the legend to set the fill of the legend's symbols (except for the "line" shape which uses stroke). If you set useClass to `true` then it will apply the scale's output as classes to the shapes instead of the fill or stroke, [an example](#color-quant).
+The default behavior is for the legend to set the fill of the legend's symbols (except for the "line" shape which uses stroke). If you set useClass to `true` then it will apply the scale's output as classes to the shapes instead of the fill or stroke. An example: [Color - Quantile Scale Legend](#color-quant).
 
 color.**labels([string])**
 
-Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, [an example](#size-line).
+Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items. An example: [Size - Linear Scale Legend, Lines](#size-line).
 
 color.**labelAlign(string)**
 
-Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, [an example](#size-line).
+Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: [Size - Linear Scale Legend, Lines](#size-line).
 
 color.**labelFormat(d3.format)**
 
@@ -91,15 +91,15 @@ Creates a new d3 legend based on the scale. The code determines the type of scal
 
 size.**cells(number or [numbers])**
 
-This parameter is only valid for [quantitative scales](https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative) (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
+This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
 
 size.**orient(string)**
 
 Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."
 
-size.**shape(string[, path-string])**
+size.**shape(string)**
 
-Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string, [an example](#color-ordinal). Defaults to "rect."
+Accepts "rect", "circle", or "line". Defaults to "rect." The assumption is that the scale's output will be used for the width and height if you select "rect," the radius if you select "circle," and the stroke-width if you select "line." If you want to have a custom shape of different sizes in your legend, use the symbol legend and make each path string for the sizes you want as the range array.
 
 size.**shapeWidth(number)**
 
@@ -111,11 +111,11 @@ Applies to all shapes. Determines vertical or horizontal spacing between shapes 
 
 size.**labels([string])**
 
-Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, [an example](#size-line).
+Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items. An example: [Size - Linear Scale Legend, Lines](#size-line)
 
 size.**labelAlign(string)**
 
-Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, [an example](#size-line).
+Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: [Size - Linear Scale Legend, Lines](#size-line).
 
 size.**labelFormat(d3.format)**
 
@@ -135,11 +135,11 @@ Constructs a new symbol legend. The legend component expects a d3 scale as the b
 
 symbol.**scale()**
 
-Creates a new d3 legend based on the scale. The code determines the type of scale and generates the different symbol and label pairs.
+Creates a new d3 legend based on the scale. The code determines the type of scale and generates the different symbol and label pairs. The scale's range will be used as the d-attribute in an svg path for each symbol in the legend.
 
 symbol.**cells()**
 
-This parameter is only valid for [quantitative scales](https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative) (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
+This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
 
 symbol.**orient(string)**
 
@@ -151,11 +151,11 @@ Applies to all shapes. Determines vertical or horizontal spacing between shapes 
 
 symbol.**labels([string])**
 
-Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, [an example](#size-line).
+Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items. An example: [Size - Linear Scale Legend, Lines](#size-line).
 
 symbol.**labelAlign(string)**
 
-Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, [an example](#size-line).
+Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: [Size - Linear Scale Legend, Lines](#size-line).
 
 symbol.**labelFormat(d3.format)**
 

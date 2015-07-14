@@ -103,7 +103,7 @@ module.exports =  function(){
 
   legend.shape = function(_, d) {
     if (!arguments.length) return legend;
-    if (_ == "rect" || _ == "circle" || _ == "line" || (_ == "path" && (typeof d === 'string')) ){
+    if (_ == "rect" || _ == "circle" || _ == "line" ){
       shape = _;
       path = d;
     }

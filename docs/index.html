@@ -53,7 +53,29 @@
     border-top: 1px solid #999;
   }
 
-  #contents ul li a {
+  table tbody tr:not(:last-child) td{
+    border-bottom: 2px solid #E7E7E7;
+  }
+
+  table tbody td:not(:last-child), table thead th:not(:last-child) {
+    border-right: 2px solid #e7e7e7
+  }
+
+  table td:not(:first-child){
+    width: 60px;
+  }
+
+  table td.included{
+    background-color: rgb(102, 178, 155);
+  }
+
+  @media only screen and (max-width: 480px){
+    table {
+      font-size: 11px;
+    }
+  }
+
+  #contents ul li {
     font-size: 16px;
   }
 
@@ -93,8 +115,9 @@
     <div class="container">
       <div class="txt-center">
         <h1 class="column12">d3 Legend</h1>
-        <div class="column12">
-          <p>Tired of making legends for your data visualizations? Me too, please enjoy.</p>
+        <div class="column6 prefix3">
+          <p>Tired of making legends for your data visualizations? Me too, enjoy.</p>
+          <img src="d3-legend.jpg">
           <p>By <a href="http://www.susielu.com">Susie Lu</a></p>
         </div>
         <nav class="column6 prefix3 nav nav-small">
@@ -103,6 +126,7 @@
           <a href="#color">Color</a>
           <a href="#size">Size</a>
           <a href="#symbol">Symbol</a>
+          <a href="#summary">Summary of Functions</a>
         </nav>
       </div>
     </div>
@@ -116,7 +140,7 @@
         <h2>Usage</h2>
 
         <h3>Client-side</h3>
-        <p>You must inclue the <a href="http://d3js.org/">d3 library</a> before including the legend file. Then you can simply add the compiled js file to your website:</p>
+        <p>You must include the <a href="http://d3js.org/">d3 library</a> before including the legend file. Then you can simply add the compiled js file to your website:</p>
         <ul>
           <li><a href="https://raw.githubusercontent.com/susielu/d3-legend/master/d3-legend-all.min.js">All legends</a></li>
           <li><a href="https://github.com/susielu/d3-legend/blob/master/d3-legend-all.js">All legends - human readable</a></li>
@@ -157,6 +181,8 @@
           <ul><li><a href="#symbol-doc">Documentation</a></li>
           <li><a href="#symbol-examples">Examples</a></li>
           <ul><li><a href="#symbol-ordinal">Ordinal Scale Legend - Custom Symbols</a></li></ul></ul></li>
+          <li><a href="#summary">Summary of Functions</a> - table of which functions are shared across legend types</li>
+
           </ul>
 
 
@@ -181,7 +207,7 @@
 
         <p>color.<strong>cells(number or [numbers])</strong></p>
 
-        <p>This parameter is only valid for <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative">quantitative scales</a> (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
+        <p>This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
 
         <p>color.<strong>orient(string)</strong></p>
 
@@ -189,7 +215,7 @@
 
         <p>color.<strong>shape(string[, path-string])</strong></p>
 
-        <p>Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string, <a href="#color-ordinal">an example</a>. Defaults to "rect."</p>
+        <p>Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string. Defaults to "rect." An example: <a href="#color-ordinal">Color - Ordinal Scale Legend, custom shape</a>.</p>
 
         <p>color.<strong>shapeWidth(number)</strong></p>
 
@@ -209,15 +235,15 @@
 
         <p>color.<strong>useClass(boolean)</strong></p>
 
-        <p>The default behavior is for the legend to set the fill of the legend's symbols (except for the "line" shape which uses stroke). If you set useClass to <code>true</code> then it will apply the scale's output as classes to the shapes instead of the fill or stroke, <a href="#color-quant">an example</a>.</p>
+        <p>The default behavior is for the legend to set the fill of the legend's symbols (except for the "line" shape which uses stroke). If you set useClass to <code>true</code> then it will apply the scale's output as classes to the shapes instead of the fill or stroke. An example: <a href="#color-quant">Color - Quantile Scale Legend</a>.</p>
 
         <p>color.<strong>labels([string])</strong></p>
 
-        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, <a href="#size-line">an example</a>.</p>
+        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items. An example: <a href="#size-line">Size - Linear Scale Legend, Lines</a>.</p>
 
         <p>color.<strong>labelAlign(string)</strong></p>
 
-        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, <a href="#size-line">an example</a>.</p>
+        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: <a href="#size-line">Size - Linear Scale Legend, Lines</a>.</p>
 
         <p>color.<strong>labelFormat(d3.format)</strong></p>
 
@@ -348,8 +374,6 @@ var ordinal = d3.scale.ordinal()
 
 var svg = d3.select("svg");
 
-var svg = d3.select("svg");
-
 svg.append("g")
   .attr("class", "legendOrdinal")
   .attr("transform", "translate(20,20)");
@@ -388,15 +412,15 @@ svg.select(".legendOrdinal")
 
         <p>size.<strong>cells(number or [numbers])</strong></p>
 
-        <p>This parameter is only valid for <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative">quantitative scales</a> (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
+        <p>This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
 
         <p>size.<strong>orient(string)</strong></p>
 
         <p>Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."</p>
 
-        <p>size.<strong>shape(string[, path-string])</strong></p>
+        <p>size.<strong>shape(string)</strong></p>
 
-        <p>Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string, <a href="#color-ordinal">an example</a>. Defaults to "rect."</p>
+        <p>Accepts "rect", "circle", or "line". Defaults to "rect." The assumption is that the scale's output will be used for the width and height if you select "rect," the radius if you select "circle," and the stroke-width if you select "line." If you want to have a custom shape of different sizes in your legend, use the symbol legend and make each path string for the sizes you want as the range array.</p>
 
         <p>size.<strong>shapeWidth(number)</strong></p>
 
@@ -408,11 +432,11 @@ svg.select(".legendOrdinal")
 
         <p>size.<strong>labels([string])</strong></p>
 
-        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, <a href="#size-line">an example</a>.</p>
+        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items. An example: <a href="#size-line">Size - Linear Scale Legend, Lines</a></p>
 
         <p>size.<strong>labelAlign(string)</strong></p>
 
-        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, <a href="#size-line">an example</a>.</p>
+        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: <a href="#size-line">Size - Linear Scale Legend, Lines</a>.</p>
 
         <p>size.<strong>labelFormat(d3.format)</strong></p>
 
@@ -500,11 +524,11 @@ svg.select(".legendSizeLine")
 
         <p>symbol.<strong>scale()</strong></p>
 
-        <p>Creates a new d3 legend based on the scale. The code determines the type of scale and generates the different symbol and label pairs.</p>
+        <p>Creates a new d3 legend based on the scale. The code determines the type of scale and generates the different symbol and label pairs. The scale's range will be used as the d-attribute in an svg path for each symbol in the legend.</p>
 
         <p>symbol.<strong>cells()</strong></p>
 
-        <p>This parameter is only valid for <a href="https://github.com/mbostock/d3/wiki/Quantitative-Scales#quantitative">quantitative scales</a> (except for quantize and quantile). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
+        <p>This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the <a href="#color-linear-custom">specific steps</a> you want the legend to display.</p>
 
         <p>symbol.<strong>orient(string)</strong></p>
 
@@ -516,11 +540,11 @@ svg.select(".legendSizeLine")
 
         <p>symbol.<strong>labels([string])</strong></p>
 
-        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items, <a href="#size-line">an example</a>.</p>
+        <p>Sets the legend labels to the array of strings passed to the legend. If the array is not the same length as the array the legend calculates, it merges the values and gives the calculated labels for the remaining items. An example: <a href="#size-line">Size - Linear Scale Legend, Lines</a>.</p>
 
         <p>symbol.<strong>labelAlign(string)</strong></p>
 
-        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend, <a href="#size-line">an example</a>.</p>
+        <p>Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: <a href="#size-line">Size - Linear Scale Legend, Lines</a>.</p>
 
         <p>symbol.<strong>labelFormat(d3.format)</strong></p>
 
@@ -576,14 +600,109 @@ svg.select(".legendSymbol")
     </div>
   </section>
 
+  <section id="summary">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Summary of Functions</h2>
+        <table>
+        <tr>
+          <th>Function</th>
+          <th>Color</th>
+          <th>Size</th>
+          <th>Symbol</th>
+        </tr>
+
+        <tr>
+          <td>scale</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>cells</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>orient</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>shape</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>shapeWidth</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>shapeHeight</td>
+          <td class="included"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>shapeRadius</td>
+          <td class="included"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>shapePadding</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>useClass</td>
+          <td class="included"></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>labelAlign</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>labelFormat</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>labelOffset</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <section class="bg-light">
     <div class="container">
       <div class="column6 prefix3">
 
-        <hr />
+      <br />
         <p>NOTES</p>
 
-        <p>Huge thanks to <a href="http://elijahmeeks.com/">Elijah Meeks</a> for discussing ideas and encouragning me to complete this project.</p>
+        <p>Huge thanks to <a href="http://elijahmeeks.com/">Elijah Meeks</a> for discussing ideas and encouraging me to complete this project.</p>
         <p>The styling and layout of this page is made with another project of mine, <a href="http://minimal-ui.susielu.com">minimal-ui.</a></p>
         <p>The fonts on this page are provided by Google Fonts, and created by <a href="https://www.google.com/fonts/specimen/Montserrat">Julieta Ulanovsky</a> and <a href="https://www.google.com/fonts/specimen/Cardo">David Perry</a>.</p>
         <p>Using <a href="http://prismjs.com/">Prism</a> for syntax highlighting.</p>
@@ -598,4 +717,5 @@ svg.select(".legendSymbol")
 <script src="d3-legend.min.js"></script>
 
 <script src="legends.js"></script>
+<script src="ga.js"></script>
 </body>
