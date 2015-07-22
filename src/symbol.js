@@ -14,12 +14,13 @@ module.exports = function(){
     labelFormat = d3.format(".01f"),
     labelAlign = "middle",
     labelOffset = 10,
+    labelDelimiter = "to",
     orient = "vertical";
 
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, cells, labels, labelFormat);
+      var type = helper.d3_calcType(scale, cells, labels, labelFormat, labelDelimiter);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -104,6 +105,12 @@ module.exports = function(){
   legend.labelOffset = function(_) {
     if (!arguments.length) return legend;
     labelOffset = +_;
+    return legend;
+  };
+
+  legend.labelDelimiter = function(_) {
+    if (!arguments.length) return legend;
+    labelDelimiter = _;
     return legend;
   };
 

@@ -77,6 +77,10 @@ color.**labelOffset(number)**
 
 A value that determines how far the label is from the symbol in each legend item. Default set to 10px.
 
+color.**labelDelimiter(string)**
+
+Change the default "to" text when working with a quant scale.
+
 ### Examples
 
 ## Size
@@ -125,6 +129,10 @@ size.**labelOffset(number)**
 
 A value that determines how far the label is from the symbol in each legend item. Default set to 10px.
 
+size.**labelDelimiter(string)**
+
+Change the default "to" text when working with a quant scale.
+
 ### Examples
 
 ## Symbol
@@ -164,4 +172,8 @@ Takes a [d3.format](https://github.com/mbostock/d3/wiki/Formatting) and applies 
 symbol.**labelOffset(number)**
 
 A value that determines how far the label is from the symbol in each legend item. Default set to 10px.
+
+symbol.**labelDelimiter(string)**
+
+Change the default "to" text when working with a quant scale.
 

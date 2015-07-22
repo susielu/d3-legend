@@ -253,6 +253,10 @@
 
         <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
 
+        <p>color.<strong>labelDelimiter(string)</strong></p>
+
+        <p>Change the default "to" text when working with a quant scale.</p>
+
     </div>
   </div>
 </section>
@@ -283,6 +287,31 @@ var legend = d3.legend.color()
 
 svg.select(".legendQuant")
   .call(legend);
+          </code>
+        </pre>
+
+        <h4 id="color-quant">Log Scale Legend</h4>
+        <svg height=200 width=160  id="svg-color-log"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var log = d3.scale.log()
+    .domain([ 0.1, 100, 1000 ])
+    .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendLog")
+  .attr("transform", "translate(20,20)");
+
+var logLegend = d3.legend.color()
+    .cells([0.1, 5, 10, 50, 100, 500, 1000])
+    .scale(log);
+
+svg.select(".legendLog")
+  .call(logLegend);
+
           </code>
         </pre>
 
@@ -442,6 +471,10 @@ svg.select(".legendOrdinal")
 
         <p>Takes a <a href="https://github.com/mbostock/d3/wiki/Formatting">d3.format</a> and applies that styling to the legend labels. Default is set to <code>d3.format(".01f")</code>.</p>
 
+        <p>size.<strong>labelDelimiter(string)</strong></p>
+
+        <p>Change the default "to" text when working with a quant scale.</p>
+
         <p>size.<strong>labelOffset(number)</strong></p>
 
         <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
@@ -554,7 +587,9 @@ svg.select(".legendSizeLine")
 
         <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
 
+        <p>symbol.<strong>labelDelimiter(string)</strong></p>
 
+        <p>Change the default "to" text when working with a quant scale.</p>
 
        </div>
     </div>

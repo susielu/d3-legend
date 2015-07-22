@@ -25,7 +25,7 @@ d3_linearLegend: function (scale, cells, labelFormat) {
 
   } else {
     var domain = scale.domain(),
-    increment = (domain[1] - domain[0])/(cells - 1),
+    increment = (domain[domain.length - 1] - domain[0])/(cells - 1),
     i = 0;
 
     for (; i < cells; i++){
@@ -38,11 +38,12 @@ d3_linearLegend: function (scale, cells, labelFormat) {
           feature: function(d){ return scale(d); }};
 },
 
-d3_quantLegend: function (scale, labelFormat) {
+d3_quantLegend: function (scale, labelFormat, labelDelimiter) {
   var labels = scale.range().map(function(d){
     var invert = scale.invertExtent(d);
-    return labelFormat(invert[0]) + " to " + labelFormat(invert[1]);
+    return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
   });
+
   return {data: scale.range(),
           labels: labels,
           feature: this.d3_identity
@@ -75,10 +76,10 @@ d3_addText: function (svg, enter, labels){
   svg.selectAll("g.cell text").data(labels).text(this.d3_identity);
 },
 
-d3_calcType: function (scale, cells, labels, labelFormat){
+d3_calcType: function (scale, cells, labels, labelFormat, labelDelimiter){
   var type = scale.ticks ?
           this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          this.d3_quantLegend(scale, labelFormat) :this. d3_ordinalLegend(scale);
+          this.d3_quantLegend(scale, labelFormat, labelDelimiter) :this. d3_ordinalLegend(scale);
 
   type.labels = this.d3_mergeLabels(type.labels, labels);
 
