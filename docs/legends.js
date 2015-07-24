@@ -15,7 +15,6 @@ svg.append("g")
 var legend = d3.legend.color()
     .labelFormat(d3.format(".2f"))
     .useClass(true)
-    .labelDelimiter("tot")
     .scale(quantize);
 
 svg.select(".legendQuant")

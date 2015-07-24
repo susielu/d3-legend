@@ -218,8 +218,18 @@ d3_linearLegend: function (scale, cells, labelFormat) {
 
 d3_quantLegend: function (scale, labelFormat, labelDelimiter) {
   var labels = scale.range().map(function(d){
-    var invert = scale.invertExtent(d);
-    return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+    var invert = scale.invertExtent(d),
+    a = labelFormat(invert[0]),
+    b = labelFormat(invert[1]);
+
+    if (a && b){
+      console.log("in initial statement")
+      return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+    } else if (a || b) {
+      console.log('in else statement')
+      return (a) ? a : b;
+    }
+
   });
 
   return {data: scale.range(),
