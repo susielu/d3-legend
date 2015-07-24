@@ -222,13 +222,13 @@ d3_quantLegend: function (scale, labelFormat, labelDelimiter) {
     a = labelFormat(invert[0]),
     b = labelFormat(invert[1]);
 
-    if (a && b){
-      console.log("in initial statement")
+    // if (( (a) && (a.isNan()) && b){
+    //   console.log("in initial statement")
       return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
-    } else if (a || b) {
-      console.log('in else statement')
-      return (a) ? a : b;
-    }
+    // } else if (a || b) {
+    //   console.log('in else statement')
+    //   return (a) ? a : b;
+    // }
 
   });
 
