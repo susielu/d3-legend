@@ -18,6 +18,11 @@ grunt.initConfig({
       files: {
         'd3-legend.min.js': 'd3-legend.js'
       }
+    },
+    docs: {
+      files: {
+        'docs/d3-legend.min.js': 'd3-legend.js'
+      }
     }
   }
 
