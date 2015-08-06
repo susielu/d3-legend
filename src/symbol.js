@@ -15,8 +15,8 @@ module.exports = function(){
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
-    orient = "vertical";
-
+    orient = "vertical",
+    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -26,6 +26,9 @@ module.exports = function(){
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
         shapes = cell.select("g.cell " + shape);
+
+      //add event handlers
+      helper.d3_addEvents(cellEnter, legendDispatcher);
 
       //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
@@ -122,6 +125,8 @@ module.exports = function(){
     }
     return legend;
   };
+
+  d3.rebind(legend, legendDispatcher, "on");
 
   return legend;
 

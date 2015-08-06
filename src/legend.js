@@ -89,7 +89,7 @@ d3_addText: function (svg, enter, labels){
 d3_calcType: function (scale, cells, labels, labelFormat, labelDelimiter){
   var type = scale.ticks ?
           this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          this.d3_quantLegend(scale, labelFormat, labelDelimiter) :this. d3_ordinalLegend(scale);
+          this.d3_quantLegend(scale, labelFormat, labelDelimiter) : this.d3_ordinalLegend(scale);
 
   type.labels = this.d3_mergeLabels(type.labels, labels);
 
@@ -102,7 +102,26 @@ d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
   if (orient === "horizontal"){
     text.style("text-anchor", labelAlign);
   }
-}
+},
 
+d3_addEvents: function(cells, dispatcher){
+  var _ = this;
+
+    cells.on("mouseover.legend", function (d) { _.d3_cellOver(dispatcher, d, this); })
+        .on("mouseout.legend", function (d) { _.d3_cellOut(dispatcher, d, this); })
+        .on("click.legend", function (d) { _.d3_cellClick(dispatcher, d, this); });
+},
+
+d3_cellOver: function(cellDispatcher, d, obj){
+  cellDispatcher.cellover.call(obj, d);
+},
+
+d3_cellOut: function(cellDispatcher, d, obj){
+  cellDispatcher.cellout.call(obj, d);
+},
+
+d3_cellClick: function(cellDispatcher, d, obj){
+  cellDispatcher.cellclick.call(obj, d);
+}
 
 }

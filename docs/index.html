@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
+
+
+  <meta name="author" content="Susie Lu">
+  <meta name="description" content="Tired of making legends for your data visualizations? This is a component for d3 that allows you to reuse the scales you’ve made for your visualization to quickly add a legend.">
+  <link rel="canonical" href="http://d3-legend.susielu.com">
+
+
   <link href='http://fonts.googleapis.com/css?family=Cardo:400,700' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="minimal-ui.min.css">
@@ -257,6 +264,11 @@
 
         <p>Change the default "to" text when working with a quant scale.</p>
 
+
+        <p>color.<strong>on(string, function)</strong></p>
+
+        <p>There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: <a href="#symbol-ordinal">Symbol - Ordinal Scale</a></p>
+
     </div>
   </div>
 </section>
@@ -479,6 +491,10 @@ svg.select(".legendOrdinal")
 
         <p>A value that determines how far the label is from the symbol in each legend item. Default set to 10px.</p>
 
+        <p>size.<strong>on(string, function)</strong></p>
+
+        <p>There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: <a href="#symbol-ordinal">Symbol - Ordinal Scale</a></p>
+
        </div>
     </div>
   </section>
@@ -591,6 +607,10 @@ svg.select(".legendSizeLine")
 
         <p>Change the default "to" text when working with a quant scale.</p>
 
+        <p>symbol.<strong>on(string, function)</strong></p>
+
+        <p>There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: <a href="#symbol-ordinal">Symbol - Ordinal Scale</a></p>
+
        </div>
     </div>
   </section>
@@ -625,7 +645,8 @@ svg.append("g")
 
 var legendPath = d3.legend.symbol()
   .scale(symbolScale)
-  .orient("horizontal");
+  .orient("horizontal")
+  .on("cellclick", function(d){alert("clicked " + d);});
 
 svg.select(".legendSymbol")
   .call(legendPath);
@@ -721,6 +742,12 @@ svg.select(".legendSymbol")
         </tr>
         <tr>
           <td>labelOffset</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>on</td>
           <td class="included"></td>
           <td class="included"></td>
           <td class="included"></td>

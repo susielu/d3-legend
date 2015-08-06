@@ -34,7 +34,8 @@ svg.append("g")
 
 var logLegend = d3.legend.color()
     .cells([0.1, 5, 10, 50, 100, 500, 1000])
-    .scale(log);
+    .scale(log)
+
 
 svg.select(".legendLog")
   .call(logLegend);
@@ -168,7 +169,7 @@ var symbolScale =  d3.scale.ordinal()
 
 var legendPath = d3.legend.symbol()
   .scale(symbolScale)
-  .orient("horizontal");
-
+  .orient("horizontal")
+  .on("cellclick", function(d){alert("clicked " + d);});
 svg.select(".legendSymbol")
   .call(legendPath);

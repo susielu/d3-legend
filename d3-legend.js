@@ -17,8 +17,8 @@ module.exports = function(){
     labelAlign = "middle",
     labelDelimiter = "to",
     orient = "vertical",
-    path;
-
+    path,
+    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -28,6 +28,9 @@ module.exports = function(){
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
         shapes = cell.select("g.cell " + shape);
+
+      //add event handlers
+      helper.d3_addEvents(cellEnter, legendDispatcher);
 
       cell.exit().transition().style("opacity", 0).remove();
 
@@ -170,6 +173,8 @@ module.exports = function(){
     return legend;
   };
 
+  d3.rebind(legend, legendDispatcher, "on");
+
   return legend;
 
 };
@@ -267,7 +272,7 @@ d3_addText: function (svg, enter, labels){
 d3_calcType: function (scale, cells, labels, labelFormat, labelDelimiter){
   var type = scale.ticks ?
           this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-          this.d3_quantLegend(scale, labelFormat, labelDelimiter) :this. d3_ordinalLegend(scale);
+          this.d3_quantLegend(scale, labelFormat, labelDelimiter) : this.d3_ordinalLegend(scale);
 
   type.labels = this.d3_mergeLabels(type.labels, labels);
 
@@ -280,8 +285,27 @@ d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
   if (orient === "horizontal"){
     text.style("text-anchor", labelAlign);
   }
-}
+},
 
+d3_addEvents: function(cells, dispatcher){
+  var _ = this;
+
+    cells.on("mouseover.legend", function (d) { _.d3_cellOver(dispatcher, d, this); })
+        .on("mouseout.legend", function (d) { _.d3_cellOut(dispatcher, d, this); })
+        .on("click.legend", function (d) { _.d3_cellClick(dispatcher, d, this); });
+},
+
+d3_cellOver: function(cellDispatcher, d, obj){
+  cellDispatcher.cellover.call(obj, d);
+},
+
+d3_cellOut: function(cellDispatcher, d, obj){
+  cellDispatcher.cellout.call(obj, d);
+},
+
+d3_cellClick: function(cellDispatcher, d, obj){
+  cellDispatcher.cellclick.call(obj, d);
+}
 
 }
 
@@ -302,8 +326,8 @@ module.exports =  function(){
     labelAlign = "middle",
     labelDelimiter = "to",
     orient = "vertical",
-    path;
-
+    path,
+    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -313,6 +337,9 @@ module.exports =  function(){
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
         shapes = cell.select("g.cell " + shape);
+
+      //add event handlers
+      helper.d3_addEvents(cellEnter, legendDispatcher);
 
       cell.exit().transition().style("opacity", 0).remove();
 
@@ -452,6 +479,8 @@ module.exports =  function(){
     return legend;
   };
 
+  d3.rebind(legend, legendDispatcher, "on");
+
   return legend;
 
 };
@@ -475,8 +504,8 @@ module.exports = function(){
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
-    orient = "vertical";
-
+    orient = "vertical",
+    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -486,6 +515,9 @@ module.exports = function(){
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
         shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
         shapes = cell.select("g.cell " + shape);
+
+      //add event handlers
+      helper.d3_addEvents(cellEnter, legendDispatcher);
 
       //remove old shapes
       cell.exit().transition().style("opacity", 0).remove();
@@ -582,6 +614,8 @@ module.exports = function(){
     }
     return legend;
   };
+
+  d3.rebind(legend, legendDispatcher, "on");
 
   return legend;
 

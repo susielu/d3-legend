@@ -81,6 +81,10 @@ color.**labelDelimiter(string)**
 
 Change the default "to" text when working with a quant scale.
 
+color.**on(string, function)**
+
+There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: [Symbol - Ordinal Scale](#symbol-ordinal)
+
 ### Examples
 
 ## Size
@@ -133,6 +137,10 @@ size.**labelDelimiter(string)**
 
 Change the default "to" text when working with a quant scale.
 
+size.**on(string, function)**
+
+There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: [Symbol - Ordinal Scale](#symbol-ordinal)
+
 ### Examples
 
 ## Symbol
@@ -176,4 +184,8 @@ A value that determines how far the label is from the symbol in each legend item
 symbol.**labelDelimiter(string)**
 
 Change the default "to" text when working with a quant scale.
+
+symbol.**on(string, function)**
+
+There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: [Symbol - Ordinal Scale](#symbol-ordinal)
 
