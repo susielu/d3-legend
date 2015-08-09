@@ -29,12 +29,14 @@ d3_linearLegend: function (scale, cells, labelFormat) {
     i = 0;
 
     for (; i < cells; i++){
-      data.push(labelFormat(domain[0] + i*increment));
+      data.push(domain[0] + i*increment);
     }
   }
 
+  var labels = data.map(labelFormat);
+
   return {data: data,
-          labels: data,
+          labels: labels,
           feature: function(d){ return scale(d); }};
 },
 
