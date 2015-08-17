@@ -16,11 +16,12 @@ module.exports = function(){
     labelOffset = 10,
     labelDelimiter = "to",
     orient = "vertical",
+    ascending = false,
     legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, cells, labels, labelFormat, labelDelimiter);
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -123,6 +124,12 @@ module.exports = function(){
     if (_ == "horizontal" || _ == "vertical") {
       orient = _;
     }
+    return legend;
+  };
+
+  legend.ascending = function(_) {
+    if (!arguments.length) return legend;
+    ascending = !!_;
     return legend;
   };
 
