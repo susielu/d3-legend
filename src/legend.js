@@ -96,11 +96,19 @@ d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimi
   type.labels = this.d3_mergeLabels(type.labels, labels);
 
   if (ascending) {
-    type.labels.reverse();
-    type.data.reverse();
+    type.labels = this.d3_reverse(type.labels);
+    type.data = this.d3_reverse(type.data);
   }
 
   return type;
+},
+
+d3_reverse: function(arr) {
+  var mirror = [];
+  for (var i = 0, l = arr.length; i < l; i++) {
+    mirror[i] = arr[l-i-1];
+  }
+  return mirror;
 },
 
 d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
