@@ -17,12 +17,13 @@ module.exports = function(){
     labelAlign = "middle",
     labelDelimiter = "to",
     orient = "vertical",
+    ascending = false,
     path,
     legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, cells, labels, labelFormat, labelDelimiter);
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -173,6 +174,12 @@ module.exports = function(){
     return legend;
   };
 
+  legend.ascending = function(_) {
+    if (!arguments.length) return legend;
+    ascending = !!_;
+    return legend;
+  };
+
   d3.rebind(legend, legendDispatcher, "on");
 
   return legend;
@@ -212,12 +219,14 @@ d3_linearLegend: function (scale, cells, labelFormat) {
     i = 0;
 
     for (; i < cells; i++){
-      data.push(labelFormat(domain[0] + i*increment));
+      data.push(domain[0] + i*increment);
     }
   }
 
+  var labels = data.map(labelFormat);
+
   return {data: data,
-          labels: data,
+          labels: labels,
           feature: function(d){ return scale(d); }};
 },
 
@@ -269,14 +278,27 @@ d3_addText: function (svg, enter, labels){
   svg.selectAll("g.cell text").data(labels).text(this.d3_identity);
 },
 
-d3_calcType: function (scale, cells, labels, labelFormat, labelDelimiter){
+d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
   var type = scale.ticks ?
           this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
           this.d3_quantLegend(scale, labelFormat, labelDelimiter) : this.d3_ordinalLegend(scale);
 
   type.labels = this.d3_mergeLabels(type.labels, labels);
 
+  if (ascending) {
+    type.labels = this.d3_reverse(type.labels);
+    type.data = this.d3_reverse(type.data);
+  }
+
   return type;
+},
+
+d3_reverse: function(arr) {
+  var mirror = [];
+  for (var i = 0, l = arr.length; i < l; i++) {
+    mirror[i] = arr[l-i-1];
+  }
+  return mirror;
 },
 
 d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
@@ -326,12 +348,13 @@ module.exports =  function(){
     labelAlign = "middle",
     labelDelimiter = "to",
     orient = "vertical",
+    ascending = false,
     path,
     legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, cells, labels, labelFormat, labelDelimiter);
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -479,6 +502,12 @@ module.exports =  function(){
     return legend;
   };
 
+  legend.ascending = function(_) {
+    if (!arguments.length) return legend;
+    ascending = !!_;
+    return legend;
+  };
+
   d3.rebind(legend, legendDispatcher, "on");
 
   return legend;
@@ -505,11 +534,12 @@ module.exports = function(){
     labelOffset = 10,
     labelDelimiter = "to",
     orient = "vertical",
+    ascending = false,
     legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, cells, labels, labelFormat, labelDelimiter);
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter);
 
       var cell = svg.selectAll(".cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
@@ -612,6 +642,12 @@ module.exports = function(){
     if (_ == "horizontal" || _ == "vertical") {
       orient = _;
     }
+    return legend;
+  };
+
+  legend.ascending = function(_) {
+    if (!arguments.length) return legend;
+    ascending = !!_;
     return legend;
   };
 
