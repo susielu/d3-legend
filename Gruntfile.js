@@ -1,3 +1,5 @@
+var stringify = require('stringify');
+
 
 module.exports = function(grunt){
 
@@ -8,6 +10,18 @@ grunt.initConfig({
     dist: {
       files: {
         'd3-legend.js': ['src/web.js'],
+      }
+    },
+    docs: {
+      files: {
+        'docs/docs.js': ['docs/legends.js', 'docs/markdown.js']
+      },
+      options: {
+        transform: [
+          function(file) {
+            return stringify({extensions: ['.md']}).call(stringify, file);
+          }
+        ]
       }
     }
   },
@@ -22,6 +36,11 @@ grunt.initConfig({
     docs: {
       files: {
         'docs/d3-legend.min.js': 'd3-legend.js'
+      }
+    },
+    docsjs: {
+      files: {
+        'docs/docs.min.js': 'docs/docs.js'
       }
     }
   }
