@@ -625,7 +625,7 @@ svg.select(".legendSizeLine")
       <div class="column6 prefix3">
         <h3>Examples</h3>
        <h4 id="symbol-ordinal">Ordinal Scale Legend - Custom symbols</h4>
-       <svg height=60 width=110  id="svg-symbol-ordinal"></svg>
+       <svg height=90 width=170  id="svg-symbol-ordinal"></svg>
        <pre class="column6 left-margin right-margin">
          <code class="language-javascript">
 
@@ -652,6 +652,7 @@ svg.append("g")
 var legendPath = d3.legend.symbol()
   .scale(symbolScale)
   .orient("horizontal")
+  .title("Symbol Legend Title")
   .on("cellclick", function(d){alert("clicked " + d);});
 
 svg.select(".legendSymbol")

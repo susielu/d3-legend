@@ -9,6 +9,8 @@ module.exports =  function(){
     cells = [5],
     labels = [],
     useStroke = false,
+    classPrefix = "",
+    title = "",
     labelFormat = d3.format(".01f"),
     labelOffset = 10,
     labelAlign = "middle",
@@ -20,12 +22,14 @@ module.exports =  function(){
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter);
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+        legendG = svg.append('g').attr('class', classPrefix + 'legendCells');
 
-      var cell = svg.selectAll(".cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", "cell").style("opacity", 1e-6);
-        shapeEnter = cellEnter.append(shape).attr("class", "swatch"),
-        shapes = cell.select("g.cell " + shape);
+
+      var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
+        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6);
+        shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
+        shapes = cell.select("g." + classPrefix + "cell " + shape);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -40,7 +44,7 @@ module.exports =  function(){
         helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
       }
 
-      helper.d3_addText(svg, cellEnter, type.labels)
+      helper.d3_addText(legendG, cellEnter, type.labels, classPrefix)
 
       //sets placement
       var text = cell.select("text"),
@@ -85,11 +89,11 @@ module.exports =  function(){
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+      helper.d3_title(svg, legendG, title, classPrefix);
+
       cell.transition().style("opacity", 1);
 
     }
-
-
 
   legend.scale = function(_) {
     if (!arguments.length) return legend;
@@ -171,6 +175,18 @@ module.exports =  function(){
   legend.ascending = function(_) {
     if (!arguments.length) return legend;
     ascending = !!_;
+    return legend;
+  };
+
+  legend.classPrefix = function(_) {
+    if (!arguments.length) return legend;
+    classPrefix = _;
+    return legend;
+  };
+
+  legend.title = function(_) {
+    if (!arguments.length) return legend;
+    title = _;
     return legend;
   };
 

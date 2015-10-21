@@ -170,6 +170,8 @@ var symbolScale =  d3.scale.ordinal()
 var legendPath = d3.legend.symbol()
   .scale(symbolScale)
   .orient("horizontal")
+  .title('Symbol Legend Title')
   .on("cellclick", function(d){alert("clicked " + d);});
+
 svg.select(".legendSymbol")
   .call(legendPath);
