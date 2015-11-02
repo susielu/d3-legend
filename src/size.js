@@ -23,7 +23,9 @@ module.exports =  function(){
     function legend(svg){
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
-        legendG = svg.append('g').attr('class', classPrefix + 'legendCells');
+        legendG = svg.selectAll('g').data([scale]);
+
+      legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
@@ -195,4 +197,3 @@ module.exports =  function(){
   return legend;
 
 };
-
