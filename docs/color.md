@@ -14,6 +14,10 @@ color.**orient(string)**
 
 Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."
 
+color.**ascending(boolean)**
+
+If you pass this a true, it will reverse the order of the scale.
+
 color.**shape(string[, path-string])**
 
 Accepts "rect", "circle", "line", or "path". If you choose "path," you must also pass a second parameter as a path string. Defaults to "rect." An example: [Color - Ordinal Scale Legend, custom shape](#color-ordinal).

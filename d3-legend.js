@@ -26,7 +26,9 @@ module.exports = function(){
     function legend(svg){
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
-        legendG = svg.append('g').attr('class', classPrefix + 'legendCells');
+        legendG = svg.selectAll('g').data([scale]);
+
+      legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
@@ -203,7 +205,6 @@ module.exports = function(){
   return legend;
 
 };
-
 
 },{"./legend":2}],2:[function(require,module,exports){
 module.exports = {
@@ -390,7 +391,9 @@ module.exports =  function(){
     function legend(svg){
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
-        legendG = svg.append('g').attr('class', classPrefix + 'legendCells');
+        legendG = svg.selectAll('g').data([scale]);
+
+      legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
@@ -563,7 +566,6 @@ module.exports =  function(){
 
 };
 
-
 },{"./legend":2}],4:[function(require,module,exports){
 var helper = require('./legend');
 
@@ -591,7 +593,9 @@ module.exports = function(){
     function legend(svg){
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
-        legendG = svg.append('g').attr('class', classPrefix + 'legendCells');
+        legendG = svg.selectAll('g').data([scale]);
+
+      legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
         cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6);
@@ -721,7 +725,6 @@ module.exports = function(){
   return legend;
 
 };
-
 
 },{"./legend":2}],5:[function(require,module,exports){
 d3.legend = {

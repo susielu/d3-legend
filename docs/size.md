@@ -14,6 +14,10 @@ size.**orient(string)**
 
 Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."
 
+size.**ascending(boolean)**
+
+If you pass this a true, it will reverse the order of the scale.
+
 size.**shape(string)**
 
 Accepts "rect", "circle", or "line". Defaults to "rect." The assumption is that the scale's output will be used for the width and height if you select "rect," the radius if you select "circle," and the stroke-width if you select "line." If you want to have a custom shape of different sizes in your legend, use the symbol legend and make each path string for the sizes you want as the range array.

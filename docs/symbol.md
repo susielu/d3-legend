@@ -14,6 +14,10 @@ symbol.**orient(string)**
 
 Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."
 
+symbol.**ascending(boolean)**
+
+If you pass this a true, it will reverse the order of the scale.
+
 symbol.**shapePadding()**
 
 Applies to all shapes. Determines vertical or horizontal spacing between shapes depending on the respective orient setting. Default set to 2px.
