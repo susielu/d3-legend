@@ -12,6 +12,10 @@ You must inclue the [d3 library](http://d3js.org/) before including the legend f
 - d3-legend.min.js
 - d3-legend.js (Human readable version)
 
+### Using CDN
+
+You can also add latest version of [d3-legend hosted on cdnjs](https://cdnjs.com/libraries/d3-legend).
+
 ### Using npm
 
 Already using d3? Great! You can add the d3 legend as a node module by running:
