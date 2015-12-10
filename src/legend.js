@@ -142,9 +142,15 @@ module.exports = {
   d3_title: function(svg, cellsSvg, title, classPrefix){
     if (title !== ""){
 
-      svg.append('text')
-        .attr('class', classPrefix + 'legendTitle')
-        .text(title)
+      var titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
+
+      titleText.data([title])
+        .enter()
+        .append('text')
+        .attr('class', classPrefix + 'legendTitle');
+
+        svg.selectAll('text.' + classPrefix + 'legendTitle')
+            .text(title)
 
       var yOffset = svg.select('.' + classPrefix + 'legendTitle')
           .map(function(d) { return d[0].getBBox().height})[0],
