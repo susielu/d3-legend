@@ -142,12 +142,16 @@ module.exports = {
   d3_title: function(svg, cellsSvg, title, classPrefix){
     if (title !== ""){
 
-      svg.append('text')
-        .attr('class', classPrefix + 'legendTitle')
-        .text(title)
+      var text_elem = null;
+      if (!svg.select('text.' + classPrefix + 'legendTitle').empty()) {
+          text_elem = svg.select('text.' + classPrefix + 'legendTitle');
+      } else {
+          text_elem = svg.append('text').classed(classPrefix + 'legendTitle', true);
+      }
 
-      var yOffset = svg.select('.' + classPrefix + 'legendTitle')
-          .map(function(d) { return d[0].getBBox().height})[0],
+      text_elem.text(title);
+
+      var yOffset = text_elem.map(function(d) { return d[0].getBBox().height})[0],
       xOffset = -cellsSvg.map(function(d) { return d[0].getBBox().x})[0];
 
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset + 10) + ')');
