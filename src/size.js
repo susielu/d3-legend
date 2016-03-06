@@ -98,13 +98,13 @@ module.exports =  function(){
     }
 
   legend.scale = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return scale;
     scale = _;
     return legend;
   };
 
   legend.cells = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return cells;
     if (_.length > 1 || _ >= 2 ){
       cells = _;
     }
@@ -113,7 +113,7 @@ module.exports =  function(){
 
 
   legend.shape = function(_, d) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return shape;
     if (_ == "rect" || _ == "circle" || _ == "line" ){
       shape = _;
       path = d;
@@ -122,25 +122,25 @@ module.exports =  function(){
   };
 
   legend.shapeWidth = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return shapeWidth;
     shapeWidth = +_;
     return legend;
   };
 
   legend.shapePadding = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return shapePadding;
     shapePadding = +_;
     return legend;
   };
 
   legend.labels = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return labels;
     labels = _;
     return legend;
   };
 
   legend.labelAlign = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return labelAlign;
     if (_ == "start" || _ == "end" || _ == "middle") {
       labelAlign = _;
     }
@@ -148,25 +148,25 @@ module.exports =  function(){
   };
 
   legend.labelFormat = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return labelFormat;
     labelFormat = _;
     return legend;
   };
 
   legend.labelOffset = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return labelOffset;
     labelOffset = +_;
     return legend;
   };
 
   legend.labelDelimiter = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return labelDelimiter;
     labelDelimiter = _;
     return legend;
   };
 
   legend.orient = function(_){
-    if (!arguments.length) return legend;
+    if (!arguments.length) return orient;
     _ = _.toLowerCase();
     if (_ == "horizontal" || _ == "vertical") {
       orient = _;
@@ -175,19 +175,19 @@ module.exports =  function(){
   };
 
   legend.ascending = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return ascending;
     ascending = !!_;
     return legend;
   };
 
   legend.classPrefix = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return classPrefix;
     classPrefix = _;
     return legend;
   };
 
   legend.title = function(_) {
-    if (!arguments.length) return legend;
+    if (!arguments.length) return title;
     title = _;
     return legend;
   };

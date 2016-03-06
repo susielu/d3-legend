@@ -25,7 +25,6 @@ var svg = d3.select("#svg-color-log");
 
 var log = d3.scale.log()
     .domain([ 0.1, 100, 1000 ])
-
     .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
 
 svg.append("g")
@@ -34,8 +33,7 @@ svg.append("g")
 
 var logLegend = d3.legend.color()
     .cells([0.1, 5, 10, 50, 100, 500, 1000])
-    .scale(log)
-
+    .scale(log);
 
 svg.select(".legendLog")
   .call(logLegend);
