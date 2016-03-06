@@ -1,6 +1,6 @@
 {
   "name": "d3-svg-legend",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
   "main": "index.js",
   "files": [
