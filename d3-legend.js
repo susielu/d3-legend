@@ -32,7 +32,7 @@ module.exports = function(){
 
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6);
+        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6),
         shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
         shapes = cell.select("g." + classPrefix + "cell " + shape);
 
@@ -403,7 +403,7 @@ module.exports =  function(){
 
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6);
+        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6),
         shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
         shapes = cell.select("g." + classPrefix + "cell " + shape);
 
@@ -604,7 +604,7 @@ module.exports = function(){
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
       var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6);
+        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6),
         shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
         shapes = cell.select("g." + classPrefix + "cell " + shape);
 
