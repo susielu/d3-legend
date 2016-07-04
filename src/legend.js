@@ -1,3 +1,5 @@
+var d3 = require('d3');
+
 module.exports = {
 
   d3_identity: function (d) {

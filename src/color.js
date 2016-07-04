@@ -1,3 +1,4 @@
+var d3 = require('d3');
 var helper = require('./legend');
 
 module.exports = function(){
