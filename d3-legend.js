@@ -27,7 +27,7 @@ module.exports = function(){
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -257,12 +257,12 @@ module.exports = {
       a = labelFormat(invert[0]),
       b = labelFormat(invert[1]);
 
-      if (labelFloor && lableCeil) {
-        return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+      if (labelFloor && lableCeil || !labelFloor && !lableCeil) {
+        return a + " " + labelDelimiter + " " + b;
       } else if (labelFloor && !lableCeil) {
-        return labelFormat(invert[0]);
+        return a;
       } else if (!labelFloor && lableCeil) {
-        return labelFormat(invert[1]);
+        return b;
       }
       // if (( (a) && (a.isNan()) && b){
       //   console.log("in initial statement")
