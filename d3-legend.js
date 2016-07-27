@@ -167,6 +167,18 @@ module.exports = function(){
     return legend;
   };
 
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
+    return legend;
+  };
+
   legend.useClass = function(_) {
     if (!arguments.length) return useClass;
     if (_ === true || _ === false){
@@ -721,6 +733,18 @@ module.exports = function(){
   legend.labelDelimiter = function(_) {
     if (!arguments.length) return labelDelimiter;
     labelDelimiter = _;
+    return legend;
+  };
+
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
     return legend;
   };
 
