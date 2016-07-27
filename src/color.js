@@ -17,6 +17,8 @@ module.exports = function(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
+    labelFloor = true,
+    labelCeil = true,
     orient = "vertical",
     ascending = false,
     path,

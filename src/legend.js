@@ -40,15 +40,22 @@ module.exports = {
             feature: function(d){ return scale(d); }};
   },
 
-  d3_quantLegend: function (scale, labelFormat, labelDelimiter) {
+  d3_quantLegend: function (scale, labelFormat, labelDelimiter, labelFloor, lableCeil) {
     var labels = scale.range().map(function(d){
       var invert = scale.invertExtent(d),
       a = labelFormat(invert[0]),
       b = labelFormat(invert[1]);
 
+      if (labelFloor && lableCeil) {
+        return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+      } else if (labelFloor && !lableCeil) {
+        return labelFormat(invert[0]);
+      } else if (!labelFloor && lableCeil) {
+        return labelFormat(invert[1]);
+      }
       // if (( (a) && (a.isNan()) && b){
       //   console.log("in initial statement")
-        return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+        // return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
       // } else if (a || b) {
       //   console.log('in else statement')
       //   return (a) ? a : b;
@@ -88,10 +95,10 @@ module.exports = {
     svg.selectAll("g." + classPrefix + "cell text").data(labels).text(this.d3_identity);
   },
 
-  d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
+  d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, lableCeil){
     var type = scale.ticks ?
             this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-            this.d3_quantLegend(scale, labelFormat, labelDelimiter) : this.d3_ordinalLegend(scale);
+            this.d3_quantLegend(scale, labelFormat, labelDelimiter, labelFloor, lableCeil) : this.d3_ordinalLegend(scale);
 
     type.labels = this.d3_mergeLabels(type.labels, labels);
 
