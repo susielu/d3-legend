@@ -18,6 +18,8 @@ module.exports = function(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
+    labelFloor = true,
+    labelCeil = true,
     orient = "vertical",
     ascending = false,
     path,
@@ -25,7 +27,7 @@ module.exports = function(){
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -165,6 +167,18 @@ module.exports = function(){
     return legend;
   };
 
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
+    return legend;
+  };
+
   legend.useClass = function(_) {
     if (!arguments.length) return useClass;
     if (_ === true || _ === false){
@@ -249,15 +263,22 @@ module.exports = {
             feature: function(d){ return scale(d); }};
   },
 
-  d3_quantLegend: function (scale, labelFormat, labelDelimiter) {
+  d3_quantLegend: function (scale, labelFormat, labelDelimiter, labelFloor, labelCeil) {
     var labels = scale.range().map(function(d){
       var invert = scale.invertExtent(d),
       a = labelFormat(invert[0]),
       b = labelFormat(invert[1]);
 
+      if (labelFloor && labelCeil || !labelFloor && !labelCeil) {
+        return a + " " + labelDelimiter + " " + b;
+      } else if (labelFloor && !labelCeil) {
+        return a;
+      } else if (!labelFloor && labelCeil) {
+        return b;
+      }
       // if (( (a) && (a.isNan()) && b){
       //   console.log("in initial statement")
-        return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+        // return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
       // } else if (a || b) {
       //   console.log('in else statement')
       //   return (a) ? a : b;
@@ -297,10 +318,10 @@ module.exports = {
     svg.selectAll("g." + classPrefix + "cell text").data(labels).text(this.d3_identity);
   },
 
-  d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
+  d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil){
     var type = scale.ticks ?
             this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-            this.d3_quantLegend(scale, labelFormat, labelDelimiter) : this.d3_ordinalLegend(scale);
+            this.d3_quantLegend(scale, labelFormat, labelDelimiter, labelFloor, labelCeil) : this.d3_ordinalLegend(scale);
 
     type.labels = this.d3_mergeLabels(type.labels, labels);
 
@@ -389,6 +410,8 @@ module.exports =  function(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
+    labelFloor = true,
+    labelCeil = true,
     orient = "vertical",
     ascending = false,
     path,
@@ -396,7 +419,7 @@ module.exports =  function(){
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -539,6 +562,18 @@ module.exports =  function(){
     return legend;
   };
 
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
+    return legend;
+  };
+
   legend.orient = function(_){
     if (!arguments.length) return orient;
     _ = _.toLowerCase();
@@ -592,13 +627,15 @@ module.exports = function(){
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
+    labelFloor = true,
+    labelCeil = true,
     orient = "vertical",
     ascending = false,
     legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -696,6 +733,18 @@ module.exports = function(){
   legend.labelDelimiter = function(_) {
     if (!arguments.length) return labelDelimiter;
     labelDelimiter = _;
+    return legend;
+  };
+
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
     return legend;
   };
 

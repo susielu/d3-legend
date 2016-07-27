@@ -17,13 +17,15 @@ module.exports = function(){
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
+    labelFloor = true,
+    labelCeil = true,
     orient = "vertical",
     ascending = false,
     legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -121,6 +123,18 @@ module.exports = function(){
   legend.labelDelimiter = function(_) {
     if (!arguments.length) return labelDelimiter;
     labelDelimiter = _;
+    return legend;
+  };
+
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
     return legend;
   };
 
