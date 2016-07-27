@@ -40,17 +40,17 @@ module.exports = {
             feature: function(d){ return scale(d); }};
   },
 
-  d3_quantLegend: function (scale, labelFormat, labelDelimiter, labelFloor, lableCeil) {
+  d3_quantLegend: function (scale, labelFormat, labelDelimiter, labelFloor, labelCeil) {
     var labels = scale.range().map(function(d){
       var invert = scale.invertExtent(d),
       a = labelFormat(invert[0]),
       b = labelFormat(invert[1]);
 
-      if (labelFloor && lableCeil || !labelFloor && !lableCeil) {
+      if (labelFloor && labelCeil || !labelFloor && !labelCeil) {
         return a + " " + labelDelimiter + " " + b;
-      } else if (labelFloor && !lableCeil) {
+      } else if (labelFloor && !labelCeil) {
         return a;
-      } else if (!labelFloor && lableCeil) {
+      } else if (!labelFloor && labelCeil) {
         return b;
       }
       // if (( (a) && (a.isNan()) && b){
@@ -95,10 +95,10 @@ module.exports = {
     svg.selectAll("g." + classPrefix + "cell text").data(labels).text(this.d3_identity);
   },
 
-  d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, lableCeil){
+  d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter, labelFloor, labelCeil){
     var type = scale.ticks ?
             this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-            this.d3_quantLegend(scale, labelFormat, labelDelimiter, labelFloor, lableCeil) : this.d3_ordinalLegend(scale);
+            this.d3_quantLegend(scale, labelFormat, labelDelimiter, labelFloor, labelCeil) : this.d3_ordinalLegend(scale);
 
     type.labels = this.d3_mergeLabels(type.labels, labels);
 
