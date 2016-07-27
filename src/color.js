@@ -166,6 +166,18 @@ module.exports = function(){
     return legend;
   };
 
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
+    return legend;
+  };
+
   legend.useClass = function(_) {
     if (!arguments.length) return useClass;
     if (_ === true || _ === false){

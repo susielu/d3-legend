@@ -126,6 +126,18 @@ module.exports = function(){
     return legend;
   };
 
+  legend.labelFloor = function(_) {
+    if (!arguments.length) return labelFloor;
+    labelFloor = _;
+    return legend;
+  };
+
+  legend.labelCeil = function(_) {
+    if (!arguments.length) return labelCeil;
+    labelCeil = _;
+    return legend;
+  };
+
   legend.orient = function(_){
     if (!arguments.length) return orient;
     _ = _.toLowerCase();
