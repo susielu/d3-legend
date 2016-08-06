@@ -1,8 +1,13 @@
 var helper = require('./legend');
 
-module.exports = function(){
+import { dispatch } from 'd3-dispatch';
+import { scaleLinear } from 'd3-scale';
+import { format } from 'd3-format';
+import { max } from 'd3-array';
 
-  var scale = d3.scale.linear(),
+export default function symbol(){
+
+  var scale = scaleLinear(),
     shape = "path",
     shapeWidth = 15,
     shapeHeight = 15,
@@ -13,13 +18,13 @@ module.exports = function(){
     classPrefix = "",
     useClass = false,
     title = "",
-    labelFormat = d3.format(".01f"),
+    labelFormat = format(".01f"),
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
     orient = "vertical",
     ascending = false,
-    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -46,8 +51,8 @@ module.exports = function(){
       var text = cell.select("text"),
         shapeSize = shapes[0].map( function(d){ return d.getBBox(); });
 
-      var maxH = d3.max(shapeSize, function(d){ return d.height; }),
-      maxW = d3.max(shapeSize, function(d){ return d.width; });
+      var maxH = max(shapeSize, function(d){ return d.height; }),
+      maxW = max(shapeSize, function(d){ return d.width; });
 
       var cellTrans,
       textTrans,
@@ -151,7 +156,10 @@ module.exports = function(){
     return legend;
   };
 
-  d3.rebind(legend, legendDispatcher, "on");
+  legend.on = function(){
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments)
+    return value === legendDispatcher ? legend : value;
+  }
 
   return legend;
 

@@ -17,10 +17,9 @@
     "example": "examples",
     "test": "test"
   },
-  "peerDependencies": {
-    "d3": "^3.0.0"
-  },
   "devDependencies": {
+    "babel-preset-es2015": "6.13.2",
+    "babelify": "7.3.0",
     "chai": "3.4.1",
     "grunt": "0.4.5",
     "grunt-browserify": "3.8.0",
@@ -45,5 +44,12 @@
   "bugs": {
     "url": "https://github.com/susielu/d3-legend/issues"
   },
-  "homepage": "http://d3-legend.susielu.com"
+  "homepage": "http://d3-legend.susielu.com",
+  "dependencies": {
+    "d3-array": "1.0.1",
+    "d3-dispatch": "1.0.1",
+    "d3-format": "1.0.2",
+    "d3-scale": "1.0.3",
+    "d3-selection": "1.0.2"
+  }
 }

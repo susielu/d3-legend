@@ -1,8 +1,13 @@
 var helper = require('./legend');
 
-module.exports =  function(){
+import { dispatch } from 'd3-dispatch';
+import { scaleLinear } from 'd3-scale';
+import { format } from 'd3-format';
+import { sum, max } from 'd3-array';
 
-  var scale = d3.scale.linear(),
+export default function size(){
+
+  var scale = scaleLinear(),
     shape = "rect",
     shapeWidth = 15,
     shapePadding = 2,
@@ -11,14 +16,14 @@ module.exports =  function(){
     useStroke = false,
     classPrefix = "",
     title = "",
-    labelFormat = d3.format(".01f"),
+    labelFormat = format(".01f"),
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
     orient = "vertical",
     ascending = false,
     path,
-    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -64,8 +69,8 @@ module.exports =  function(){
             return bbox;
         });
 
-      var maxH = d3.max(shapeSize, function(d){ return d.height + d.y; }),
-      maxW = d3.max(shapeSize, function(d){ return d.width + d.x; });
+      var maxH = max(shapeSize, function(d){ return d.height + d.y; }),
+      maxW = max(shapeSize, function(d){ return d.width + d.x; });
 
       var cellTrans,
       textTrans,
@@ -75,7 +80,7 @@ module.exports =  function(){
       if (orient === "vertical"){
 
         cellTrans = function(d,i) {
-            var height = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.height; });
+            var height = sum(shapeSize.slice(0, i + 1 ), function(d){ return d.height; });
             return "translate(0, " + (height + i*shapePadding) + ")"; };
 
         textTrans = function(d,i) { return "translate(" + (maxW + labelOffset) + "," +
@@ -83,7 +88,7 @@ module.exports =  function(){
 
       } else if (orient === "horizontal"){
         cellTrans = function(d,i) {
-            var width = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.width; });
+            var width = sum(shapeSize.slice(0, i + 1 ), function(d){ return d.width; });
             return "translate(" + (width + i*shapePadding) + ",0)"; };
 
         textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) + "," +
@@ -192,7 +197,10 @@ module.exports =  function(){
     return legend;
   };
 
-  d3.rebind(legend, legendDispatcher, "on");
+  legend.on = function(){
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments)
+    return value === legendDispatcher ? legend : value;
+  }
 
   return legend;
 

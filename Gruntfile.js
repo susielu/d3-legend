@@ -5,11 +5,14 @@ module.exports = function(grunt){
 
 // configure plugins
 grunt.initConfig({
-
   browserify: {
     dist: {
       files: {
         'd3-legend.js': ['src/web.js'],
+      },
+      options: {
+        browserifyOptions: { debug: false },
+        transform: [ ['babelify', {'presets': ['es2015']}] ]
       }
     },
     docs: {

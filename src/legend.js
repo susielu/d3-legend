@@ -128,15 +128,15 @@ module.exports = {
   },
 
   d3_cellOver: function(cellDispatcher, d, obj){
-    cellDispatcher.cellover.call(obj, d);
+    cellDispatcher.call("cellover", obj, d);
   },
 
   d3_cellOut: function(cellDispatcher, d, obj){
-    cellDispatcher.cellout.call(obj, d);
+    cellDispatcher.call("cellout", obj, d);
   },
 
   d3_cellClick: function(cellDispatcher, d, obj){
-    cellDispatcher.cellclick.call(obj, d);
+    cellDispatcher.call("cellclick", obj, d);
   },
 
   d3_title: function(svg, cellsSvg, title, classPrefix){
