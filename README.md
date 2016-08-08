@@ -25,9 +25,9 @@ You can add the d3 legend as a node module by running:
 
 `npm i d3-svg-legend -S`
 
-Using the import syntax for `import legend from 'd3-svg-legend'` gives access to the three legend types as an object. You can also import them independently for example `import { legendColor } from 'd3-svg-legend'`
+Using the import syntax `import legend from 'd3-svg-legend'` gives access to the three legend types as an object. You can also import them independently for example `import { legendColor } from 'd3-svg-legend'`
 
-
+```
 var svg = d3.select("#svg-color-quant");
 
 var quantize = d3.scale.quantize()
