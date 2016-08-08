@@ -2,4 +2,8 @@
 // d3.legend = require('./no-extend');
 // module.exports = d3;
 
-module.export = require('./no-extend');
+export default {
+  color: require('./src/color'),
+  size: require('./src/size'),
+  symbol: require('./src/symbol')
+};

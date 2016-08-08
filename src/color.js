@@ -1,5 +1,4 @@
-var helper = require('./legend');
-
+import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
@@ -33,11 +32,12 @@ export default function color(){
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
-
-      var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6),
+      var cell = svg.select('.' + classPrefix + 'legendCells')
+          .selectAll("." + classPrefix + "cell").data(type.data),
+        cellEnter = cell.enter().append("g")
+          .attr("class", classPrefix + "cell"),//.merge(cell).style("opacity", 1e-6),
         shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
-        shapes = cell.select("g." + classPrefix + "cell " + shape);
+        shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -46,11 +46,11 @@ export default function color(){
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
 
-      helper.d3_addText(legendG, cellEnter, type.labels, classPrefix)
+      helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
 
       // sets placement
-      var text = cell.select("text"),
-        shapeSize = shapes[0].map( function(d){ return d.getBBox(); });
+      var text = cellEnter.selectAll("text"),
+        shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); });
 
       //sets scale
       //everything is fill except for line which is stroke,
@@ -80,8 +80,8 @@ export default function color(){
           "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
       }
 
-      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, legendG, title, classPrefix);
+      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_title(svg, title, classPrefix);
 
       cell.transition().style("opacity", 1);
 

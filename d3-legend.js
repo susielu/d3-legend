@@ -4035,15 +4035,24 @@
 },{}],10:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = color;
+
+var _legend = require('./legend');
+
+var _legend2 = _interopRequireDefault(_legend);
+
 var _d3Dispatch = require('d3-dispatch');
 
 var _d3Scale = require('d3-scale');
 
 var _d3Format = require('d3-format');
 
-var helper = require('./legend');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function () {
+function color() {
 
   var scale = (0, _d3Scale.scaleLinear)(),
       shape = "rect",
@@ -4067,7 +4076,7 @@ module.exports = function () {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = _legend2.default.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -4078,13 +4087,13 @@ module.exports = function () {
         shapes = cell.select("g." + classPrefix + "cell " + shape);
 
     //add event handlers
-    helper.d3_addEvents(cellEnter, legendDispatcher);
+    _legend2.default.d3_addEvents(cellEnter, legendDispatcher);
 
     cell.exit().transition().style("opacity", 0).remove();
 
-    helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
+    _legend2.default.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
 
-    helper.d3_addText(legendG, cellEnter, type.labels, classPrefix);
+    _legend2.default.d3_addText(legendG, cellEnter, type.labels, classPrefix);
 
     // sets placement
     var text = cell.select("text"),
@@ -4127,8 +4136,8 @@ module.exports = function () {
       };
     }
 
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-    helper.d3_title(svg, legendG, title, classPrefix);
+    _legend2.default.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    _legend2.default.d3_title(svg, legendG, title, classPrefix);
 
     cell.transition().style("opacity", 1);
   }
@@ -4258,7 +4267,10 @@ module.exports = function () {
 },{"./legend":11,"d3-dispatch":4,"d3-format":5,"d3-scale":7}],11:[function(require,module,exports){
 "use strict";
 
-module.exports = {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
 
   d3_identity: function d3_identity(d) {
     return d;
@@ -4424,6 +4436,15 @@ module.exports = {
 },{}],12:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = size;
+
+var _legend = require('./legend');
+
+var _legend2 = _interopRequireDefault(_legend);
+
 var _d3Dispatch = require('d3-dispatch');
 
 var _d3Scale = require('d3-scale');
@@ -4432,9 +4453,9 @@ var _d3Format = require('d3-format');
 
 var _d3Array = require('d3-array');
 
-var helper = require('./legend');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function () {
+function size() {
 
   var scale = (0, _d3Scale.scaleLinear)(),
       shape = "rect",
@@ -4456,7 +4477,7 @@ module.exports = function () {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = _legend2.default.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -4467,19 +4488,19 @@ module.exports = function () {
         shapes = cell.select("g." + classPrefix + "cell " + shape);
 
     //add event handlers
-    helper.d3_addEvents(cellEnter, legendDispatcher);
+    _legend2.default.d3_addEvents(cellEnter, legendDispatcher);
 
     cell.exit().transition().style("opacity", 0).remove();
 
     //creates shape
     if (shape === "line") {
-      helper.d3_drawShapes(shape, shapes, 0, shapeWidth);
+      _legend2.default.d3_drawShapes(shape, shapes, 0, shapeWidth);
       shapes.attr("stroke-width", type.feature);
     } else {
-      helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
+      _legend2.default.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
     }
 
-    helper.d3_addText(legendG, cellEnter, type.labels, classPrefix);
+    _legend2.default.d3_addText(legendG, cellEnter, type.labels, classPrefix);
 
     //sets placement
     var text = cell.select("text"),
@@ -4533,8 +4554,8 @@ module.exports = function () {
       };
     }
 
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-    helper.d3_title(svg, legendG, title, classPrefix);
+    _legend2.default.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    _legend2.default.d3_title(svg, legendG, title, classPrefix);
 
     cell.transition().style("opacity", 1);
   }
@@ -4644,6 +4665,15 @@ module.exports = function () {
 },{"./legend":11,"d3-array":1,"d3-dispatch":4,"d3-format":5,"d3-scale":7}],13:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = symbol;
+
+var _legend = require('./legend');
+
+var _legend2 = _interopRequireDefault(_legend);
+
 var _d3Dispatch = require('d3-dispatch');
 
 var _d3Scale = require('d3-scale');
@@ -4652,9 +4682,9 @@ var _d3Format = require('d3-format');
 
 var _d3Array = require('d3-array');
 
-var helper = require('./legend');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function () {
+function symbol() {
 
   var scale = (0, _d3Scale.scaleLinear)(),
       shape = "path",
@@ -4677,7 +4707,7 @@ module.exports = function () {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = _legend2.default.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -4688,13 +4718,13 @@ module.exports = function () {
         shapes = cell.select("g." + classPrefix + "cell " + shape);
 
     //add event handlers
-    helper.d3_addEvents(cellEnter, legendDispatcher);
+    _legend2.default.d3_addEvents(cellEnter, legendDispatcher);
 
     //remove old shapes
     cell.exit().transition().style("opacity", 0).remove();
 
-    helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-    helper.d3_addText(legendG, cellEnter, type.labels, classPrefix);
+    _legend2.default.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
+    _legend2.default.d3_addText(legendG, cellEnter, type.labels, classPrefix);
 
     // sets placement
     var text = cell.select("text"),
@@ -4730,8 +4760,8 @@ module.exports = function () {
       };
     }
 
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-    helper.d3_title(svg, legendG, title, classPrefix);
+    _legend2.default.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    _legend2.default.d3_title(svg, legendG, title, classPrefix);
     cell.transition().style("opacity", 1);
   }
 
@@ -4825,10 +4855,22 @@ module.exports = function () {
 },{"./legend":11,"d3-array":1,"d3-dispatch":4,"d3-format":5,"d3-scale":7}],14:[function(require,module,exports){
 'use strict';
 
-d3.legend = {
-  color: require('./color'),
-  size: require('./size'),
-  symbol: require('./symbol')
-};
+var _color = require('./color');
+
+var _color2 = _interopRequireDefault(_color);
+
+var _size = require('./size');
+
+var _size2 = _interopRequireDefault(_size);
+
+var _symbol = require('./symbol');
+
+var _symbol2 = _interopRequireDefault(_symbol);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+d3.legendColor = _color2.default;
+d3.legendSize = _size2.default;
+d3.legendSymbol = _symbol2.default;
 
 },{"./color":10,"./size":12,"./symbol":13}]},{},[14]);
