@@ -2,6 +2,17 @@
 
 Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
 
+## Looking for v3?
+- You can see the code for the d3 legend that works with d3 v3 in the v3 branch
+- [Documentation](http://d3-legend-v3.susielu.com) for the v3 version of the legend
+
+## d3-legend v4 updates
+- Flattened naming for accessing functions
+    - d3.legend.color => d3.legendColor
+    - d3.legend.size => d3.legendSize
+    - d3.legend.symbol => d3.legendSymbol
+- NPM package no longer binds to global d3, is now just an object with the three legend functions
+
 ## Moving to v4 To Dos:
 - Move over to rollup
 
