@@ -2,10 +2,13 @@
 
 Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
 
+## Moving to v4 To Dos:
+- Move over to rollup
+
+
 ## Usage
 
 ### Using just the minified file
-
 
 You must inclue the [d3 library](http://d3js.org/) before including the legend file. Then you can simply add the compiled js file to your website:
 
@@ -18,20 +21,12 @@ You can also add latest version of [d3-legend hosted on cdnjs](https://cdnjs.com
 
 ### Using npm
 
-Already using d3? Great! You can add the d3 legend as a node module by running:
+You can add the d3 legend as a node module by running:
 
 `npm i d3-svg-legend -S`
 
-If not, install both this way:
+Using the import syntax for `import legend from 'd3-svg-legend'` gives access to the three legend types as an object. You can also import them independently for example `import { legendColor } from 'd3-svg-legend'`
 
-`npm i d3@^3.0.0 d3-svg-legend -S`
-
-Please note, d3 is now a peer dependency, you will have to have the npm d3 module separately. This component works with any 3.x version of d3.
-
-If you `require('d3-svg-legend')` we attach to d3 as `d3.legend`. If you'd like to use d3-legend without extending d3, `require('d3-svg-legend/no-extend')`. For example:
-```
-var d3 = require('d3')
-var legend = require('d3-svg-legend/no-extend')
 
 var svg = d3.select("#svg-color-quant");
 
