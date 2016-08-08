@@ -121,7 +121,7 @@
   <header>
     <div class="container">
       <div class="txt-center">
-        <h1 class="column12">d3 SVG Legend</h1>
+        <h1 class="column12">d3 SVG Legend (v4)</h1>
         <div class="column6 prefix3">
           <p>Tired of making legends for your data visualizations? Me too, enjoy.</p>
           <p>A library to make legends in svg-land easy as pie.</p>
@@ -149,6 +149,20 @@
 
         <h3>Client-side</h3>
 
+        <h4>Version</h4>
+        <p>This is the version compatible with <b>d3v4</b>, <a href="">please go here for the version compatible with d3v3</a></p>
+
+        <p>Changes when moving to d3v4 of this component</p>
+        <ul>
+          <li>Flattened naming for accessing functions</li>
+          <ul>
+            <li>d3.legend.color => d3.legendColor</li>
+            <li>d3.legend.size => d3.legendSize</li>
+            <li>d3.legend.symbol => d3.legendSymbol</li>
+          </ul>
+          <li>NPM package no longer binds to global d3, is now just an object with the three legend functions</li>
+        </ul>
+
         <h4>CDN</h4>
         <p>You can add latest version of d3-legend hosted on cdnjs.<p>
         <a href="https://cdnjs.com/libraries/d3-legend">https://cdnjs.com/libraries/d3-legend</a>
@@ -156,9 +170,8 @@
         <h4>Include the file directly</h4>
         <p>You must include the <a href="http://d3js.org/">d3 library</a> before including the legend file. Then you can simply add the compiled js file to your website:</p>
         <ul>
-          <li><a href="https://raw.githubusercontent.com/susielu/d3-legend/master/d3-legend.min.js">All legends</a></li>
-          <li><a href="https://github.com/susielu/d3-legend/blob/master/d3-legend.js">All legends - human readable</a></li>
-
+          <li><a href="https://raw.githubusercontent.com/susielu/d3-legend/master/d3-legend.min.js">All legends (d3v4)</a></li>
+          <li><a href="https://github.com/susielu/d3-legend/blob/master/d3-legend.js">All legends - human readable (d3v4)</a></li>
         </ul>
 
         <h3>npm</h3>
@@ -628,8 +641,8 @@ svg.select(".legendSymbol")
 <script src="prism.js"></script>
 
 <script src="https://d3js.org/d3.v4.js"></script>
-<script src="d3-legend.js"></script>
+<script src="d3-legend.min.js"></script>
 
-<script src="docs.js"></script>
+<script src="docs.min.js"></script>
 <script src="ga.js"></script>
 </body>

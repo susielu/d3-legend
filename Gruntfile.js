@@ -8,7 +8,7 @@ grunt.initConfig({
   browserify: {
     dist: {
       files: {
-        'docs/d3-legend.js': ['src/web.js'],
+        'd3-legend.js': ['src/web.js'],
       },
       options: {
         browserifyOptions: { debug: true },
@@ -29,23 +29,16 @@ grunt.initConfig({
     }
   },
 
-  watch: {
-    // scripts: {
-      files: 'src/*.js',
-      tasks: [ 'browserify' ]
-    // }
-  },
-
   // Uglify js for build
   uglify: {
-    // build: {
-    //   files: {
-    //     'd3-legend.min.js': 'd3-legend.js'
-    //   }
-    // },
+    build: {
+      files: {
+        'd3-legend.min.js': 'd3-legend.js'
+      }
+    },
     docs: {
       files: {
-        'docs/d3-legend.js': 'd3-legend.js'
+        'docs/d3-legend.min.js': 'd3-legend.js'
       }
     },
     docsjs: {
@@ -60,10 +53,8 @@ grunt.initConfig({
   // Loading tasks
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Registering tasks
-  grunt.registerTask('default', ['browserify']);
-  grunt.registerTask('watch', ['watch']);
+  grunt.registerTask('default', ['browserify', 'uglify']);
 
 };
