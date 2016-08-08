@@ -125,10 +125,14 @@ var legendSize = d3.legendSize()
     .shape('circle')
     .shapePadding(15)
     .labelOffset(20)
-   .orient('horizontal');
+    .orient('horizontal')
+    .on('cellover', function(){
+      console.log('cellover', d3.event, d3.event.type)
+    });
 
 svg.select(".legendSize")
   .call(legendSize);
+
 
 //Size: Linear Line #svg-size-line
 var lineSize = d3.scaleLinear().domain([0,10]).range([2, 10]);

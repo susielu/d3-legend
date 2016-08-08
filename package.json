@@ -1,6 +1,6 @@
 {
   "name": "d3-svg-legend",
-  "version": "1.12.0",
+  "version": "2.0.0",
   "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
   "main": "index.js",
   "files": [
@@ -47,6 +47,7 @@
   },
   "homepage": "http://d3-legend.susielu.com",
   "dependencies": {
+    "d3": "4.2.1",
     "d3-array": "1.0.1",
     "d3-dispatch": "1.0.1",
     "d3-format": "1.0.2",
