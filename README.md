@@ -6,7 +6,7 @@ Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
 - You can see the code for the d3 legend that works with d3 v3 in the [v3 branch](https://github.com/susielu/d3-legend/tree/v3)
 - [Documentation](http://d3-legend-v3.susielu.com) for the v3 version of the legend
 
-## d3-legend v4 updates
+## d3-legend v4 updates (npm version 2.0.0 and higher)
 - Flattened naming for accessing functions
     - d3.legend.color => d3.legendColor
     - d3.legend.size => d3.legendSize
