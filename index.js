@@ -1,12 +1,6 @@
-import legendColor from './color'
-import legendSize from './size'
-import legendSymbol from './symbol'
-
-export default {
-  legendColor,
-  legendSize,
-  legendSymbol
-};
+import legendColor from './src/color'
+import legendSize from './src/size'
+import legendSymbol from './src/symbol'
 
 export {
   legendColor,
