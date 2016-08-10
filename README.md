@@ -2,8 +2,8 @@
 
 Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
 
-## Looking for v3?
-- You can see the code for the d3 legend that works with d3 v3 in the v3 branch
+## Looking for compatibility with d3 v3?
+- You can see the code for the d3 legend that works with d3 v3 in the [v3 branch](https://github.com/susielu/d3-legend/tree/v3)
 - [Documentation](http://d3-legend-v3.susielu.com) for the v3 version of the legend
 
 ## d3-legend v4 updates
@@ -12,10 +12,6 @@ Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
     - d3.legend.size => d3.legendSize
     - d3.legend.symbol => d3.legendSymbol
 - NPM package no longer binds to global d3, is now just an object with the three legend functions
-
-## Moving to v4 To Dos:
-- Move over to rollup
-
 
 ## Usage
 
@@ -41,7 +37,7 @@ Using the import syntax `import legend from 'd3-svg-legend'` gives access to the
 ```
 var svg = d3.select("#svg-color-quant");
 
-var quantize = d3.scale.quantize()
+var quantize = d3.scaleQuantize()
     .domain([ 0, 0.15 ])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
@@ -49,7 +45,7 @@ svg.append("g")
   .attr("class", "legendQuant")
   .attr("transform", "translate(20,20)");
 
-var colorLegend = legend.color()
+var colorLegend = legendColor()
     .labelFormat(d3.format(".2f"))
     .useClass(true)
     .scale(quantize);
