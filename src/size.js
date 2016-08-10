@@ -1,8 +1,12 @@
-var helper = require('./legend');
+import helper from './legend';
+import { dispatch } from 'd3-dispatch';
+import { scaleLinear } from 'd3-scale';
+import { format } from 'd3-format';
+import { sum, max } from 'd3-array';
 
-module.exports =  function(){
+export default function size(){
 
-  var scale = d3.scale.linear(),
+  var scale = scaleLinear(),
     shape = "rect",
     shapeWidth = 15,
     shapePadding = 2,
@@ -11,14 +15,14 @@ module.exports =  function(){
     useStroke = false,
     classPrefix = "",
     title = "",
-    labelFormat = d3.format(".01f"),
+    labelFormat = format(".01f"),
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
     orient = "vertical",
     ascending = false,
     path,
-    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -27,11 +31,12 @@ module.exports =  function(){
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
-
-      var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6),
+      var cell = svg.select('.' + classPrefix + 'legendCells')
+          .selectAll("." + classPrefix + "cell").data(type.data),
+        cellEnter = cell.enter().append("g")
+          .attr("class", classPrefix + "cell"),//.merge(cell).style("opacity", 1e-6),
         shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
-        shapes = cell.select("g." + classPrefix + "cell " + shape);
+        shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -46,11 +51,11 @@ module.exports =  function(){
         helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
       }
 
-      helper.d3_addText(legendG, cellEnter, type.labels, classPrefix)
+      helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
 
       //sets placement
-      var text = cell.select("text"),
-        shapeSize = shapes[0].map(
+      var text = cellEnter.selectAll("text"),
+        shapeSize = shapes.nodes().map(
           function(d, i){
             var bbox = d.getBBox()
             var stroke = scale(type.data[i]);
@@ -64,8 +69,8 @@ module.exports =  function(){
             return bbox;
         });
 
-      var maxH = d3.max(shapeSize, function(d){ return d.height + d.y; }),
-      maxW = d3.max(shapeSize, function(d){ return d.width + d.x; });
+      var maxH = max(shapeSize, function(d){ return d.height + d.y; }),
+      maxW = max(shapeSize, function(d){ return d.width + d.x; });
 
       var cellTrans,
       textTrans,
@@ -75,7 +80,7 @@ module.exports =  function(){
       if (orient === "vertical"){
 
         cellTrans = function(d,i) {
-            var height = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.height; });
+            var height = sum(shapeSize.slice(0, i + 1 ), function(d){ return d.height; });
             return "translate(0, " + (height + i*shapePadding) + ")"; };
 
         textTrans = function(d,i) { return "translate(" + (maxW + labelOffset) + "," +
@@ -83,15 +88,15 @@ module.exports =  function(){
 
       } else if (orient === "horizontal"){
         cellTrans = function(d,i) {
-            var width = d3.sum(shapeSize.slice(0, i + 1 ), function(d){ return d.width; });
+            var width = sum(shapeSize.slice(0, i + 1 ), function(d){ return d.width; });
             return "translate(" + (width + i*shapePadding) + ",0)"; };
 
         textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) + "," +
               (maxH + labelOffset ) + ")"; };
       }
 
-      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, legendG, title, classPrefix);
+      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_title(svg, title, classPrefix);
 
       cell.transition().style("opacity", 1);
 
@@ -192,7 +197,10 @@ module.exports =  function(){
     return legend;
   };
 
-  d3.rebind(legend, legendDispatcher, "on");
+  legend.on = function(){
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments)
+    return value === legendDispatcher ? legend : value;
+  }
 
   return legend;
 

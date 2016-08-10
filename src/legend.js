@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 
   d3_identity: function (d) {
     return d;
@@ -46,13 +46,7 @@ module.exports = {
       a = labelFormat(invert[0]),
       b = labelFormat(invert[1]);
 
-      // if (( (a) && (a.isNan()) && b){
-      //   console.log("in initial statement")
-        return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
-      // } else if (a || b) {
-      //   console.log('in else statement')
-      //   return (a) ? a : b;
-      // }
+      return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
 
     });
 
@@ -89,9 +83,9 @@ module.exports = {
   },
 
   d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
-    var type = scale.ticks ?
-            this.d3_linearLegend(scale, cells, labelFormat) : scale.invertExtent ?
-            this.d3_quantLegend(scale, labelFormat, labelDelimiter) : this.d3_ordinalLegend(scale);
+    var type = scale.invertExtent ?
+            this.d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ?
+            this.d3_linearLegend(scale, cells, labelFormat) : this.d3_ordinalLegend(scale);
 
     type.labels = this.d3_mergeLabels(type.labels, labels);
 
@@ -128,18 +122,18 @@ module.exports = {
   },
 
   d3_cellOver: function(cellDispatcher, d, obj){
-    cellDispatcher.cellover.call(obj, d);
+    cellDispatcher.call("cellover", obj, d);
   },
 
   d3_cellOut: function(cellDispatcher, d, obj){
-    cellDispatcher.cellout.call(obj, d);
+    cellDispatcher.call("cellout", obj, d);
   },
 
   d3_cellClick: function(cellDispatcher, d, obj){
-    cellDispatcher.cellclick.call(obj, d);
+    cellDispatcher.call("cellclick", obj, d);
   },
 
-  d3_title: function(svg, cellsSvg, title, classPrefix){
+  d3_title: function(svg, title, classPrefix){
     if (title !== ""){
 
       var titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
@@ -152,9 +146,11 @@ module.exports = {
         svg.selectAll('text.' + classPrefix + 'legendTitle')
             .text(title)
 
-      var yOffset = svg.select('.' + classPrefix + 'legendTitle')
-          .map(function(d) { return d[0].getBBox().height})[0],
-      xOffset = -cellsSvg.map(function(d) { return d[0].getBBox().x})[0];
+      var cellsSvg = svg.select('.' + classPrefix + 'legendCells')
+
+      var yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes()
+          .map(function(d) { return d.getBBox().height})[0],
+      xOffset = -cellsSvg.nodes().map(function(d) { return d.getBBox().x})[0];
 
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset + 10) + ')');
 

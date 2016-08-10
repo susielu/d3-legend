@@ -1,8 +1,12 @@
-var helper = require('./legend');
+import helper from './legend';
+import { dispatch } from 'd3-dispatch';
+import { scaleLinear } from 'd3-scale';
+import { format } from 'd3-format';
+import { max } from 'd3-array';
 
-module.exports = function(){
+export default function symbol(){
 
-  var scale = d3.scale.linear(),
+  var scale = scaleLinear(),
     shape = "path",
     shapeWidth = 15,
     shapeHeight = 15,
@@ -13,13 +17,13 @@ module.exports = function(){
     classPrefix = "",
     useClass = false,
     title = "",
-    labelFormat = d3.format(".01f"),
+    labelFormat = format(".01f"),
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
     orient = "vertical",
     ascending = false,
-    legendDispatcher = d3.dispatch("cellover", "cellout", "cellclick");
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
 
@@ -28,10 +32,12 @@ module.exports = function(){
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
-      var cell = legendG.selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g", ".cell").attr("class", classPrefix + "cell").style("opacity", 1e-6),
+      var cell = svg.select('.' + classPrefix + 'legendCells')
+          .selectAll("." + classPrefix + "cell").data(type.data),
+        cellEnter = cell.enter().append("g")
+          .attr("class", classPrefix + "cell"),//.style("opacity", 1e-6),
         shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
-        shapes = cell.select("g." + classPrefix + "cell " + shape);
+        shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -40,14 +46,14 @@ module.exports = function(){
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-      helper.d3_addText(legendG, cellEnter, type.labels, classPrefix)
+      helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
 
       // sets placement
-      var text = cell.select("text"),
-        shapeSize = shapes[0].map( function(d){ return d.getBBox(); });
+      var text = cellEnter.selectAll("text"),
+        shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); });
 
-      var maxH = d3.max(shapeSize, function(d){ return d.height; }),
-      maxW = d3.max(shapeSize, function(d){ return d.width; });
+      var maxH = max(shapeSize, function(d){ return d.height; }),
+      maxW = max(shapeSize, function(d){ return d.width; });
 
       var cellTrans,
       textTrans,
@@ -65,8 +71,8 @@ module.exports = function(){
               (maxH + labelOffset ) + ")"; };
       }
 
-      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, legendG, title, classPrefix);
+      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_title(svg, title, classPrefix);
       cell.transition().style("opacity", 1);
 
     }
@@ -151,7 +157,10 @@ module.exports = function(){
     return legend;
   };
 
-  d3.rebind(legend, legendDispatcher, "on");
+  legend.on = function(){
+    var value = legendDispatcher.on.apply(legendDispatcher, arguments)
+    return value === legendDispatcher ? legend : value;
+  }
 
   return legend;
 

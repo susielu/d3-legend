@@ -1,4 +1,4 @@
-d3.legend.**color()**
+d3.**legendColor()**
 
 Constructs a new color legend. The legend component expects a d3 scale as the basic input, but also has a number of optional parameters for changing the default display such as vertical or horizontal orientation, shape of the symbol next to the label, symbol sizing, and label formatting.
 
