@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-dispatch'), require('d3-scale'), require('d3-format'), require('d3-array')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'd3-dispatch', 'd3-scale', 'd3-format', 'd3-array'], factory) :
-  (factory((global.indexRollup = global.indexRollup || {}),global.d3Dispatch,global.d3Scale,global.d3Format,global.d3Array));
-}(this, function (exports,d3Dispatch,d3Scale,d3Format,d3Array) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3-dispatch'), require('d3-scale'), require('d3-format'), require('d3-array')) :
+  typeof define === 'function' && define.amd ? define(['d3-dispatch', 'd3-scale', 'd3-format', 'd3-array'], factory) :
+  (global.indexRollup = factory(global.d3Dispatch,global.d3Scale,global.d3Format,global.d3Array));
+}(this, function (d3Dispatch,d3Scale,d3Format,d3Array) { 'use strict';
 
   var helper = {
 
@@ -753,11 +753,13 @@
     return legend;
   };
 
-  exports.legendColor = color;
-  exports.legendSize = size;
-  exports.legendSymbol = symbol;
+  var index = {
+    legendColor: color,
+    legendSize: size,
+    legendSymbol: symbol
+  };
 
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return index;
 
 }));
 //# sourceMappingURL=indexRollup.js.map

@@ -746,5 +746,10 @@ function symbol() {
     return legend;
   };
 
-export { color as legendColor, size as legendSize, symbol as legendSymbol };
+var index = {
+    legendColor: color,
+    legendSize: size,
+    legendSymbol: symbol  };
+
+export default index;
 //# sourceMappingURL=indexRollup.mjs.map
