@@ -32,6 +32,9 @@ You can add the d3 legend as a node module by running:
 
 `npm i d3-svg-legend -S`
 
+To use the version compatible with d3v3 run:
+`npm i d3-svg-legend@1.x -S`
+
 Using the import syntax `import legend from 'd3-svg-legend'` gives access to the three legend types as an object. You can also import them independently for example `import { legendColor } from 'd3-svg-legend'`
 
 ```
