@@ -17,7 +17,7 @@ Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
 
 ### Using just the minified file
 
-You must inclue the [d3 library](http://d3js.org/) before including the legend file. Then you can simply add the compiled js file to your website:
+You must include the [d3 library](http://d3js.org/) before including the legend file. Then you can simply add the compiled js file to your website:
 
 - d3-legend.min.js
 - d3-legend.js (Human readable version)
