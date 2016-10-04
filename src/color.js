@@ -46,10 +46,14 @@ export default function color(){
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
 
+
       helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
+      
+      // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+      cell = cellEnter.merge(cell);
 
       // sets placement
-      var text = cellEnter.selectAll("text"),
+      var text = cell.selectAll("text"),
         shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); });
 
       //sets scale
@@ -80,7 +84,7 @@ export default function color(){
           "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
       }
 
-      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       helper.d3_title(svg, title, classPrefix);
 
       cell.transition().style("opacity", 1);
