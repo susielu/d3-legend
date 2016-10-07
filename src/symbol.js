@@ -117,7 +117,7 @@ export default function symbol(){
 
   legend.labelFormat = function(_) {
     if (!arguments.length) return labelFormat;
-    labelFormat = _;
+    labelFormat = typeof(_) === 'string' ? format(_) : _;
     return legend;
   };
 
