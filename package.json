@@ -1,6 +1,6 @@
 {
   "name": "d3-svg-legend",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
   "main": "indexRollup.js",
   "jsnext:main": "indexRollup.mjs",
@@ -8,6 +8,7 @@
     "src",
     "index.js",
     "indexRollup.js",
+    "indexRollup.js.map",
     "indexRollup.mjs",
     "d3-legend.*"
   ],
