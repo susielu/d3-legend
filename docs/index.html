@@ -134,6 +134,7 @@
           <a href="#color">Color</a>
           <a href="#size">Size</a>
           <a href="#symbol">Symbol</a>
+          <a href="#helpers">Helpers</a>
           <a href="#summary">Summary of Functions</a>
         </nav>
       </div>
@@ -233,7 +234,49 @@ svg.select(".legendQuant")
           </code>
         </pre>
 
-        <h4 id="color-quant">Log Scale Legend</h4>
+        <h4 id="color-threshold">Treshold Scale Legend</h4>
+        <svg height=150 width=210  id="svg-color-threshold"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var thresholdScale = d3.scaleThreshold()
+  .domain([ 0, 1000, 2500, 5000, 10000 ])
+  .range(d3.range(6)
+  .map(function(i) { return "q" + i + "-9"}));
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendQuant")
+  .attr("transform", "translate(20,20)");
+
+var legend = d3.legendColor()
+    .labelFormat(d3.format(".2f"))
+    .labels(d3.legendHelpers.thresholdLabels)
+    .useClass(true)
+    .scale(thresholdScale)
+
+/*
+----legendHelpers.thresholdLabels----
+function({ i, genLength, generatedLabels }){
+  if (i === 0 ){
+    return generatedLabels[i]
+      .replace('NaN to', 'Less than')
+  } else if (i === genLength - 1) {
+    return `More than
+      ${generatedLabels[genLength - 1]
+      .replace(' to NaN', '')}`
+  }
+  return generatedLabels[i]
+}
+*/
+
+svg.select(".legendThreshold")
+  .call(legend);
+          </code>
+        </pre>
+
+        <h4 id="color-log">Log Scale Legend</h4>
         <svg height=160 width=100  id="svg-color-log"></svg>
         <pre class="column6 left-margin right-margin">
           <code class="language-javascript">
@@ -491,6 +534,18 @@ svg.select(".legendSymbol")
          </code>
        </pre>
       </div>
+    </div>
+  </section>
+
+  <section id="helpers">
+    <div class="container">
+      <div class="column6 prefix3">
+        <h2>Helpers</h2>
+
+        <h3 id="helpers-doc">Documentation</h3>
+        <div id="helpers-md"></div>
+
+       </div>
     </div>
   </section>
 

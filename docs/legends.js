@@ -1,7 +1,6 @@
 
 
 //Color: Quantile #svg-color-quant
-
 var svg = d3.select("#svg-color-quant");
 
 var quantize = d3.scaleQuantize()
@@ -18,6 +17,27 @@ var legend = d3.legendColor()
     .scale(quantize);
 
 svg.select(".legendQuant")
+  .call(legend);
+
+//Color: Treshold #svg-color-threshold
+
+var svg = d3.select("#svg-color-threshold");
+
+var thresholdScale = d3.scaleThreshold()
+  .domain([ 0, 1000, 2500, 5000, 10000 ])
+  .range(d3.range(6).map(function(i) { return "q" + i + "-9"}));
+
+svg.append("g")
+  .attr("class", "legendThreshold")
+  .attr("transform", "translate(20,20)");
+
+var legend = d3.legendColor()
+    .labelFormat(d3.format(".2f"))
+    .labels(d3.legendHelpers.thresholdLabels)
+    .useClass(true)
+    .scale(thresholdScale)
+
+svg.select(".legendThreshold")
   .call(legend);
 
 //Color: Log #svg-color-log

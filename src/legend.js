@@ -4,25 +4,31 @@ export default {
     return d;
   },
 
-  d3_mergeLabels: function (gen=[], labels, range) {
+  d3_mergeLabels: function (gen=[], labels, domain, range) {
 
       if (typeof labels === "object"){
         if(labels.length === 0) return gen;
 
-        var i = labels.length;
+        let i = labels.length;
         for (; i < gen.length; i++) {
           labels.push(gen[i]);
         }
         return labels;
       } else if (typeof labels === "function") {
-
-        for (const i; i < gen.length; i++){
-
+        const customLabels = []
+        const genLength = gen.length
+        for (let i=0; i < genLength; i++){
+          customLabels.push(labels({
+            i, 
+            genLength,
+            generatedLabels : gen,
+            domain,
+            range }))
         }
-
+        return customLabels
       }
 
-      return [];
+      return gen;
     },
 
   d3_linearLegend: function (scale, cells, labelFormat) {
@@ -93,7 +99,7 @@ export default {
             this.d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ?
             this.d3_linearLegend(scale, cells, labelFormat) : this.d3_ordinalLegend(scale);
 
-    type.labels = this.d3_mergeLabels(type.labels, labels, scale.range());
+    type.labels = this.d3_mergeLabels(type.labels, labels, scale.domain(), scale.range());
 
     if (ascending) {
       type.labels = this.d3_reverse(type.labels);
