@@ -1,6 +1,6 @@
 {
   "name": "d3-svg-legend",
-  "version": "2.11.0",
+  "version": "2.12.0",
   "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
   "main": "indexRollup.js",
   "jsnext:main": "indexRollup.mjs",
@@ -32,6 +32,7 @@
     "grunt-contrib-uglify": "0.9.1",
     "marked": "0.3.5",
     "mocha": "2.2.5",
+    "reify": "^0.3.8",
     "rollup": "0.34.7",
     "rollup-plugin-babel": "2.6.1",
     "stringify": "3.1.0"
@@ -39,7 +40,7 @@
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm t",
-    "test": "mocha test/test.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
