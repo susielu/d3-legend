@@ -58,7 +58,7 @@ color.**labelAlign(string)**
 
 Only used if the legend's orient is set to "horizontal." Accepts "start", "middle", or "end" as inputs to determine if the labels are aligned on the left, middle or right under the symbol in a horizontal legend. An example: [Size - Linear Scale Legend, Lines](#size-line).
 
-color.**labelFormat(d3.format)**
+color.**labelFormat(d3.format or d3.format string)**
 
 Takes a [d3.format](https://github.com/mbostock/d3/wiki/Formatting) and applies that styling to the legend labels. Default is set to `d3.format(".01f")`.
 
