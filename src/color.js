@@ -2,6 +2,7 @@ import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
+import { sum } from 'd3-array';
 
 export default function color(){
 
@@ -53,8 +54,17 @@ export default function color(){
       cell = cellEnter.merge(cell);
 
       // sets placement
-      var text = cell.selectAll("text"),
-        shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); });
+      var text = svg.selectAll("g." + classPrefix + "cell text"),
+        textSize = text.nodes().map( function(d){ return d.getBBox(); }),
+        shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); }),
+        // Determine the width the cell needs to be to include the shape and text (for horizontal orientation)
+        cellWidths = shapeSize.map( function(d, i){
+          if (orient === "horizontal" && textSize[i].width > d.width) {
+              return textSize[i].width
+          } else {
+              d.width;
+          }
+        });
 
       //sets scale
       //everything is fill except for line which is stroke,
@@ -69,8 +79,9 @@ export default function color(){
       }
 
       var cellTrans,
-      textTrans,
-      textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
+        shapeTrans,
+        textTrans,
+        textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
 
       //positions cells and text
       if (orient === "vertical"){
@@ -79,12 +90,19 @@ export default function color(){
           labelOffset) + "," + (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
 
       } else if (orient === "horizontal"){
-        cellTrans = function(d,i) { return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)"; }
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) +
+        cellTrans = function(d,i) {
+          var previousCellWidths = sum(cellWidths.slice(0, i));
+          return "translate(" + (previousCellWidths + i * shapePadding) + ",0)";
+        };
+        shapeTrans = function(d,i) {
+          var x = (cellWidths[i] - shapeSize[i].width) * textAlign;
+          return "translate(" + x + ", 0)";
+        };
+        textTrans = function(d,i) { return "translate(" + (cellWidths[i] * textAlign) +
           "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
       }
 
-      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign, shapes, shapeTrans);
       helper.d3_title(svg, title, classPrefix);
 
       cell.transition().style("opacity", 1);

@@ -117,12 +117,13 @@ export default {
     return mirror;
   },
 
-  d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
+  d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign, shape, shapeTrans) {
     cell.attr("transform", cellTrans);
     text.attr("transform", textTrans);
     if (orient === "horizontal"){
       text.style("text-anchor", labelAlign);
     }
+    if (shape && shapeTrans) shape.attr("transform", shapeTrans);
   },
 
   d3_addEvents: function(cells, dispatcher){
