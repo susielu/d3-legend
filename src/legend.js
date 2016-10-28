@@ -10,7 +10,7 @@ export default {
         if(labels.length === 0) return gen;
 
         let i = labels.length;
-        for (; i < gen.length; i++) {
+        for (; i <= gen.length; i++) {
           labels.push(gen[i]);
         }
         return labels;
