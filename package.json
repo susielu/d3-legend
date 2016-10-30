@@ -39,7 +39,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "prepublish": "npm t && npm build",
+    "prepublish": "npm t && npm run build",
     "test": "mocha"
   },
   "repository": {

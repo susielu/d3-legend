@@ -3,21 +3,48 @@ import { scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
 import { sum, max } from 'd3-array';
 
-var helper = {    d3_identity: function d3_identity(d) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  };
+
+var helper = {
+
+    d3_identity: function d3_identity(d) {
       return d;
     },
 
-    d3_mergeLabels: function d3_mergeLabels(gen, labels) {
+    d3_mergeLabels: function d3_mergeLabels() {
+      var gen = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+      var labels = arguments[1];
+      var domain = arguments[2];
+      var range = arguments[3];
 
-      if (labels.length === 0) return gen;
 
-      gen = gen ? gen : [];
+      if ((typeof labels === "undefined" ? "undefined" : _typeof(labels)) === "object") {
+        if (labels.length === 0) return gen;
 
-      var i = labels.length;
-      for (; i < gen.length; i++) {
-        labels.push(gen[i]);
+        var i = labels.length;
+        for (; i < gen.length; i++) {
+          labels.push(gen[i]);
+        }
+        return labels;
+      } else if (typeof labels === "function") {
+        var customLabels = [];
+        var genLength = gen.length;
+        for (var _i = 0; _i < genLength; _i++) {
+          customLabels.push(labels({
+            i: _i,
+            genLength: genLength,
+            generatedLabels: gen,
+            domain: domain,
+            range: range }));
+        }
+        return customLabels;
       }
-      return labels;
+
+      return gen;
     },
 
     d3_linearLegend: function d3_linearLegend(scale, cells, labelFormat) {
@@ -46,9 +73,7 @@ var helper = {    d3_identity: function d3_identity(d) {
 
     d3_quantLegend: function d3_quantLegend(scale, labelFormat, labelDelimiter) {
       var labels = scale.range().map(function (d) {
-        var invert = scale.invertExtent(d),
-            a = labelFormat(invert[0]),
-            b = labelFormat(invert[1]);
+        var invert = scale.invertExtent(d);
 
         return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
       });
@@ -87,7 +112,7 @@ var helper = {    d3_identity: function d3_identity(d) {
     d3_calcType: function d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter) {
       var type = scale.invertExtent ? this.d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ? this.d3_linearLegend(scale, cells, labelFormat) : this.d3_ordinalLegend(scale);
 
-      type.labels = this.d3_mergeLabels(type.labels, labels);
+      type.labels = this.d3_mergeLabels(type.labels, labels, scale.domain(), scale.range());
 
       if (ascending) {
         type.labels = this.d3_reverse(type.labels);
@@ -180,7 +205,9 @@ function color() {
         orient = "vertical",
         ascending = false,
         path,
-        legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");    function legend(svg) {
+        legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
+
+    function legend(svg) {
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
           legendG = svg.selectAll('g').data([scale]);
@@ -202,8 +229,11 @@ function color() {
 
       helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
 
+      // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+      cell = cellEnter.merge(cell);
+
       // sets placement
-      var text = cellEnter.selectAll("text"),
+      var text = cell.selectAll("text"),
           shapeSize = shapes.nodes().map(function (d) {
         return d.getBBox();
       });
@@ -243,7 +273,7 @@ function color() {
         };
       }
 
-      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       helper.d3_title(svg, title, classPrefix);
 
       cell.transition().style("opacity", 1);
@@ -312,8 +342,7 @@ function color() {
 
     legend.labelFormat = function (_) {
       if (!arguments.length) return labelFormat;
-      labelFormat = _;
-      return legend;
+      labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;      return legend;
     };
 
     legend.labelOffset = function (_) {
@@ -419,8 +448,11 @@ function size() {
 
       helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
 
+      // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+      cell = cellEnter.merge(cell);
+
       //sets placement
-      var text = cellEnter.selectAll("text"),
+      var text = cell.selectAll("text"),
           shapeSize = shapes.nodes().map(function (d, i) {
         var bbox = d.getBBox();
         var stroke = scale(type.data[i]);
@@ -460,7 +492,8 @@ function size() {
         };
       } else if (orient === "horizontal") {
         cellTrans = function cellTrans(d, i) {
-          var width = d3Array.sum(shapeSize.slice(0, i + 1), function (d) {            return d.width;
+          var width = d3Array.sum(shapeSize.slice(0, i + 1), function (d) {
+            return d.width;
           });
           return "translate(" + (width + i * shapePadding) + ",0)";
         };
@@ -470,7 +503,7 @@ function size() {
         };
       }
 
-      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       helper.d3_title(svg, title, classPrefix);
 
       cell.transition().style("opacity", 1);
@@ -527,8 +560,7 @@ function size() {
 
     legend.labelFormat = function (_) {
       if (!arguments.length) return labelFormat;
-      labelFormat = _;
-      return legend;
+      labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;      return legend;
     };
 
     legend.labelOffset = function (_) {
@@ -621,8 +653,11 @@ function symbol() {
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
       helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
 
+      // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+      cell = cellEnter.merge(cell);
+
       // sets placement
-      var text = cellEnter.selectAll("text"),
+      var text = cell.selectAll("text"),
           shapeSize = shapes.nodes().map(function (d) {
         return d.getBBox();
       });
@@ -630,7 +665,8 @@ function symbol() {
       var maxH = d3Array.max(shapeSize, function (d) {
         return d.height;
       }),
-          maxW = d3Array.max(shapeSize, function (d) {        return d.width;
+          maxW = d3Array.max(shapeSize, function (d) {
+        return d.width;
       });
 
       var cellTrans,
@@ -654,7 +690,7 @@ function symbol() {
         };
       }
 
-      helper.d3_placement(orient, cellEnter, cellTrans, text, textTrans, labelAlign);
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
       helper.d3_title(svg, title, classPrefix);
       cell.transition().style("opacity", 1);
     }
@@ -695,8 +731,7 @@ function symbol() {
 
     legend.labelFormat = function (_) {
       if (!arguments.length) return labelFormat;
-      labelFormat = _;
-      return legend;
+      labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;      return legend;
     };
 
     legend.labelOffset = function (_) {
@@ -746,10 +781,28 @@ function symbol() {
     return legend;
   };
 
+var thresholdLabels = function thresholdLabels(_ref) {
+    var i = _ref.i;
+    var genLength = _ref.genLength;
+    var generatedLabels = _ref.generatedLabels;
+
+
+    if (i === 0) {
+      return generatedLabels[i].replace('NaN to', 'Less than');
+    } else if (i === genLength - 1) {
+      return 'More than ' + generatedLabels[genLength - 1].replace(' to NaN', '');
+    }
+    return generatedLabels[i];
+  };
+
+var legendHelpers = {    thresholdLabels: thresholdLabels
+  };
+
 var index = {
     legendColor: color,
     legendSize: size,
-    legendSymbol: symbol  };
+    legendSymbol: symbol,    legendHelpers: legendHelpers
+  };
 
 export default index;
 //# sourceMappingURL=indexRollup.mjs.map
