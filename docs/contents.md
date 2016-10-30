@@ -2,6 +2,7 @@
   - [Documentation](#color-doc)
   - [Examples](#color-examples)
     - [Quantile Scale Legend](#color-quant)
+    - [Threshold Scale Legend](#color-threshold)
     - [Linear Scale Legend - Horizontal](#color-linear)
     - [Linear Scale Legend - 10 cells](#color-linear-10)
     - [Linear Scale Legend - Custom cells](#color-linear-custom)
