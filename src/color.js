@@ -62,7 +62,7 @@ export default function color(){
           if (orient === "horizontal" && textSize[i].width > d.width) {
               return textSize[i].width
           } else {
-              d.width;
+              return d.width;
           }
         });
 
