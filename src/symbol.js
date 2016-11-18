@@ -6,7 +6,7 @@ import { max } from 'd3-array';
 
 export default function symbol(){
 
-  var scale = scaleLinear(),
+  let scale = scaleLinear(),
     shape = "path",
     shapeWidth = 15,
     shapeHeight = 15,
@@ -15,7 +15,6 @@ export default function symbol(){
     cells = [5],
     labels = [],
     classPrefix = "",
-    useClass = false,
     title = "",
     labelFormat = format(".01f"),
     labelAlign = "middle",
@@ -27,17 +26,18 @@ export default function symbol(){
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
-      var cell = svg.select('.' + classPrefix + 'legendCells')
-          .selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g")
-          .attr("class", classPrefix + "cell"),//.style("opacity", 1e-6),
-        shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
-        shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+      let cell = svg.select('.' + classPrefix + 'legendCells')
+          .selectAll("." + classPrefix + "cell").data(type.data)
+      const cellEnter = cell.enter().append("g")
+          .attr("class", classPrefix + "cell")
+      cellEnter.append(shape).attr("class", classPrefix + "swatch")
+
+      const shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -52,26 +52,26 @@ export default function symbol(){
       cell = cellEnter.merge(cell);
 
       // sets placement
-      var text = cell.selectAll("text"),
-        shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); });
+      const text = cell.selectAll("text"),
+        shapeSize = shapes.nodes().map( d => d.getBBox());
 
-      var maxH = max(shapeSize, function(d){ return d.height; }),
-      maxW = max(shapeSize, function(d){ return d.width; });
+      const maxH = max(shapeSize, d => d.height),
+      maxW = max(shapeSize, d => d.width);
 
-      var cellTrans,
+      let cellTrans,
       textTrans,
       textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
 
       //positions cells and text
       if (orient === "vertical"){
-        cellTrans = function(d,i) { return "translate(0, " + (i * (maxH + shapePadding)) + ")"; };
-        textTrans = function(d,i) { return "translate(" + (maxW + labelOffset) + "," +
-              (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
+        cellTrans = (d,i) => `translate(0, ${(i * (maxH + shapePadding))} )`;
+        textTrans = (d,i) => `translate( ${(maxW + labelOffset)},
+              ${(shapeSize[i].y + shapeSize[i].height/2 + 5)})`;
 
       } else if (orient === "horizontal"){
-        cellTrans = function(d,i) { return "translate(" + (i * (maxW + shapePadding)) + ",0)"; };
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) + "," +
-              (maxH + labelOffset ) + ")"; };
+        cellTrans = (d,i) => `translate( ${(i * (maxW + shapePadding))},0)`;
+        textTrans = (d,i) => `translate( ${(shapeSize[i].width*textAlign  + shapeSize[i].x)},
+              ${(maxH + labelOffset )})`;
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -161,7 +161,7 @@ export default function symbol(){
   };
 
   legend.on = function(){
-    var value = legendDispatcher.on.apply(legendDispatcher, arguments)
+    const value = legendDispatcher.on.apply(legendDispatcher, arguments)
     return value === legendDispatcher ? legend : value;
   }
 

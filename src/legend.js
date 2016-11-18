@@ -1,80 +1,96 @@
-export default {
+const d3_identity =  (d) => d
 
-  d3_identity: function (d) {
-    return d;
-  },
+const d3_reverse = (arr) => {
+  const mirror = [];
+  for (let i = 0, l = arr.length; i < l; i++) {
+    mirror[i] = arr[l-i-1];
+  }
+  return mirror;
+}
 
-  d3_mergeLabels: function (gen=[], labels, domain, range) {
+const d3_mergeLabels = (gen=[], labels, domain, range) => {
 
-      if (typeof labels === "object"){
-        if(labels.length === 0) return gen;
+    if (typeof labels === "object"){
+      if(labels.length === 0) return gen;
 
-        let i = labels.length;
-        for (; i < gen.length; i++) {
-          labels.push(gen[i]);
-        }
-        return labels;
-      } else if (typeof labels === "function") {
-        const customLabels = []
-        const genLength = gen.length
-        for (let i=0; i < genLength; i++){
-          customLabels.push(labels({
-            i, 
-            genLength,
-            generatedLabels : gen,
-            domain,
-            range }))
-        }
-        return customLabels
+      let i = labels.length;
+      for (; i < gen.length; i++) {
+        labels.push(gen[i]);
       }
-
-      return gen;
-    },
-
-  d3_linearLegend: function (scale, cells, labelFormat) {
-    var data = [];
-
-    if (cells.length > 1){
-      data = cells;
-
-    } else {
-      var domain = scale.domain(),
-      increment = (domain[domain.length - 1] - domain[0])/(cells - 1),
-      i = 0;
-
-      for (; i < cells; i++){
-        data.push(domain[0] + i*increment);
+      return labels;
+    } else if (typeof labels === "function") {
+      const customLabels = []
+      const genLength = gen.length
+      for (let i=0; i < genLength; i++){
+        customLabels.push(labels({
+          i,
+          genLength,
+          generatedLabels : gen,
+          domain,
+          range }))
       }
+      return customLabels
     }
 
-    var labels = data.map(labelFormat);
+    return gen;
+  }
 
-    return {data: data,
-            labels: labels,
-            feature: function(d){ return scale(d); }};
-  },
+const d3_linearLegend = (scale, cells, labelFormat) => {
+  let data = [];
 
-  d3_quantLegend: function (scale, labelFormat, labelDelimiter) {
-    var labels = scale.range().map(function(d){
-      var invert = scale.invertExtent(d);
+  if (cells.length > 1){
+    data = cells;
 
-      return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+  } else {
+    const domain = scale.domain(),
+    increment = (domain[domain.length - 1] - domain[0])/(cells - 1)
+    let i = 0;
 
-    });
+    for (; i < cells; i++){
+      data.push(domain[0] + i*increment);
+    }
+  }
 
-    return {data: scale.range(),
-            labels: labels,
-            feature: this.d3_identity
-          };
-  },
+  const labels = data.map(labelFormat);
 
-  d3_ordinalLegend: function (scale) {
-    return {data: scale.domain(),
-            labels: scale.domain(),
-            feature: function(d){ return scale(d); }};
-  },
+  return {data: data,
+          labels: labels,
+          feature: d => scale(d)};
+}
 
-  d3_drawShapes: function (shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
+const d3_quantLegend = (scale, labelFormat, labelDelimiter) => {
+  const labels = scale.range().map( d => {
+    const invert = scale.invertExtent(d);
+    return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
+  });
+
+  return {data: scale.range(),
+          labels: labels,
+          feature: d3_identity
+        };
+}
+
+const d3_ordinalLegend= scale => ({data: scale.domain(),
+          labels: scale.domain(),
+          feature: d => scale(d) }
+)
+
+const d3_cellOver = (cellDispatcher, d, obj) => {
+  cellDispatcher.call("cellover", obj, d);
+}
+
+const d3_cellOut = (cellDispatcher, d, obj) => {
+  cellDispatcher.call("cellout", obj, d);
+}
+
+const d3_cellClick = (cellDispatcher, d, obj) => {
+  cellDispatcher.call("cellclick", obj, d);
+}
+
+
+export default {
+
+  d3_drawShapes: (shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) => {
     if (shape === "rect"){
         shapes.attr("height", shapeHeight).attr("width", shapeWidth);
 
@@ -91,33 +107,25 @@ export default {
 
   d3_addText: function (svg, enter, labels, classPrefix){
     enter.append("text").attr("class", classPrefix + "label");
-    svg.selectAll("g." + classPrefix + "cell text").data(labels).text(this.d3_identity);
+    svg.selectAll(`g.${classPrefix}cell text${classPrefix ? '.' + classPrefix : ''}`).data(labels).text(d3_identity);
   },
 
   d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
-    var type = scale.invertExtent ?
-            this.d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ?
-            this.d3_linearLegend(scale, cells, labelFormat) : this.d3_ordinalLegend(scale);
+    const type = scale.invertExtent ?
+            d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ?
+            d3_linearLegend(scale, cells, labelFormat) : d3_ordinalLegend(scale);
 
-    type.labels = this.d3_mergeLabels(type.labels, labels, scale.domain(), scale.range());
+    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), scale.range());
 
     if (ascending) {
-      type.labels = this.d3_reverse(type.labels);
-      type.data = this.d3_reverse(type.data);
+      type.labels = d3_reverse(type.labels);
+      type.data = d3_reverse(type.data);
     }
 
     return type;
   },
 
-  d3_reverse: function(arr) {
-    var mirror = [];
-    for (var i = 0, l = arr.length; i < l; i++) {
-      mirror[i] = arr[l-i-1];
-    }
-    return mirror;
-  },
-
-  d3_placement: function (orient, cell, cellTrans, text, textTrans, labelAlign) {
+  d3_placement: (orient, cell, cellTrans, text, textTrans, labelAlign) => {
     cell.attr("transform", cellTrans);
     text.attr("transform", textTrans);
     if (orient === "horizontal"){
@@ -126,29 +134,15 @@ export default {
   },
 
   d3_addEvents: function(cells, dispatcher){
-    var _ = this;
-
-      cells.on("mouseover.legend", function (d) { _.d3_cellOver(dispatcher, d, this); })
-          .on("mouseout.legend", function (d) { _.d3_cellOut(dispatcher, d, this); })
-          .on("click.legend", function (d) { _.d3_cellClick(dispatcher, d, this); });
+      cells.on("mouseover.legend", function (d) { d3_cellOver(dispatcher, d, this); })
+          .on("mouseout.legend", function (d) { d3_cellOut(dispatcher, d, this); })
+          .on("click.legend", function (d) { d3_cellClick(dispatcher, d, this); });
   },
 
-  d3_cellOver: function(cellDispatcher, d, obj){
-    cellDispatcher.call("cellover", obj, d);
-  },
-
-  d3_cellOut: function(cellDispatcher, d, obj){
-    cellDispatcher.call("cellout", obj, d);
-  },
-
-  d3_cellClick: function(cellDispatcher, d, obj){
-    cellDispatcher.call("cellclick", obj, d);
-  },
-
-  d3_title: function(svg, title, classPrefix){
+  d3_title: (svg, title, classPrefix) => {
     if (title !== ""){
 
-      var titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
+      const titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
 
       titleText.data([title])
         .enter()
@@ -158,10 +152,10 @@ export default {
         svg.selectAll('text.' + classPrefix + 'legendTitle')
             .text(title)
 
-      var cellsSvg = svg.select('.' + classPrefix + 'legendCells')
+      const cellsSvg = svg.select('.' + classPrefix + 'legendCells')
 
-      var yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes()
-          .map(function(d) { return d.getBBox().height})[0],
+      const yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes()
+          .map(d => d.getBBox().height)[0],
       xOffset = -cellsSvg.nodes().map(function(d) { return d.getBBox().x})[0];
 
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset + 10) + ')');

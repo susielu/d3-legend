@@ -5,7 +5,7 @@ import { format } from 'd3-format';
 
 export default function color(){
 
-  var scale = scaleLinear(),
+  let scale = scaleLinear(),
     shape = "rect",
     shapeWidth = 15,
     shapeHeight = 15,
@@ -27,17 +27,19 @@ export default function color(){
 
     function legend(svg){
 
-      var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
-      var cell = svg.select('.' + classPrefix + 'legendCells')
-          .selectAll("." + classPrefix + "cell").data(type.data),
-        cellEnter = cell.enter().append("g")
-          .attr("class", classPrefix + "cell"),//.merge(cell).style("opacity", 1e-6),
-        shapeEnter = cellEnter.append(shape).attr("class", classPrefix + "swatch"),
-        shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+      let cell = svg.select('.' + classPrefix + 'legendCells')
+          .selectAll("." + classPrefix + "cell").data(type.data)
+
+      const cellEnter = cell.enter().append("g")
+          .attr("class", classPrefix + "cell")
+      cellEnter.append(shape).attr("class", classPrefix + "swatch")
+
+      const shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -48,14 +50,13 @@ export default function color(){
 
 
       helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
-      
+
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
       cell = cellEnter.merge(cell);
 
       // sets placement
-      var text = cell.selectAll("text"),
-        shapeSize = shapes.nodes().map( function(d){ return d.getBBox(); });
-
+      const text = cell.selectAll("text"),
+        shapeSize = shapes.nodes().map( d => d.getBBox());
       //sets scale
       //everything is fill except for line which is stroke,
       if (!useClass){
@@ -65,23 +66,23 @@ export default function color(){
           shapes.style("fill", type.feature);
         }
       } else {
-        shapes.attr("class", function(d){ return classPrefix + "swatch " + type.feature(d); });
+        shapes.attr("class", d => `${classPrefix}swatch ${type.feature(d)}`);
       }
 
-      var cellTrans,
+      let cellTrans,
       textTrans,
       textAlign = (labelAlign == "start") ? 0 : (labelAlign == "middle") ? 0.5 : 1;
 
       //positions cells and text
       if (orient === "vertical"){
-        cellTrans = function(d,i) { return "translate(0, " + (i * (shapeSize[i].height + shapePadding)) + ")"; };
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width + shapeSize[i].x +
-          labelOffset) + "," + (shapeSize[i].y + shapeSize[i].height/2 + 5) + ")"; };
+        cellTrans = (d,i) => `translate(0, ${i * (shapeSize[i].height + shapePadding)})`;
+        textTrans = (d,i) => `translate( ${(shapeSize[i].width + shapeSize[i].x +
+          labelOffset)}, ${(shapeSize[i].y + shapeSize[i].height/2 + 5)})`;
 
       } else if (orient === "horizontal"){
-        cellTrans = function(d,i) { return "translate(" + (i * (shapeSize[i].width + shapePadding)) + ",0)"; }
-        textTrans = function(d,i) { return "translate(" + (shapeSize[i].width*textAlign  + shapeSize[i].x) +
-          "," + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")"; };
+        cellTrans = (d,i) => `translate(${(i * (shapeSize[i].width + shapePadding))},0)`
+        textTrans = (d,i) => `translate(${(shapeSize[i].width*textAlign  + shapeSize[i].x)},
+          ${(shapeSize[i].height + shapeSize[i].y + labelOffset + 8)})`;
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -208,7 +209,7 @@ export default function color(){
   };
 
   legend.on = function(){
-    var value = legendDispatcher.on.apply(legendDispatcher, arguments)
+    const value = legendDispatcher.on.apply(legendDispatcher, arguments)
     return value === legendDispatcher ? legend : value;
   }
 
