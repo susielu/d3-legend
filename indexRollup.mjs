@@ -125,7 +125,7 @@ var helper = {
 
     d3_addText: function d3_addText(svg, enter, labels, classPrefix) {
       enter.append("text").attr("class", classPrefix + "label");
-      svg.selectAll("g." + classPrefix + "cell text" + (classPrefix ? '.' + classPrefix : '')).data(labels).text(d3_identity);
+      svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
     },
 
     d3_calcType: function d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter) {
