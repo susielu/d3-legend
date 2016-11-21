@@ -85,7 +85,8 @@ module.exports = {
 
   d3_addText: function (svg, enter, labels, classPrefix){
     enter.append("text").attr("class", classPrefix + "label");
-    svg.selectAll("g." + classPrefix + "cell text").data(labels).text(this.d3_identity);
+    svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label")
+      .data(labels).text(this.d3_identity);
   },
 
   d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
