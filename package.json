@@ -38,7 +38,7 @@
     "stringify": "3.1.0"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && grunt",
     "prepublish": "npm t && npm run build",
     "test": "mocha"
   },
