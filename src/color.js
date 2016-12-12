@@ -31,7 +31,7 @@ export default function color(){
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
-
+      console.log('type', type)
       let cell = svg.select('.' + classPrefix + 'legendCells')
           .selectAll("." + classPrefix + "cell").data(type.data)
 

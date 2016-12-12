@@ -72,7 +72,8 @@ const d3_quantLegend = (scale, labelFormat, labelDelimiter) => {
 
 const d3_ordinalLegend= scale => ({data: scale.domain(),
           labels: scale.domain(),
-          feature: d => scale(d) }
+          feature: d => scale(d) 
+        }
 )
 
 const d3_cellOver = (cellDispatcher, d, obj) => {
@@ -110,6 +111,17 @@ export default {
     svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`).data(labels).text(d3_identity);
   },
 
+  d3_labelsFilter: function(filter, labels, data){
+
+    const join = labels.map((d,i) => ({label: d, data: data[i]})) 
+    const filteredValues = filter(join) || []
+
+    labels = filteredValues.map(d => d.label)
+    data = filteredValues.map(d => d.data)
+
+    return { labels, data }
+  },
+
   d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
     const type = scale.invertExtent ?
             d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ?
@@ -120,6 +132,12 @@ export default {
     if (ascending) {
       type.labels = d3_reverse(type.labels);
       type.data = d3_reverse(type.data);
+    }
+
+    if (filter && typeof filter === "function"){
+      const filtered = d3_labelsFilter(filter, type.labels, type.data)
+      type.labels = filtered.labels
+      type.data = filtered.data
     }
 
     return type;
