@@ -287,6 +287,25 @@ var helper = {
       return type;
     },
 
+    d3_filterCells: function d3_filterCells(type, cellFilter) {
+      var filterCells = type.data.map(function (d, i) {
+        return { data: d, label: type.labels[i] };
+      }).filter(cellFilter);
+      var dataValues = filterCells.map(function (d) {
+        return d.data;
+      });
+      var labelValues = filterCells.map(function (d) {
+        return d.label;
+      });
+      type.data = type.data.filter(function (d) {
+        return dataValues.indexOf(d) !== -1;
+      });
+      type.labels = type.labels.filter(function (d) {
+        return labelValues.indexOf(d) !== -1;
+      });
+      return type;
+    },
+
     d3_placement: function d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign) {
       cell.attr("transform", cellTrans);
       text.attr("transform", textTrans);
@@ -339,6 +358,7 @@ function color() {
         shapeRadius = 10,
         shapePadding = 2,
         cells = [5],
+        cellFilter = void 0,
         labels = [],
         classPrefix = "",
         useClass = false,
@@ -360,6 +380,10 @@ function color() {
           legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
+
+      if (cellFilter) {
+        helper.d3_filterCells(type, cellFilter);
+      }
 
       var cell = svg.select('.' + classPrefix + 'legendCells').selectAll("." + classPrefix + "cell").data(type.data);
 
@@ -436,6 +460,12 @@ function color() {
       if (_.length > 1 || _ >= 2) {
         cells = _;
       }
+      return legend;
+    };
+
+    legend.cellFilter = function (_) {
+      if (!arguments.length) return cellFilter;
+      cellFilter = _;
       return legend;
     };
 
@@ -565,6 +595,7 @@ function size() {
         shapeWidth = 15,
         shapePadding = 2,
         cells = [5],
+        cellFilter = void 0,
         labels = [],
         classPrefix = "",
         title = "",
@@ -583,6 +614,10 @@ function size() {
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
           legendG = svg.selectAll('g').data([scale]);
+
+      if (cellFilter) {
+        helper.d3_filterCells(type, cellFilter);
+      }
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
@@ -679,6 +714,12 @@ function size() {
       if (_.length > 1 || _ >= 2) {
         cells = _;
       }
+      return legend;
+    };
+
+    legend.cellFilter = function (_) {
+      if (!arguments.length) return cellFilter;
+      cellFilter = _;
       return legend;
     };
 
@@ -790,6 +831,7 @@ function symbol() {
         shapeRadius = 10,
         shapePadding = 5,
         cells = [5],
+        cellFilter = void 0,
         labels = [],
         classPrefix = "",
         title = "",
@@ -807,6 +849,10 @@ function symbol() {
 
       var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
           legendG = svg.selectAll('g').data([scale]);
+
+      if (cellFilter) {
+        helper.d3_filterCells(type, cellFilter);
+      }
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
@@ -878,6 +924,12 @@ function symbol() {
       if (_.length > 1 || _ >= 2) {
         cells = _;
       }
+      return legend;
+    };
+
+    legend.cellFilter = function (_) {
+      if (!arguments.length) return cellFilter;
+      cellFilter = _;
       return legend;
     };
 
