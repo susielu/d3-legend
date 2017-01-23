@@ -1,3 +1,4 @@
+import { select } from 'd3-selection';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
@@ -134,6 +135,33 @@ var d3_identity = function d3_identity(d) {
     return mirror;
   };
 
+  //Text wrapping code adapted from Mike Bostock
+  var d3_textWrapping = function d3_textWrapping(text, width) {
+    text.each(function () {
+      var text = d3Selection.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.2,
+          //ems
+      y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")) || 0,
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("dy", dy + "em");
+
+      while (word = words.pop()) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan").attr("x", 0).attr("dy", lineHeight + dy + "em").text(word);
+        }
+      }
+    });
+  };
+
   var d3_mergeLabels = function d3_mergeLabels() {
     var gen = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     var labels = arguments[1];
@@ -236,9 +264,14 @@ var helper = {
       }
     },
 
-    d3_addText: function d3_addText(svg, enter, labels, classPrefix) {
+    d3_addText: function d3_addText(svg, enter, labels, classPrefix, labelWidth) {
       enter.append("text").attr("class", classPrefix + "label");
       svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
+
+      // if (labelWidth){
+      //   svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+      //       .call(d3_textWrapping, labelWidth)
+      // }
     },
 
     d3_calcType: function d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter) {
@@ -272,7 +305,7 @@ var helper = {
       });
     },
 
-    d3_title: function d3_title(svg, title, classPrefix) {
+    d3_title: function d3_title(svg, title, classPrefix, titleWidth) {
       if (title !== "") {
 
         var titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
@@ -281,16 +314,18 @@ var helper = {
 
         svg.selectAll('text.' + classPrefix + 'legendTitle').text(title);
 
-        var cellsSvg = svg.select('.' + classPrefix + 'legendCells');
+        if (titleWidth) {
+          svg.selectAll('text.' + classPrefix + 'legendTitle').call(d3_textWrapping, titleWidth);
+        }
 
+        var cellsSvg = svg.select('.' + classPrefix + 'legendCells');
         var yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes().map(function (d) {
           return d.getBBox().height;
         })[0],
             xOffset = -cellsSvg.nodes().map(function (d) {
           return d.getBBox().x;
         })[0];
-
-        cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset + 10) + ')');
+        cellsSvg.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
       }
     }
   };
@@ -312,9 +347,11 @@ function color() {
         labelOffset = 10,
         labelAlign = "middle",
         labelDelimiter = "to",
+        labelWidth = void 0,
         orient = "vertical",
         ascending = false,
         path = void 0,
+        titleWidth = void 0,
         legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg) {
@@ -337,7 +374,6 @@ function color() {
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
-
       helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
@@ -384,7 +420,7 @@ function color() {
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, title, classPrefix);
+      helper.d3_title(svg, title, classPrefix, titleWidth);
 
       cell.transition().style("opacity", 1);
     }
@@ -467,6 +503,12 @@ function color() {
       return legend;
     };
 
+    legend.labelWidth = function (_) {
+      if (!arguments.length) return labelWidth;
+      labelWidth = _;
+      return legend;
+    };
+
     legend.useClass = function (_) {
       if (!arguments.length) return useClass;
       if (_ === true || _ === false) {
@@ -502,6 +544,12 @@ function color() {
       return legend;
     };
 
+    legend.titleWidth = function (_) {
+      if (!arguments.length) return titleWidth;
+      titleWidth = _;
+      return legend;
+    };
+
     legend.on = function () {
       var value = legendDispatcher.on.apply(legendDispatcher, arguments);
       return value === legendDispatcher ? legend : value;
@@ -524,9 +572,11 @@ function size() {
         labelOffset = 10,
         labelAlign = "middle",
         labelDelimiter = "to",
+        labelWidth = void 0,
         orient = "vertical",
         ascending = false,
         path = void 0,
+        titleWidth = void 0,
         legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg) {
@@ -613,7 +663,7 @@ function size() {
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, title, classPrefix);
+      helper.d3_title(svg, title, classPrefix, titleWidth);
 
       cell.transition().style("opacity", 1);
     }
@@ -684,6 +734,12 @@ function size() {
       return legend;
     };
 
+    legend.labelWidth = function (_) {
+      if (!arguments.length) return labelWidth;
+      labelWidth = _;
+      return legend;
+    };
+
     legend.orient = function (_) {
       if (!arguments.length) return orient;
       _ = _.toLowerCase();
@@ -711,6 +767,12 @@ function size() {
       return legend;
     };
 
+    legend.titleWidth = function (_) {
+      if (!arguments.length) return titleWidth;
+      titleWidth = _;
+      return legend;
+    };
+
     legend.on = function () {
       var value = legendDispatcher.on.apply(legendDispatcher, arguments);
       return value === legendDispatcher ? legend : value;
@@ -735,8 +797,10 @@ function symbol() {
         labelAlign = "middle",
         labelOffset = 10,
         labelDelimiter = "to",
+        labelWidth = void 0,
         orient = "vertical",
         ascending = false,
+        titleWidth = void 0,
         legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg) {
@@ -759,7 +823,7 @@ function symbol() {
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-      helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
+      helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWidth);
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
       cell = cellEnter.merge(cell);
@@ -799,7 +863,7 @@ function symbol() {
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, title, classPrefix);
+      helper.d3_title(svg, title, classPrefix, titleWidth);
       cell.transition().style("opacity", 1);
     }
 
@@ -854,6 +918,12 @@ function symbol() {
       return legend;
     };
 
+    legend.labelWidth = function (_) {
+      if (!arguments.length) return labelWidth;
+      labelWidth = _;
+      return legend;
+    };
+
     legend.orient = function (_) {
       if (!arguments.length) return orient;
       _ = _.toLowerCase();
@@ -878,6 +948,12 @@ function symbol() {
     legend.title = function (_) {
       if (!arguments.length) return title;
       title = _;
+      return legend;
+    };
+
+    legend.titleWidth = function (_) {
+      if (!arguments.length) return titleWidth;
+      titleWidth = _;
       return legend;
     };
 
