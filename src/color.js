@@ -20,12 +20,14 @@ export default function color(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
+    labelWidth,
     orient = "vertical",
     ascending = false,
     path,
+    titleWidth,
     legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
-    function legend(svg){
+  function legend(svg) {
 
       const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
@@ -47,8 +49,6 @@ export default function color(){
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
-
-
       helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
@@ -86,13 +86,11 @@ export default function color(){
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, title, classPrefix);
+      helper.d3_title(svg, title, classPrefix, titleWidth);
 
       cell.transition().style("opacity", 1);
 
-    }
-
-
+  }
 
   legend.scale = function(_) {
     if (!arguments.length) return scale;
@@ -173,6 +171,12 @@ export default function color(){
     return legend;
   };
 
+  legend.labelWidth = function(_) {
+    if (!arguments.length) return labelWidth;
+    labelWidth = _;
+    return legend;
+  };
+
   legend.useClass = function(_) {
     if (!arguments.length) return useClass;
     if (_ === true || _ === false){
@@ -205,6 +209,12 @@ export default function color(){
   legend.title = function(_) {
     if (!arguments.length) return title;
     title = _;
+    return legend;
+  };
+
+  legend.titleWidth = function(_) {
+    if (!arguments.length) return titleWidth;
+    titleWidth = _;
     return legend;
   };
 

@@ -210,7 +210,7 @@
         <h3 >Examples</h3>
 
         <h4 id="color-quant">Quantile Scale Legend</h4>
-        <svg height=200 width=160  id="svg-color-quant"></svg>
+        <svg height=240 width=160  id="svg-color-quant"></svg>
         <pre class="column6 left-margin right-margin">
           <code class="language-javascript">
 
@@ -227,6 +227,9 @@ svg.append("g")
 var legend = d3.legendColor()
   .labelFormat(d3.format(".2f"))
   .useClass(true)
+  .title("A really really really really 
+    really long title")
+  .titleWidth(100)
   .scale(quantize);
 
 svg.select(".legendQuant")
@@ -634,6 +637,12 @@ svg.select(".legendSymbol")
           <td class="included"></td>
         </tr>
         <tr>
+          <td>titleWidth</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
           <td>labels</td>
           <td class="included"></td>
           <td class="included"></td>
@@ -693,7 +702,7 @@ svg.select(".legendSymbol")
 <script src="prism.js"></script>
 
 <script src="https://d3js.org/d3.v4.js"></script>
-<script src="../d3-legend.js"></script>
+<script src="d3-legend.min.js"></script>
 
 <script src="docs.min.js"></script>
 <script src="ga.js"></script>

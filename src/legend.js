@@ -1,3 +1,5 @@
+import { select } from 'd3-selection'
+
 const d3_identity =  (d) => d
 
 const d3_reverse = (arr) => {
@@ -7,6 +9,38 @@ const d3_reverse = (arr) => {
   }
   return mirror;
 }
+
+//Text wrapping code adapted from Mike Bostock
+const d3_textWrapping = (text, width) => {
+  text.each(function() {
+    var text = select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.2, //ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")) || 0,
+        tspan = text.text(null)
+          .append("tspan")
+          .attr("x", 0)
+          .attr("dy", dy + "em");
+
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan")
+          .attr("x", 0)
+          .attr("dy", lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
+
 
 const d3_mergeLabels = (gen=[], labels, domain, range) => {
 
@@ -105,9 +139,16 @@ export default {
     }
   },
 
-  d3_addText: function (svg, enter, labels, classPrefix){
+  d3_addText: function (svg, enter, labels, classPrefix, labelWidth){
     enter.append("text").attr("class", classPrefix + "label");
-    svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`).data(labels).text(d3_identity);
+    svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+      .data(labels)
+      .text(d3_identity);
+
+    // if (labelWidth){
+    //   svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+    //       .call(d3_textWrapping, labelWidth)
+    // }
   },
 
   d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
@@ -139,7 +180,7 @@ export default {
           .on("click.legend", function (d) { d3_cellClick(dispatcher, d, this); });
   },
 
-  d3_title: (svg, title, classPrefix) => {
+  d3_title: (svg, title, classPrefix, titleWidth) => {
     if (title !== ""){
 
       const titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
@@ -149,16 +190,20 @@ export default {
         .append('text')
         .attr('class', classPrefix + 'legendTitle');
 
+      svg.selectAll('text.' + classPrefix + 'legendTitle')
+        .text(title)
+
+      if (titleWidth){
         svg.selectAll('text.' + classPrefix + 'legendTitle')
-            .text(title)
-
+          .call(d3_textWrapping, titleWidth)
+      }
+      
       const cellsSvg = svg.select('.' + classPrefix + 'legendCells')
-
       const yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes()
           .map(d => d.getBBox().height)[0],
+      
       xOffset = -cellsSvg.nodes().map(function(d) { return d.getBBox().x})[0];
-
-      cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset + 10) + ')');
+      cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset) + ')');
 
     }
   }

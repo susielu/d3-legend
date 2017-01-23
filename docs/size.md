@@ -38,6 +38,10 @@ legendSize.**title(string)**
 
 Sets the legend's title to the string. Automatically moves the legend cells down based on the size of the title. An example: [Symbol - Ordinal Scale](#symbol-ordinal).
 
+legendSize.**titleWidth(number)**
+
+Will break the legend title into multiple lines based on the width in pixels. An example: [Color - Quantile Scale Legend](#color-quant).
+
 legendSize.**labels([string] or function(options))**
 
 Passing a string:

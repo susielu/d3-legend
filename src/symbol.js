@@ -20,8 +20,10 @@ export default function symbol(){
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
+    labelWidth,
     orient = "vertical",
     ascending = false,
+    titleWidth,
     legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
@@ -46,7 +48,7 @@ export default function symbol(){
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-      helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
+      helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWidth)
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
       cell = cellEnter.merge(cell);
@@ -75,7 +77,7 @@ export default function symbol(){
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, title, classPrefix);
+      helper.d3_title(svg, title, classPrefix, titleWidth);
       cell.transition().style("opacity", 1);
 
     }
@@ -133,6 +135,12 @@ export default function symbol(){
     return legend;
   };
 
+  legend.labelWidth = function(_) {
+    if (!arguments.length) return labelWidth;
+    labelWidth = _;
+    return legend;
+  };
+
   legend.orient = function(_){
     if (!arguments.length) return orient;
     _ = _.toLowerCase();
@@ -157,6 +165,12 @@ export default function symbol(){
   legend.title = function(_) {
     if (!arguments.length) return title;
     title = _;
+    return legend;
+  };
+
+  legend.titleWidth = function(_) {
+    if (!arguments.length) return titleWidth;
+    titleWidth = _;
     return legend;
   };
 

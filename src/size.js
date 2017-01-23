@@ -18,9 +18,11 @@ export default function size(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
+    labelWidth,
     orient = "vertical",
     ascending = false,
     path,
+    titleWidth,
     legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
     function legend(svg){
@@ -99,7 +101,7 @@ export default function size(){
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
-      helper.d3_title(svg, title, classPrefix);
+      helper.d3_title(svg, title, classPrefix, titleWidth);
 
       cell.transition().style("opacity", 1);
 
@@ -173,6 +175,12 @@ export default function size(){
     return legend;
   };
 
+  legend.labelWidth = function(_) {
+    if (!arguments.length) return labelWidth;
+    labelWidth = _;
+    return legend;
+  };
+
   legend.orient = function(_){
     if (!arguments.length) return orient;
     _ = _.toLowerCase();
@@ -197,6 +205,12 @@ export default function size(){
   legend.title = function(_) {
     if (!arguments.length) return title;
     title = _;
+    return legend;
+  };
+
+  legend.titleWidth = function(_) {
+    if (!arguments.length) return titleWidth;
+    titleWidth = _;
     return legend;
   };
 
