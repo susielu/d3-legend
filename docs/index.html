@@ -382,7 +382,7 @@ svg.select(".legendLinear")
         </pre>
 
         <h4 id="color-ordinal">Ordinal Scale Legend - Custom shape</h4>
-        <svg height=150 width=70  id="svg-color-ordinal"></svg>
+        <svg height=120 width=70  id="svg-color-ordinal"></svg>
         <pre class="column6 left-margin right-margin">
           <code class="language-javascript">
 
@@ -402,6 +402,8 @@ var legendOrdinal = d3.legendColor()
   //8.059274488676564 -9.306048591020996,8.059274488676564Z"
   .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
   .shapePadding(10)
+  //use cellFilter to hide the "e" cell
+  .cellFilter(function(d){ return d.label !== "e" })
   .scale(ordinal);
 
 svg.select(".legendOrdinal")
@@ -572,6 +574,12 @@ svg.select(".legendSymbol")
         </tr>
         <tr>
           <td>cells</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>cellFilter</td>
           <td class="included"></td>
           <td class="included"></td>
           <td class="included"></td>

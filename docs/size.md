@@ -10,6 +10,10 @@ legendSize.**cells(number or [numbers])**
 
 This parameter is only valid for continuous scales (like linear and log). When there is no indication from the domain or range for the number of steps in the legend you may want to display, it defaults to five steps in equal increments. You can pass the cells function a single number which will create equal increments for that number of steps, or an array of the [specific steps](#color-linear-custom) you want the legend to display.
 
+legendSize.**cellFilter(function)**
+
+This function is run as a filter function against the array of cells. If you have a function(d){ return true or false }, d has a .data and a .label property as it iterates over each cell it will display. Create a false condition for any cells you want to exclude from being displayed. An example: [Color - Ordinal Scale Legend, custom shape](#color-ordinal).
+
 legendSize.**orient(string)**
 
 Accepts "vertical" or "horizontal" for legend orientation. Default set to "vertical."

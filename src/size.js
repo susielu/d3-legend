@@ -11,6 +11,7 @@ export default function size(){
     shapeWidth = 15,
     shapePadding = 2,
     cells = [5],
+    cellFilter,
     labels = [],
     classPrefix = "",
     title = "",
@@ -29,6 +30,10 @@ export default function size(){
 
       const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
+
+      if (cellFilter){
+        helper.d3_filterCells(type, cellFilter)
+      }
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
@@ -121,7 +126,12 @@ export default function size(){
     return legend;
   };
 
-
+  legend.cellFilter = function(_) {
+    if (!arguments.length) return cellFilter;
+    cellFilter = _;
+    return legend;
+  };
+  
   legend.shape = function(_, d) {
     if (!arguments.length) return shape;
     if (_ == "rect" || _ == "circle" || _ == "line" ){

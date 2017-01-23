@@ -166,6 +166,16 @@ export default {
     return type;
   },
 
+  d3_filterCells: (type, cellFilter) => {
+    let filterCells = type.data.map((d, i) => ({ data: d, label: type.labels[i] }))
+      .filter(cellFilter)
+    const dataValues = filterCells.map(d => d.data)
+    const labelValues = filterCells.map(d => d.label)
+    type.data = type.data.filter(d => dataValues.indexOf(d) !== -1)
+    type.labels = type.labels.filter(d => labelValues.indexOf(d) !== -1)
+    return type
+  },
+
   d3_placement: (orient, cell, cellTrans, text, textTrans, labelAlign) => {
     cell.attr("transform", cellTrans);
     text.attr("transform", textTrans);

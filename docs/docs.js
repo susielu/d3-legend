@@ -78,7 +78,6 @@ svg = d3.select("#svg-color-linear");
 svg.append("g")
   .attr("class", "legendLinear")
   .attr("transform", "translate(20,20)");
-
 var legendLinear = d3.legendColor()
     .shapeWidth(30)
     .orient('horizontal')
@@ -129,6 +128,7 @@ svg.append("g")
 var legendOrdinal = d3.legendColor()
   .shape("path", d3.symbol().type(d3.symbolTriangle).size(150)())
   .shapePadding(10)
+  .cellFilter(function(d){ return d.label !== "e" })
   .scale(ordinal);
 
 svg.select(".legendOrdinal")

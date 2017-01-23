@@ -13,6 +13,7 @@ export default function symbol(){
     shapeRadius = 10,
     shapePadding = 5,
     cells = [5],
+    cellFilter,
     labels = [],
     classPrefix = "",
     title = "",
@@ -30,6 +31,10 @@ export default function symbol(){
 
       const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
+
+      if (cellFilter){
+        helper.d3_filterCells(type, cellFilter)
+      }
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
 
@@ -94,6 +99,12 @@ export default function symbol(){
     if (_.length > 1 || _ >= 2 ){
       cells = _;
     }
+    return legend;
+  };
+  
+  legend.cellFilter = function(_) {
+    if (!arguments.length) return cellFilter;
+    cellFilter = _;
     return legend;
   };
 

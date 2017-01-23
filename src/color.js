@@ -12,6 +12,7 @@ export default function color(){
     shapeRadius = 10,
     shapePadding = 2,
     cells = [5],
+    cellFilter,
     labels = [],
     classPrefix = "",
     useClass = false,
@@ -33,7 +34,11 @@ export default function color(){
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
-
+      
+      if (cellFilter){
+        helper.d3_filterCells(type, cellFilter)
+      }
+      
       let cell = svg.select('.' + classPrefix + 'legendCells')
           .selectAll("." + classPrefix + "cell").data(type.data)
 
@@ -103,6 +108,12 @@ export default function color(){
     if (_.length > 1 || _ >= 2 ){
       cells = _;
     }
+    return legend;
+  };
+
+  legend.cellFilter = function(_) {
+    if (!arguments.length) return cellFilter;
+    cellFilter = _;
     return legend;
   };
 
