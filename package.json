@@ -3,7 +3,8 @@
   "version": "2.21.0",
   "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
   "main": "indexRollup.js",
-  "jsnext:main": "indexRollup.mjs",
+  "jsnext:main": "indexRollupNext.js",
+  "module": "indexRollupNext.js",
   "files": [
     "src",
     "index.js",
@@ -34,8 +35,8 @@
     "marked": "0.3.5",
     "mocha": "2.2.5",
     "npm-watch": "0.1.7",
-    "reify": "^0.3.8",
-    "rollup": "0.34.7",
+    "reify": "0.3.8",
+    "rollup": "0.41.4",
     "rollup-plugin-babel": "2.6.1",
     "stringify": "3.1.0"
   },

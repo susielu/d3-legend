@@ -1,8 +1,8 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-dispatch'), require('d3-scale'), require('d3-format'), require('d3-array')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'd3-selection', 'd3-dispatch', 'd3-scale', 'd3-format', 'd3-array'], factory) :
-	(factory((global.indexRollup = global.indexRollup || {}),global.d3Selection,global.d3Dispatch,global.d3Scale,global.d3Format,global.d3Array));
-}(this, (function (exports,d3Selection,d3Dispatch,d3Scale,d3Format,d3Array) { 'use strict';
+import { select } from 'd3-selection';
+import { dispatch } from 'd3-dispatch';
+import { scaleLinear } from 'd3-scale';
+import { format } from 'd3-format';
+import { max, sum } from 'd3-array';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -25,7 +25,7 @@ var d3_reverse = function d3_reverse(arr) {
 //Text wrapping code adapted from Mike Bostock
 var d3_textWrapping = function d3_textWrapping(text, width) {
   text.each(function () {
-    var text = d3Selection.select(this),
+    var text = select(this),
         words = text.text().split(/\s+/).reverse(),
         word,
         line = [],
@@ -238,7 +238,7 @@ var helper = {
 
 function color() {
 
-  var scale = d3Scale.scaleLinear(),
+  var scale = scaleLinear(),
       shape = "rect",
       shapeWidth = 15,
       shapeHeight = 15,
@@ -250,7 +250,7 @@ function color() {
       classPrefix = "",
       useClass = false,
       title = "",
-      labelFormat = d3Format.format(".01f"),
+      labelFormat = format(".01f"),
       labelOffset = 10,
       labelAlign = "middle",
       labelDelimiter = "to",
@@ -259,7 +259,7 @@ function color() {
       ascending = false,
       path = void 0,
       titleWidth = void 0,
-      legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
+      legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
   function legend(svg) {
 
@@ -405,7 +405,7 @@ function color() {
 
   legend.labelFormat = function (_) {
     if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;
+    labelFormat = typeof _ === 'string' ? format(_) : _;
     return legend;
   };
 
@@ -478,7 +478,7 @@ function color() {
 
 function size() {
 
-  var scale = d3Scale.scaleLinear(),
+  var scale = scaleLinear(),
       shape = "rect",
       shapeWidth = 15,
       shapePadding = 2,
@@ -487,7 +487,7 @@ function size() {
       labels = [],
       classPrefix = "",
       title = "",
-      labelFormat = d3Format.format(".01f"),
+      labelFormat = format(".01f"),
       labelOffset = 10,
       labelAlign = "middle",
       labelDelimiter = "to",
@@ -496,7 +496,7 @@ function size() {
       ascending = false,
       path = void 0,
       titleWidth = void 0,
-      legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
+      legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
   function legend(svg) {
 
@@ -548,10 +548,10 @@ function size() {
       return bbox;
     });
 
-    var maxH = d3Array.max(shapeSize, function (d) {
+    var maxH = max(shapeSize, function (d) {
       return d.height + d.y;
     }),
-        maxW = d3Array.max(shapeSize, function (d) {
+        maxW = max(shapeSize, function (d) {
       return d.width + d.x;
     });
 
@@ -563,7 +563,7 @@ function size() {
     if (orient === "vertical") {
 
       cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(shapeSize.slice(0, i + 1), function (d) {
+        var height = sum(shapeSize.slice(0, i + 1), function (d) {
           return d.height;
         });
         return 'translate(0, ' + (height + i * shapePadding) + ')';
@@ -574,7 +574,7 @@ function size() {
       };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
-        var width = d3Array.sum(shapeSize.slice(0, i + 1), function (d) {
+        var width = sum(shapeSize.slice(0, i + 1), function (d) {
           return d.width;
         });
         return 'translate(' + (width + i * shapePadding) + ',0)';
@@ -648,7 +648,7 @@ function size() {
 
   legend.labelFormat = function (_) {
     if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;
+    labelFormat = typeof _ === 'string' ? format(_) : _;
     return legend;
   };
 
@@ -713,7 +713,7 @@ function size() {
 
 function symbol() {
 
-  var scale = d3Scale.scaleLinear(),
+  var scale = scaleLinear(),
       shape = "path",
       shapeWidth = 15,
       shapeHeight = 15,
@@ -724,7 +724,7 @@ function symbol() {
       labels = [],
       classPrefix = "",
       title = "",
-      labelFormat = d3Format.format(".01f"),
+      labelFormat = format(".01f"),
       labelAlign = "middle",
       labelOffset = 10,
       labelDelimiter = "to",
@@ -732,7 +732,7 @@ function symbol() {
       orient = "vertical",
       ascending = false,
       titleWidth = void 0,
-      legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
+      legendDispatcher = dispatch("cellover", "cellout", "cellclick");
 
   function legend(svg) {
 
@@ -769,10 +769,10 @@ function symbol() {
       return d.getBBox();
     });
 
-    var maxH = d3Array.max(shapeSize, function (d) {
+    var maxH = max(shapeSize, function (d) {
       return d.height;
     }),
-        maxW = d3Array.max(shapeSize, function (d) {
+        maxW = max(shapeSize, function (d) {
       return d.width;
     });
 
@@ -844,7 +844,7 @@ function symbol() {
 
   legend.labelFormat = function (_) {
     if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;
+    labelFormat = typeof _ === 'string' ? format(_) : _;
     return legend;
   };
 
@@ -932,13 +932,5 @@ var index = {
   legendHelpers: legendHelpers
 };
 
-exports.legendColor = color;
-exports.legendSize = size;
-exports.legendSymbol = symbol;
-exports.legendHelpers = legendHelpers;
-exports['default'] = index;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-//# sourceMappingURL=indexRollup.js.map
+export { color as legendColor, size as legendSize, symbol as legendSymbol, legendHelpers };export default index;
+//# sourceMappingURL=indexRollupNext.js.map
