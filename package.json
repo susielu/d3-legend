@@ -10,7 +10,8 @@
     "indexRollup.js",
     "indexRollup.js.map",
     "indexRollup.mjs",
-    "d3-legend.*"
+    "d3-legend.*",
+    "types/*"
   ],
   "keywords": [
     "d3",
@@ -66,7 +67,9 @@
     "url": "https://github.com/susielu/d3-legend/issues"
   },
   "homepage": "http://d3-legend.susielu.com",
+  "types": "./types/d3-svg-legend.d.ts",
   "dependencies": {
+    "@types/d3-selection": "1.0.10",
     "d3-array": "1.0.1",
     "d3-dispatch": "1.0.1",
     "d3-format": "1.0.2",
