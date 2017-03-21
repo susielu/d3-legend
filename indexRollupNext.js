@@ -164,7 +164,9 @@ var helper = {
   d3_calcType: function d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter) {
     var type = scale.invertExtent ? d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ? d3_linearLegend(scale, cells, labelFormat) : d3_ordinalLegend(scale);
 
-    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), scale.range());
+    //hack for d3.scaleSequential that doesn't have a range function
+    var range = scale.range !== undefined ? scale.range() : [scale(scale.domain()[0]), scale(scale.domain()[1])];
+    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), range);
 
     if (ascending) {
       type.labels = d3_reverse(type.labels);

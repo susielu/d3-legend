@@ -156,7 +156,9 @@ export default {
             d3_quantLegend(scale, labelFormat, labelDelimiter) : scale.ticks ?
             d3_linearLegend(scale, cells, labelFormat) : d3_ordinalLegend(scale);
 
-    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), scale.range());
+    //hack for d3.scaleSequential that doesn't have a range function
+    const range = scale.range !== undefined ? scale.range(): [scale(scale.domain()[0]), scale(scale.domain()[1])]
+    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), range);
 
     if (ascending) {
       type.labels = d3_reverse(type.labels);
@@ -207,11 +209,11 @@ export default {
         svg.selectAll('text.' + classPrefix + 'legendTitle')
           .call(d3_textWrapping, titleWidth)
       }
-      
+
       const cellsSvg = svg.select('.' + classPrefix + 'legendCells')
       const yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes()
           .map(d => d.getBBox().height)[0],
-      
+
       xOffset = -cellsSvg.nodes().map(function(d) { return d.getBBox().x})[0];
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset) + ')');
 
