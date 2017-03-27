@@ -48,7 +48,7 @@ svg.append("g")
   .attr("class", "legendQuant")
   .attr("transform", "translate(20,20)");
 
-var colorLegend = legendColor()
+var colorLegend = d3.legendColor()
     .labelFormat(d3.format(".2f"))
     .useClass(true)
     .scale(quantize);
