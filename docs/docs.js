@@ -47,10 +47,7 @@ var legend = d3.legendColor()
     .labelFormat(d3.format(".2f"))
     .labels(d3.legendHelpers.thresholdLabels)
     .useClass(true)
-    .shapePadding(40)
     .shapeWidth(30)
-    .labelWrap(50)
-    .orient("horizontal")
     .scale(thresholdScale)
 
 svg.select(".legendThreshold")
@@ -139,6 +136,23 @@ var legendOrdinal = d3.legendColor()
 svg.select(".legendOrdinal")
   .call(legendOrdinal);
 
+
+var sequentialScale = d3.scaleSequential(d3.interpolateRainbow)
+  .domain([0,10]);
+svg = d3.select("#svg-color-sequential");
+
+svg.append("g")
+  .attr("class", "legendSequential")
+  .attr("transform", "translate(20,20)");
+
+var legendSequential = d3.legendColor()
+    .shapeWidth(30)
+    .cells(10)
+    .orient("horizontal")
+    .scale(sequentialScale) 
+
+svg.select(".legendSequential")
+  .call(legendSequential);
 
 //Size: Linear Circle #svg-size-linear
 var linearSize = d3.scaleLinear().domain([0,10]).range([10, 30]);

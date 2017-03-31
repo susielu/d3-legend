@@ -381,6 +381,31 @@ svg.select(".legendLinear")
           </code>
         </pre>
 
+        <h4 id="color-sequential">Sequential Scale Legend</h4>
+        <svg height=60 width=350  id="svg-color-sequential"></svg>
+        <pre class="column6 left-margin right-margin">
+          <code class="language-javascript">
+
+var sequentialScale = d3.scaleSequential(d3.interpolateRainbow)
+  .domain([0,10]);
+
+var svg = d3.select("svg");
+
+svg.append("g")
+  .attr("class", "legendSequential")
+  .attr("transform", "translate(20,20)");
+
+var legendSequential = d3.legendColor()
+    .shapeWidth(30)
+    .cells(10)
+    .orient("horizontal")
+    .scale(sequentialScale) 
+
+svg.select(".legendSequential")
+  .call(legendSequential);
+          </code>
+        </pre>
+
         <h4 id="color-ordinal">Ordinal Scale Legend - Custom shape</h4>
         <svg height=120 width=70  id="svg-color-ordinal"></svg>
         <pre class="column6 left-margin right-margin">
