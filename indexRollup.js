@@ -143,7 +143,7 @@ var helper = {
     if (shape === "rect") {
       shapes.attr("height", shapeHeight).attr("width", shapeWidth);
     } else if (shape === "circle") {
-      shapes.attr("r", shapeRadius); //.attr("cx", shapeRadius).attr("cy", shapeRadius);
+      shapes.attr("r", shapeRadius);
     } else if (shape === "line") {
       shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0);
     } else if (shape === "path") {
@@ -153,12 +153,13 @@ var helper = {
 
   d3_addText: function d3_addText(svg, enter, labels, classPrefix, labelWidth) {
     enter.append("text").attr("class", classPrefix + "label");
-    svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
+    var text = svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
 
-    // if (labelWidth){
-    //   svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
-    //       .call(d3_textWrapping, labelWidth)
-    // }
+    if (labelWidth) {
+      svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").call(d3_textWrapping, labelWidth);
+    }
+
+    return text;
   },
 
   d3_calcType: function d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter) {
@@ -254,7 +255,7 @@ function color() {
       labelOffset = 10,
       labelAlign = "middle",
       labelDelimiter = "to",
-      labelWidth = void 0,
+      labelWrap = void 0,
       orient = "vertical",
       ascending = false,
       path = void 0,
@@ -285,13 +286,16 @@ function color() {
     cell.exit().transition().style("opacity", 0).remove();
 
     helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
-    helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
+    helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
 
     // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
     cell = cellEnter.merge(cell);
 
     // sets placement
     var text = cell.selectAll("text"),
+        textSize = text.nodes().map(function (d) {
+      return d.getBBox();
+    }),
         shapeSize = shapes.nodes().map(function (d) {
       return d.getBBox();
     });
@@ -315,12 +319,20 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      cellTrans = function cellTrans(d, i) {
-        return 'translate(0, ' + i * (shapeSize[i].height + shapePadding) + ')';
-      };
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
+
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ')';
+        };
+
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
@@ -421,9 +433,9 @@ function color() {
     return legend;
   };
 
-  legend.labelWidth = function (_) {
-    if (!arguments.length) return labelWidth;
-    labelWidth = _;
+  legend.labelWrap = function (_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
     return legend;
   };
 
@@ -468,6 +480,12 @@ function color() {
     return legend;
   };
 
+  legend.textWrap = function (_) {
+    if (!arguments.length) return textWrap;
+    textWrap = _;
+    return legend;
+  };
+
   legend.on = function () {
     var value = legendDispatcher.on.apply(legendDispatcher, arguments);
     return value === legendDispatcher ? legend : value;
@@ -491,7 +509,7 @@ function size() {
       labelOffset = 10,
       labelAlign = "middle",
       labelDelimiter = "to",
-      labelWidth = void 0,
+      labelWrap = void 0,
       orient = "vertical",
       ascending = false,
       path = void 0,
@@ -528,13 +546,16 @@ function size() {
       helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
     }
 
-    helper.d3_addText(svg, cellEnter, type.labels, classPrefix);
+    var text = helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
 
     // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
     cell = cellEnter.merge(cell);
 
     //sets placement
-    var text = cell.selectAll("text"),
+
+    var textSize = text.nodes().map(function (d) {
+      return d.getBBox();
+    }),
         shapeSize = shapes.nodes().map(function (d, i) {
       var bbox = d.getBBox();
       var stroke = scale(type.data[i]);
@@ -544,10 +565,9 @@ function size() {
       } else if (shape === "line" && orient === "vertical") {
         bbox.width = bbox.width;
       }
-
       return bbox;
     });
-
+    //console.log('SHAPESIZE')
     var maxH = d3Array.max(shapeSize, function (d) {
       return d.height + d.y;
     }),
@@ -561,23 +581,28 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(shapeSize.slice(0, i + 1), function (d) {
-          return d.height;
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
         });
-        return 'translate(0, ' + (height + i * shapePadding) + ')';
-      };
+        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+          return 'translate(0, ' + (y + height + i * shapePadding) + ')';
+        };
+
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
-        var width = d3Array.sum(shapeSize.slice(0, i + 1), function (d) {
+        var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
           return d.width;
         });
-        return 'translate(' + (width + i * shapePadding) + ',0)';
+        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+        return 'translate(' + (width + i * shapePadding) + ', ' + y + ')';
       };
 
       textTrans = function textTrans(d, i) {
@@ -664,9 +689,9 @@ function size() {
     return legend;
   };
 
-  legend.labelWidth = function (_) {
-    if (!arguments.length) return labelWidth;
-    labelWidth = _;
+  legend.labelWrap = function (_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
     return legend;
   };
 
@@ -728,7 +753,7 @@ function symbol() {
       labelAlign = "middle",
       labelOffset = 10,
       labelDelimiter = "to",
-      labelWidth = void 0,
+      labelWrap = void 0,
       orient = "vertical",
       ascending = false,
       titleWidth = void 0,
@@ -758,13 +783,16 @@ function symbol() {
     cell.exit().transition().style("opacity", 0).remove();
 
     helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-    helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWidth);
+    helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
 
     // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
     cell = cellEnter.merge(cell);
 
     // sets placement
     var text = cell.selectAll("text"),
+        textSize = text.nodes().map(function (d) {
+      return d.getBBox();
+    }),
         shapeSize = shapes.nodes().map(function (d) {
       return d.getBBox();
     });
@@ -782,12 +810,19 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      cellTrans = function cellTrans(d, i) {
-        return 'translate(0, ' + i * (maxH + shapePadding) + ' )';
-      };
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(maxH, d.height);
+        });
+
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ' )';
+        };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate( ' + i * (maxW + shapePadding) + ',0)';
@@ -860,9 +895,9 @@ function symbol() {
     return legend;
   };
 
-  legend.labelWidth = function (_) {
-    if (!arguments.length) return labelWidth;
-    labelWidth = _;
+  legend.labelWrap = function (_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
     return legend;
   };
 
