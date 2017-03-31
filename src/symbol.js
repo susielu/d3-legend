@@ -2,7 +2,7 @@ import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
-import { max } from 'd3-array';
+import { sum, max } from 'd3-array';
 
 export default function symbol(){
 
@@ -21,7 +21,7 @@ export default function symbol(){
     labelAlign = "middle",
     labelOffset = 10,
     labelDelimiter = "to",
-    labelWidth,
+    labelWrap,
     orient = "vertical",
     ascending = false,
     titleWidth,
@@ -53,13 +53,14 @@ export default function symbol(){
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-      helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWidth)
+      helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWrap)
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
       cell = cellEnter.merge(cell);
 
       // sets placement
       const text = cell.selectAll("text"),
+        textSize = text.nodes().map(d => d.getBBox()),
         shapeSize = shapes.nodes().map( d => d.getBBox());
 
       const maxH = max(shapeSize, d => d.height),
@@ -71,7 +72,11 @@ export default function symbol(){
 
       //positions cells and text
       if (orient === "vertical"){
-        cellTrans = (d,i) => `translate(0, ${(i * (maxH + shapePadding))} )`;
+        const cellSize = textSize.map((d, i) => Math.max(maxH, d.height))
+
+        cellTrans = (d,i) => {
+          const height = sum(cellSize.slice(0, i));
+          return `translate(0, ${(height + (i *shapePadding))} )`};
         textTrans = (d,i) => `translate( ${(maxW + labelOffset)},
               ${(shapeSize[i].y + shapeSize[i].height/2 + 5)})`;
 
@@ -146,9 +151,9 @@ export default function symbol(){
     return legend;
   };
 
-  legend.labelWidth = function(_) {
-    if (!arguments.length) return labelWidth;
-    labelWidth = _;
+  legend.labelWrap = function(_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
     return legend;
   };
 

@@ -19,7 +19,7 @@ export default function size(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
-    labelWidth,
+    labelWrap,
     orient = "vertical",
     ascending = false,
     path,
@@ -58,14 +58,15 @@ export default function size(){
         helper.d3_drawShapes(shape, shapes, type.feature, type.feature, type.feature, path);
       }
 
-      helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
+      const text = helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWrap)
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
       cell = cellEnter.merge(cell);
 
       //sets placement
-      const text = cell.selectAll("text"),
-        shapeSize = shapes.nodes().map(
+
+      const textSize = text.nodes().map( d => d.getBBox()),
+      shapeSize = shapes.nodes().map(
           (d, i) => {
             const bbox = d.getBBox()
             const stroke = scale(type.data[i]);
@@ -75,10 +76,9 @@ export default function size(){
             } else if (shape === "line" && orient === "vertical"){
               bbox.width = bbox.width;
             }
-
             return bbox;
         });
-
+      //console.log('SHAPESIZE')
       const maxH = max(shapeSize, d => d.height + d.y),
       maxW = max(shapeSize, d => d.width + d.x);
 
@@ -88,21 +88,25 @@ export default function size(){
 
       //positions cells and text
       if (orient === "vertical"){
-
+        const cellSize = textSize.map((d, i) => Math.max(d.height, shapeSize[i].height))
+        const y = shape == "circle" || shape == "line" ? shapeSize[0].height/2 : 0
         cellTrans = (d,i) => {
-            const height = sum(shapeSize.slice(0, i + 1 ), d => d.height);
-            return `translate(0, ${(height + i*shapePadding)})`};
+            const height = sum(cellSize.slice(0, i));
+            
+            return `translate(0, ${(y + height + i*shapePadding)})`};
 
         textTrans = (d,i) => `translate( ${(maxW + labelOffset)},
           ${(shapeSize[i].y + shapeSize[i].height/2 + 5)})`;
 
       } else if (orient === "horizontal"){
         cellTrans = (d,i) => {
-            const width = sum(shapeSize.slice(0, i + 1 ), d => d.width);
-            return `translate(${(width + i*shapePadding)},0)`; };
+            const width = sum(shapeSize.slice(0, i), d => d.width);
+            const y = shape == "circle" || shape == "line" ? maxH/2 : 0
+            return `translate(${(width + i*shapePadding)}, ${y})`; };
 
-        textTrans = (d,i) => `translate( ${(shapeSize[i].width*textAlign  + shapeSize[i].x)},
-              ${(maxH + labelOffset )})`;
+        textTrans = (d,i) => {
+          return `translate( ${(shapeSize[i].width*textAlign  + shapeSize[i].x)},
+              ${(maxH + labelOffset )})`};
       }
 
       helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -185,9 +189,9 @@ export default function size(){
     return legend;
   };
 
-  legend.labelWidth = function(_) {
-    if (!arguments.length) return labelWidth;
-    labelWidth = _;
+  legend.labelWrap = function(_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
     return legend;
   };
 

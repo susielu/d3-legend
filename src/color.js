@@ -2,6 +2,7 @@ import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
 import { format } from 'd3-format';
+import { sum } from 'd3-array';
 
 export default function color(){
 
@@ -21,7 +22,7 @@ export default function color(){
     labelOffset = 10,
     labelAlign = "middle",
     labelDelimiter = "to",
-    labelWidth,
+    labelWrap,
     orient = "vertical",
     ascending = false,
     path,
@@ -54,13 +55,14 @@ export default function color(){
       cell.exit().transition().style("opacity", 0).remove();
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
-      helper.d3_addText( svg, cellEnter, type.labels, classPrefix)
+      helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWrap)
 
       // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
       cell = cellEnter.merge(cell);
 
       // sets placement
       const text = cell.selectAll("text"),
+        textSize = text.nodes().map(d => d.getBBox()),
         shapeSize = shapes.nodes().map( d => d.getBBox());
       //sets scale
       //everything is fill except for line which is stroke,
@@ -80,7 +82,12 @@ export default function color(){
 
       //positions cells and text
       if (orient === "vertical"){
-        cellTrans = (d,i) => `translate(0, ${i * (shapeSize[i].height + shapePadding)})`;
+        const cellSize = textSize.map((d, i) => Math.max(d.height, shapeSize[i].height))
+
+        cellTrans = (d, i) => {
+          const height = sum(cellSize.slice(0, i));
+          return `translate(0, ${height + i*shapePadding})`}
+
         textTrans = (d,i) => `translate( ${(shapeSize[i].width + shapeSize[i].x +
           labelOffset)}, ${(shapeSize[i].y + shapeSize[i].height/2 + 5)})`;
 
@@ -182,9 +189,9 @@ export default function color(){
     return legend;
   };
 
-  legend.labelWidth = function(_) {
-    if (!arguments.length) return labelWidth;
-    labelWidth = _;
+  legend.labelWrap = function(_) {
+    if (!arguments.length) return labelWrap;
+    labelWrap = _;
     return legend;
   };
 
@@ -228,6 +235,12 @@ export default function color(){
     titleWidth = _;
     return legend;
   };
+
+  legend.textWrap = function(_) {
+    if (!arguments.length) return textWrap;
+    textWrap = _;
+    return legend;
+  }
 
   legend.on = function(){
     const value = legendDispatcher.on.apply(legendDispatcher, arguments)

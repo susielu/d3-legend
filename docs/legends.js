@@ -37,6 +37,10 @@ var legend = d3.legendColor()
     .labelFormat(d3.format(".2f"))
     .labels(d3.legendHelpers.thresholdLabels)
     .useClass(true)
+    .shapePadding(40)
+    .shapeWidth(30)
+    .labelWrap(50)
+    .orient("horizontal")
     .scale(thresholdScale)
 
 svg.select(".legendThreshold")
@@ -163,7 +167,8 @@ var legendSizeLine = d3.legendSize()
       .scale(lineSize)
       .shape("line")
       .orient("horizontal")
-      .labels(["tiny", "small", "medium", "large", "grand"])
+      .labels(["tiny testing at the beginning", "small", "medium", "large", "grand, all the way long label"])
+      .labelWrap(30)
       .shapeWidth(50)
       .labelAlign("start")
       .shapePadding(10);
@@ -189,12 +194,13 @@ var triangleU = d3.symbol().type(d3.symbolTriangle)(),
 //-4.51351666838205A4.51351666838205,4.51351666838205 0 1,1 0,4.51351666838205Z"
 
 var symbolScale =  d3.scaleOrdinal()
-  .domain(['a','b','c', 'd', 'e'])
+  .domain(['a longer label','b','c', 'd', 'e'])
   .range([ triangleU, circle, cross, diamond, star] );
 
 var legendPath = d3.legendSymbol()
   .scale(symbolScale)
-  .orient("horizontal")
+  //.orient("horizontal")
+  .labelWrap(30)
   .title('Symbol Legend Title')
   .on("cellclick", function(d){alert("clicked " + d);});
 

@@ -432,7 +432,7 @@ svg.select(".legendOrdinal")
 
        <h3>Examples</h3>
        <h4 id="size-linear">Linear Scale Legend - Circles</h4>
-       <svg height=100 width=350  id="svg-size-linear"></svg>
+       <svg height=130 width=350  id="svg-size-linear"></svg>
        <pre class="column6 left-margin right-margin">
          <code class="language-javascript">
 
@@ -457,7 +457,7 @@ svg.select(".legendSize")
        </pre>
 
        <h4 id="size-line">Linear Scale Legend - Lines</h4>
-       <svg height=60 width=380  id="svg-size-line"></svg>
+       <svg height=140 width=380  id="svg-size-line"></svg>
        <pre class="column6 left-margin right-margin">
          <code class="language-javascript">
 
@@ -475,7 +475,10 @@ var legendSizeLine = d3.legendSize()
       .orient("horizontal")
       //otherwise labels would have displayed:
       // 0, 2.5, 5, 10
-      .labels(["tiny", "small", "medium", "large", "grand"])
+      .labels(["tiny testing at the beginning",
+        "small", "medium", "large", "grand, 
+        all the way long label"])
+      .labelWrap(30)
       .shapeWidth(40)
       .labelAlign("start")
       .shapePadding(10);
@@ -504,7 +507,7 @@ svg.select(".legendSizeLine")
       <div class="column6 prefix3">
         <h3>Examples</h3>
        <h4 id="symbol-ordinal">Ordinal Scale Legend - Custom symbols</h4>
-       <svg height=90 width=170  id="svg-symbol-ordinal"></svg>
+       <svg height=170 width=170  id="svg-symbol-ordinal"></svg>
        <pre class="column6 left-margin right-margin">
          <code class="language-javascript">
 
@@ -519,7 +522,7 @@ var triangleU = d3.symbol().type(d3.symbolTriangle)(),
 //-4.51351666838205A4.51351666838205,4.51351666838205 0 1,1 0,4.51351666838205Z"
 
 var symbolScale =  d3.scaleOrdinal()
-  .domain(['a','b','c', 'd', 'e'])
+  .domain(['a longer label','b','c', 'd', 'e'])
   .range([ triangleU, circle, cross, diamond, start] );
 
 var svg = d3.select("svg");
@@ -531,6 +534,7 @@ svg.append("g")
 var legendPath = d3.legendSymbol()
   .scale(symbolScale)
   .orient("horizontal")
+  .labelWrap(30)
   .title("Symbol Legend Title")
   .on("cellclick", function(d){alert("clicked " + d);});
 
@@ -676,6 +680,12 @@ svg.select(".legendSymbol")
         </tr>
         <tr>
           <td>labelDelimiter</td>
+          <td class="included"></td>
+          <td class="included"></td>
+          <td class="included"></td>
+        </tr>
+        <tr>
+          <td>labelWrap</td>
           <td class="included"></td>
           <td class="included"></td>
           <td class="included"></td>

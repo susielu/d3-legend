@@ -126,10 +126,11 @@ export default {
 
   d3_drawShapes: (shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) => {
     if (shape === "rect"){
-        shapes.attr("height", shapeHeight).attr("width", shapeWidth);
+        shapes.attr("height", shapeHeight)
+        .attr("width", shapeWidth);
 
     } else if (shape === "circle") {
-        shapes.attr("r", shapeRadius)//.attr("cx", shapeRadius).attr("cy", shapeRadius);
+        shapes.attr("r", shapeRadius)
 
     } else if (shape === "line") {
         shapes.attr("x1", 0).attr("x2", shapeWidth).attr("y1", 0).attr("y2", 0);
@@ -141,14 +142,16 @@ export default {
 
   d3_addText: function (svg, enter, labels, classPrefix, labelWidth){
     enter.append("text").attr("class", classPrefix + "label");
-    svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+    const text = svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
       .data(labels)
       .text(d3_identity);
 
-    // if (labelWidth){
-    //   svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
-    //       .call(d3_textWrapping, labelWidth)
-    // }
+    if (labelWidth){
+      svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+          .call(d3_textWrapping, labelWidth)
+    }
+
+    return text
   },
 
   d3_calcType: function (scale, ascending, cells, labels, labelFormat, labelDelimiter){
