@@ -14,7 +14,7 @@ You must inclue the [d3 library](http://d3js.org/) before including the legend f
 
 ### Using CDN
 
-You can also add latest version of [d3-legend hosted on cdnjs](https://cdnjs.com/libraries/d3-legend).
+You can also add latest version of [d3-legend hosted on cdnjs](https://cdnjs.com/libraries/d3-legend/1.13.0).
 
 ### Using npm
 
