@@ -11,6 +11,8 @@
     "indexRollup.js",
     "indexRollup.js.map",
     "indexRollup.mjs",
+    "indexRollupNext.js",
+    "indexRollupNext.js.map",
     "d3-legend.*",
     "types/*"
   ],
