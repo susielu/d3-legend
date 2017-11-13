@@ -3,6 +3,7 @@ const chai = require('chai');
 const { expect } = chai;
 import color from '../src/color';
 import helper from '../src/legend';
+import { formatLocale, format } from 'd3-format'
 
 // describe('d3-legend', function () {
 //     var d3Legend
@@ -86,4 +87,46 @@ describe('d3-legend #legendColor', function() {
 		}).to.not.throw();
 		expect(aLegend).to.be.an('Object');
 	});
+
+  it('should have a locale', function () {
+    let result = color();
+    expect(result.locale).to.be.a('function');
+  });
+
+  it('should redifine label\'s format with a string', function () {
+    let result = color();
+    let testValue = 1.00;
+    let initial = result.labelFormat();
+
+    result.labelFormat('.2f');
+
+    expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
+  });
+
+  it('should redifine label\'s format with a format function', function () {
+    let result = color();
+    let testValue = 1.00;
+    let initial = result.labelFormat();
+    result.labelFormat(format('.2f'));
+
+    expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
+  });
+
+  it('should redifine the locale with a new definition', function () {
+    let result = color();
+    let testValue = 1.00;
+
+    let initial = result.labelFormat();
+    let frFr = {
+      decimal: ',',
+      thousands: '.',
+      grouping: [3],
+      currency: ['', '\u00a0€'],
+      percent: "\u202f%"
+    };
+
+    result.locale(frFr)
+    expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
+    expect(result.labelFormat()(testValue)).to.be.equal('1,0')
+  })
 });

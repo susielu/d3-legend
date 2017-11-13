@@ -159,7 +159,7 @@ export default {
             d3_linearLegend(scale, cells, labelFormat) : d3_ordinalLegend(scale);
 
     //for d3.scaleSequential that doesn't have a range function
-    const range = scale.range && scale.range() || scale.domain() 
+    const range = scale.range && scale.range() || scale.domain()
     type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), range);
 
     if (ascending) {
@@ -220,5 +220,14 @@ export default {
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + (yOffset) + ')');
 
     }
-  }
+  },
+
+  d3_defaultLocaleDefinition: {
+    decimal: '.',
+    thousands: ',',
+    grouping: [3],
+    currency: ['$', '']
+  },
+
+  d3_defaultFormatSpecifier: '.01f'
 }
