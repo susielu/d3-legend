@@ -101,6 +101,7 @@ describe('d3-legend #legendColor', function() {
     result.labelFormat('.2f');
 
     expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
+    expect(result.labelFormat()(testValue)).to.be.equal('1.00');
   });
 
   it('should redifine label\'s format with a format function', function () {
@@ -110,6 +111,7 @@ describe('d3-legend #legendColor', function() {
     result.labelFormat(format('.2f'));
 
     expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
+    expect(result.labelFormat()(testValue)).to.be.equal('1.00');
   });
 
   it('should redifine the locale with a new definition', function () {
