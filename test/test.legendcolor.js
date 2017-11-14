@@ -114,7 +114,7 @@ describe('d3-legend #legendColor', function() {
     expect(result.labelFormat()(testValue)).to.be.equal('1.00');
   });
 
-  it('should redifine the locale with a new definition', function () {
+  it('should redifine the locale with a new locale definition', function () {
     let result = color();
     let testValue = 1.00;
 
@@ -130,5 +130,24 @@ describe('d3-legend #legendColor', function() {
     result.locale(frFr)
     expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
     expect(result.labelFormat()(testValue)).to.be.equal('1,0')
+  })
+
+  it('should keep the format specifier after a locale update', function () {
+    let result = color();
+    let testValue = 1.00;
+
+    let initial = result.labelFormat();
+    let frFr = {
+      decimal: ',',
+      thousands: '.',
+      grouping: [3],
+      currency: ['', '\u00a0€'],
+      percent: "\u202f%"
+    };
+
+    result.labelFormat(format('.2f'));
+    result.locale(frFr)
+    expect(initial(testValue)).to.be.not.equal(result.labelFormat()(testValue));
+    expect(result.labelFormat()(testValue)).to.be.equal('1,00')
   })
 });

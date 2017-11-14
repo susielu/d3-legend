@@ -1,7 +1,7 @@
 import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
-import { format } from 'd3-format';
+import { formatLocale, formatSpecifier } from 'd3-format';
 import { sum, max } from 'd3-array';
 
 export default function size(){
@@ -15,10 +15,11 @@ export default function size(){
     labels = [],
     classPrefix = "",
     title = "",
-    labelFormat = format(".01f"),
+    locale = helper.d3_defaultLocale,
+    specifier = helper.d3_defaultFormatSpecifier,
     labelOffset = 10,
     labelAlign = "middle",
-    labelDelimiter = "to",
+    labelDelimiter = helper.d3_defaultDelimiter,
     labelWrap,
     orient = "vertical",
     ascending = false,
@@ -28,7 +29,7 @@ export default function size(){
 
     function legend(svg){
 
-      const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      const type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
       if (cellFilter){
@@ -92,7 +93,7 @@ export default function size(){
         const y = shape == "circle" || shape == "line" ? shapeSize[0].height/2 : 0
         cellTrans = (d,i) => {
             const height = sum(cellSize.slice(0, i));
-            
+
             return `translate(0, ${(y + height + i*shapePadding)})`};
 
         textTrans = (d,i) => `translate( ${(maxW + labelOffset)},
@@ -135,7 +136,7 @@ export default function size(){
     cellFilter = _;
     return legend;
   };
-  
+
   legend.shape = function(_, d) {
     if (!arguments.length) return shape;
     if (_ == "rect" || _ == "circle" || _ == "line" ){
@@ -171,9 +172,15 @@ export default function size(){
     return legend;
   };
 
+  legend.locale = function(_) {
+    if (!arguments.length) return locale;
+    locale = formatLocale(_)
+    return legend
+  };
+
   legend.labelFormat = function(_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof(_) === 'string' ? format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = formatSpecifier(_)
     return legend;
   };
 
