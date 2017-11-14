@@ -15,7 +15,7 @@ describe('d3-legend #legendSize', function() {
     expect(result.locale).to.be.a('function');
   });
 
-  it('should redifine label\'s format with a string', function () {
+  it('should redefine label\'s format with a string', function () {
     let result = size();
     let testValue = 1.00;
     let initial = result.labelFormat();
@@ -26,7 +26,7 @@ describe('d3-legend #legendSize', function() {
     expect(result.labelFormat()(testValue)).to.be.equal('1.00');
   });
 
-  it('should redifine label\'s format with a format function', function () {
+  it('should redefine label\'s format with a format function', function () {
     let result = size();
     let testValue = 1.00;
     let initial = result.labelFormat();
@@ -36,7 +36,7 @@ describe('d3-legend #legendSize', function() {
     expect(result.labelFormat()(testValue)).to.be.equal('1.00');
   });
 
-  it('should redifine the locale with a new locale definition', function () {
+  it('should redefine the locale with a new locale definition', function () {
     let result = size();
     let testValue = 1.00;
 
