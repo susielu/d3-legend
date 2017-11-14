@@ -2,6 +2,7 @@ import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
 import { formatLocale, formatSpecifier } from 'd3-format';
+
 import { sum } from 'd3-array';
 
 export default function color(){
@@ -18,11 +19,11 @@ export default function color(){
     classPrefix = "",
     useClass = false,
     title = "",
-    locale = formatLocale(helper.d3_defaultLocaleDefinition),
+    locale = helper.d3_defaultLocale,
     specifier = helper.d3_defaultFormatSpecifier,
     labelOffset = 10,
     labelAlign = "middle",
-    labelDelimiter = "to",
+    labelDelimiter = helper.d3_defaultDelimiter,
     labelWrap,
     orient = "vertical",
     ascending = false,

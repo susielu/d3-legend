@@ -1,4 +1,5 @@
 import { select } from 'd3-selection'
+import { format, formatPrefix } from 'd3-format'
 
 const d3_identity =  (d) => d
 
@@ -222,12 +223,12 @@ export default {
     }
   },
 
-  d3_defaultLocaleDefinition: {
-    decimal: '.',
-    thousands: ',',
-    grouping: [3],
-    currency: ['$', '']
+  d3_defaultLocale: {
+    format,
+    formatPrefix
   },
 
-  d3_defaultFormatSpecifier: '.01f'
+  d3_defaultFormatSpecifier: '.01f',
+
+  d3_defaultDelimiter: 'to'
 }
