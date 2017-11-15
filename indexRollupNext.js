@@ -1,7 +1,7 @@
 import { select } from 'd3-selection';
+import { format, formatLocale, formatPrefix, formatSpecifier } from 'd3-format';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
-import { format } from 'd3-format';
 import { max, sum } from 'd3-array';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -56,7 +56,7 @@ var d3_mergeLabels = function d3_mergeLabels() {
   var range = arguments[3];
 
 
-  if ((typeof labels === "undefined" ? "undefined" : _typeof(labels)) === "object") {
+  if ((typeof labels === 'undefined' ? 'undefined' : _typeof(labels)) === "object") {
     if (labels.length === 0) return gen;
 
     var i = labels.length;
@@ -152,10 +152,10 @@ var helper = {
 
   d3_addText: function d3_addText(svg, enter, labels, classPrefix, labelWidth) {
     enter.append("text").attr("class", classPrefix + "label");
-    var text = svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
+    var text = svg.selectAll('g.' + classPrefix + 'cell text.' + classPrefix + 'label').data(labels).text(d3_identity);
 
     if (labelWidth) {
-      svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").call(d3_textWrapping, labelWidth);
+      svg.selectAll('g.' + classPrefix + 'cell text.' + classPrefix + 'label').call(d3_textWrapping, labelWidth);
     }
 
     return text;
@@ -235,7 +235,16 @@ var helper = {
       })[0];
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
     }
-  }
+  },
+
+  d3_defaultLocale: {
+    format: format,
+    formatPrefix: formatPrefix
+  },
+
+  d3_defaultFormatSpecifier: '.01f',
+
+  d3_defaultDelimiter: 'to'
 };
 
 function color() {
@@ -252,10 +261,11 @@ function color() {
       classPrefix = "",
       useClass = false,
       title = "",
-      labelFormat = format(".01f"),
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
       labelOffset = 10,
       labelAlign = "middle",
-      labelDelimiter = "to",
+      labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
@@ -265,7 +275,7 @@ function color() {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -320,18 +330,20 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ')';
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
@@ -414,9 +426,15 @@ function color() {
     return legend;
   };
 
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = formatLocale(_);
+    return legend;
+  };
+
   legend.labelFormat = function (_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = formatSpecifier(_);
     return legend;
   };
 
@@ -504,10 +522,11 @@ function size() {
       labels = [],
       classPrefix = "",
       title = "",
-      labelFormat = format(".01f"),
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
       labelOffset = 10,
       labelAlign = "middle",
-      labelDelimiter = "to",
+      labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
@@ -517,7 +536,7 @@ function size() {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     if (cellFilter) {
@@ -580,19 +599,21 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
-      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-      cellTrans = function cellTrans(d, i) {
-        var height = sum(cellSize.slice(0, i));
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
+        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+        cellTrans = function cellTrans(d, i) {
+          var height = sum(cellSize.slice(0, i));
 
-        return 'translate(0, ' + (y + height + i * shapePadding) + ')';
-      };
+          return 'translate(0, ' + (y + height + i * shapePadding) + ')';
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         var width = sum(shapeSize.slice(0, i), function (d) {
@@ -668,9 +689,15 @@ function size() {
     return legend;
   };
 
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = formatLocale(_);
+    return legend;
+  };
+
   legend.labelFormat = function (_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = formatSpecifier(_);
     return legend;
   };
 
@@ -746,10 +773,11 @@ function symbol() {
       labels = [],
       classPrefix = "",
       title = "",
-      labelFormat = format(".01f"),
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
       labelAlign = "middle",
       labelOffset = 10,
-      labelDelimiter = "to",
+      labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
@@ -758,7 +786,7 @@ function symbol() {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     if (cellFilter) {
@@ -807,17 +835,19 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(maxH, d.height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(maxH, d.height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ' )';
-      };
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ' )';
+        };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate( ' + i * (maxW + shapePadding) + ',0)';
@@ -872,9 +902,15 @@ function symbol() {
     return legend;
   };
 
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = formatLocale(_);
+    return legend;
+  };
+
   legend.labelFormat = function (_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = formatSpecifier(_);
     return legend;
   };
 

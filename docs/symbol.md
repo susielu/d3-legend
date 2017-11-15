@@ -62,6 +62,10 @@ legendSymbol.**labelFormat(d3.format or d3.format string)**
 
 Takes a [d3.format](https://github.com/mbostock/d3/wiki/Formatting) and applies that styling to the legend labels. Default is set to `d3.format(".01f")`.
 
+legendSymbol.**locale(d3.format locale)**
+
+Takes a [d3.format locale](https://github.com/d3/d3-format/tree/master/locale) and applies it to the legend labels. Default is set to [US english](https://github.com/d3/d3-format/blob/master/locale/en-US.json).
+
 legendSymbol.**labelOffset(number)**
 
 A value that determines how far the label is from the symbol in each legend item. Default set to 10px.

@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-dispatch'), require('d3-scale'), require('d3-format'), require('d3-array')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'd3-selection', 'd3-dispatch', 'd3-scale', 'd3-format', 'd3-array'], factory) :
-	(factory((global.indexRollup = global.indexRollup || {}),global.d3Selection,global.d3Dispatch,global.d3Scale,global.d3Format,global.d3Array));
-}(this, (function (exports,d3Selection,d3Dispatch,d3Scale,d3Format,d3Array) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-format'), require('d3-dispatch'), require('d3-scale'), require('d3-array')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'd3-selection', 'd3-format', 'd3-dispatch', 'd3-scale', 'd3-array'], factory) :
+	(factory((global.indexRollup = global.indexRollup || {}),global.d3Selection,global.d3Format,global.d3Dispatch,global.d3Scale,global.d3Array));
+}(this, (function (exports,d3Selection,d3Format,d3Dispatch,d3Scale,d3Array) { 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -56,7 +56,7 @@ var d3_mergeLabels = function d3_mergeLabels() {
   var range = arguments[3];
 
 
-  if ((typeof labels === "undefined" ? "undefined" : _typeof(labels)) === "object") {
+  if ((typeof labels === 'undefined' ? 'undefined' : _typeof(labels)) === "object") {
     if (labels.length === 0) return gen;
 
     var i = labels.length;
@@ -152,10 +152,10 @@ var helper = {
 
   d3_addText: function d3_addText(svg, enter, labels, classPrefix, labelWidth) {
     enter.append("text").attr("class", classPrefix + "label");
-    var text = svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
+    var text = svg.selectAll('g.' + classPrefix + 'cell text.' + classPrefix + 'label').data(labels).text(d3_identity);
 
     if (labelWidth) {
-      svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").call(d3_textWrapping, labelWidth);
+      svg.selectAll('g.' + classPrefix + 'cell text.' + classPrefix + 'label').call(d3_textWrapping, labelWidth);
     }
 
     return text;
@@ -235,7 +235,16 @@ var helper = {
       })[0];
       cellsSvg.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
     }
-  }
+  },
+
+  d3_defaultLocale: {
+    format: d3Format.format,
+    formatPrefix: d3Format.formatPrefix
+  },
+
+  d3_defaultFormatSpecifier: '.01f',
+
+  d3_defaultDelimiter: 'to'
 };
 
 function color() {
@@ -252,10 +261,11 @@ function color() {
       classPrefix = "",
       useClass = false,
       title = "",
-      labelFormat = d3Format.format(".01f"),
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
       labelOffset = 10,
       labelAlign = "middle",
-      labelDelimiter = "to",
+      labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
@@ -265,7 +275,7 @@ function color() {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
@@ -320,18 +330,20 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ')';
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
@@ -414,9 +426,15 @@ function color() {
     return legend;
   };
 
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = d3Format.formatLocale(_);
+    return legend;
+  };
+
   legend.labelFormat = function (_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = d3Format.formatSpecifier(_);
     return legend;
   };
 
@@ -504,10 +522,11 @@ function size() {
       labels = [],
       classPrefix = "",
       title = "",
-      labelFormat = d3Format.format(".01f"),
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
       labelOffset = 10,
       labelAlign = "middle",
-      labelDelimiter = "to",
+      labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
@@ -517,7 +536,7 @@ function size() {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     if (cellFilter) {
@@ -580,19 +599,21 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
-      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
+        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
 
-        return 'translate(0, ' + (y + height + i * shapePadding) + ')';
-      };
+          return 'translate(0, ' + (y + height + i * shapePadding) + ')';
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
@@ -668,9 +689,15 @@ function size() {
     return legend;
   };
 
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = d3Format.formatLocale(_);
+    return legend;
+  };
+
   legend.labelFormat = function (_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = d3Format.formatSpecifier(_);
     return legend;
   };
 
@@ -746,10 +773,11 @@ function symbol() {
       labels = [],
       classPrefix = "",
       title = "",
-      labelFormat = d3Format.format(".01f"),
+      locale = helper.d3_defaultLocale,
+      specifier = helper.d3_defaultFormatSpecifier,
       labelAlign = "middle",
       labelOffset = 10,
-      labelDelimiter = "to",
+      labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
@@ -758,7 +786,7 @@ function symbol() {
 
   function legend(svg) {
 
-    var type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+    var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
     if (cellFilter) {
@@ -807,17 +835,19 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(maxH, d.height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(maxH, d.height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ' )';
-      };
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ' )';
+        };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate( ' + i * (maxW + shapePadding) + ',0)';
@@ -872,9 +902,15 @@ function symbol() {
     return legend;
   };
 
+  legend.locale = function (_) {
+    if (!arguments.length) return locale;
+    locale = d3Format.formatLocale(_);
+    return legend;
+  };
+
   legend.labelFormat = function (_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof _ === 'string' ? d3Format.format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = d3Format.formatSpecifier(_);
     return legend;
   };
 
