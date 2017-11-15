@@ -1,7 +1,8 @@
 import helper from './legend';
 import { dispatch } from 'd3-dispatch';
 import { scaleLinear } from 'd3-scale';
-import { format } from 'd3-format';
+import { formatLocale, formatSpecifier } from 'd3-format';
+
 import { sum } from 'd3-array';
 
 export default function color(){
@@ -18,10 +19,11 @@ export default function color(){
     classPrefix = "",
     useClass = false,
     title = "",
-    labelFormat = format(".01f"),
+    locale = helper.d3_defaultLocale,
+    specifier = helper.d3_defaultFormatSpecifier,
     labelOffset = 10,
     labelAlign = "middle",
-    labelDelimiter = "to",
+    labelDelimiter = helper.d3_defaultDelimiter,
     labelWrap,
     orient = "vertical",
     ascending = false,
@@ -31,15 +33,15 @@ export default function color(){
 
   function legend(svg) {
 
-      const type = helper.d3_calcType(scale, ascending, cells, labels, labelFormat, labelDelimiter),
+      const type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
         legendG = svg.selectAll('g').data([scale]);
 
       legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
-      
+
       if (cellFilter){
         helper.d3_filterCells(type, cellFilter)
       }
-      
+
       let cell = svg.select('.' + classPrefix + 'legendCells')
           .selectAll("." + classPrefix + "cell").data(type.data)
 
@@ -171,9 +173,15 @@ export default function color(){
     return legend;
   };
 
+  legend.locale = function(_) {
+    if (!arguments.length) return locale;
+    locale = formatLocale(_)
+    return legend
+  };
+
   legend.labelFormat = function(_) {
-    if (!arguments.length) return labelFormat;
-    labelFormat = typeof(_) === 'string' ? format(_) : _;
+    if (!arguments.length) return legend.locale().format(specifier);
+    specifier = formatSpecifier(_)
     return legend;
   };
 
