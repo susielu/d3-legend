@@ -512,7 +512,6 @@ function color() {
 }
 
 function size() {
-
   var scale = d3Scale.scaleLinear(),
       shape = "rect",
       shapeWidth = 15,
@@ -535,17 +534,16 @@ function size() {
       legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
 
   function legend(svg) {
-
     var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
-        legendG = svg.selectAll('g').data([scale]);
+        legendG = svg.selectAll("g").data([scale]);
 
     if (cellFilter) {
       helper.d3_filterCells(type, cellFilter);
     }
 
-    legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
+    legendG.enter().append("g").attr("class", classPrefix + "legendCells");
 
-    var cell = svg.select('.' + classPrefix + 'legendCells').selectAll("." + classPrefix + "cell").data(type.data);
+    var cell = svg.select("." + classPrefix + "legendCells").selectAll("." + classPrefix + "cell").data(type.data);
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
@@ -607,25 +605,28 @@ function size() {
         cellTrans = function cellTrans(d, i) {
           var height = d3Array.sum(cellSize.slice(0, i));
 
-          return 'translate(0, ' + (y + height + i * shapePadding) + ')';
+          return "translate(0, " + (y + height + i * shapePadding) + ")";
         };
 
         textTrans = function textTrans(d, i) {
-          return 'translate( ' + (maxW + labelOffset) + ',\n          ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
         };
       })();
     } else if (orient === "horizontal") {
-      cellTrans = function cellTrans(d, i) {
-        var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
-          return d.width;
-        });
-        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
-        return 'translate(' + (width + i * shapePadding) + ', ' + y + ')';
-      };
+      (function () {
+        cellTrans = function cellTrans(d, i) {
+          var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
+            return d.width;
+          });
+          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width * textAlign + shapeSize[i].x) + ',\n              ' + (maxH + labelOffset) + ')';
-      };
+        var offset = shape == "line" ? maxH / 2 : maxH;
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+        };
+      })();
     }
 
     helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
