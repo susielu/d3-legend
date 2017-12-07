@@ -49,12 +49,15 @@ export default function color(){
           .attr("class", classPrefix + "cell")
       cellEnter.append(shape).attr("class", classPrefix + "swatch")
 
-      const shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+      const shapes = svg.selectAll("g." + classPrefix + "cell " + shape).data(type.data);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
 
       cell.exit().transition().style("opacity", 0).remove();
+      shapes.exit().transition().style("opacity", 0).remove();
+
+      shapes.merge(shapes);
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
       helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWrap)
