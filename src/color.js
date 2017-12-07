@@ -57,7 +57,7 @@ export default function color(){
       cell.exit().transition().style("opacity", 0).remove();
       shapes.exit().transition().style("opacity", 0).remove();
 
-      shapes.merge(shapes);
+      shapes = shapes.merge(shapes);
 
       helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
       helper.d3_addText( svg, cellEnter, type.labels, classPrefix, labelWrap)
