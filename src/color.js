@@ -49,7 +49,7 @@ export default function color(){
           .attr("class", classPrefix + "cell")
       cellEnter.append(shape).attr("class", classPrefix + "swatch")
 
-      const shapes = svg.selectAll("g." + classPrefix + "cell " + shape).data(type.data);
+      let shapes = svg.selectAll("g." + classPrefix + "cell " + shape).data(type.data);
 
       //add event handlers
       helper.d3_addEvents(cellEnter, legendDispatcher);
