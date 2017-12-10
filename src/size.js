@@ -56,7 +56,7 @@ export default function size() {
       .attr("class", classPrefix + "cell")
     cellEnter.append(shape).attr("class", classPrefix + "swatch")
 
-    const shapes = svg.selectAll("g." + classPrefix + "cell " + shape)
+    let shapes = svg.selectAll("g." + classPrefix + "cell " + shape)
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher)
@@ -66,6 +66,13 @@ export default function size() {
       .transition()
       .style("opacity", 0)
       .remove()
+
+    shapes
+      .exit()
+      .transition()
+      .style("opacity", 0)
+      .remove()
+    shapes = shapes.merge(shapes)
 
     //creates shape
     if (shape === "line") {
