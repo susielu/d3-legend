@@ -289,12 +289,15 @@ function color() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape).data(type.data);
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
 
     cell.exit().transition().style("opacity", 0).remove();
+    shapes.exit().transition().style("opacity", 0).remove();
+
+    shapes = shapes.merge(shapes);
 
     helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
     helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
@@ -330,18 +333,20 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return 'translate(0, ' + (height + i * shapePadding) + ')';
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        textTrans = function textTrans(d, i) {
+          return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
@@ -552,6 +557,9 @@ function size() {
 
     cell.exit().transition().style("opacity", 0).remove();
 
+    shapes.exit().transition().style("opacity", 0).remove();
+    shapes = shapes.merge(shapes);
+
     //creates shape
     if (shape === "line") {
       helper.d3_drawShapes(shape, shapes, 0, shapeWidth);
@@ -595,32 +603,36 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
-      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-
-        return "translate(0, " + (y + height + i * shapePadding) + ")";
-      };
-
-      textTrans = function textTrans(d, i) {
-        return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-      };
-    } else if (orient === "horizontal") {
-      cellTrans = function cellTrans(d, i) {
-        var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
-          return d.width;
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
         });
-        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
-        return "translate(" + (width + i * shapePadding) + ", " + y + ")";
-      };
+        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
 
-      var offset = shape == "line" ? maxH / 2 : maxH;
-      textTrans = function textTrans(d, i) {
-        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
-      };
+          return "translate(0, " + (y + height + i * shapePadding) + ")";
+        };
+
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
+    } else if (orient === "horizontal") {
+      (function () {
+        cellTrans = function cellTrans(d, i) {
+          var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
+            return d.width;
+          });
+          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+        };
+
+        var offset = shape == "line" ? maxH / 2 : maxH;
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+        };
+      })();
     }
 
     helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -756,7 +768,6 @@ function size() {
 }
 
 function symbol() {
-
   var scale = d3Scale.scaleLinear(),
       shape = "path",
       shapeWidth = 15,
@@ -780,17 +791,16 @@ function symbol() {
       legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
 
   function legend(svg) {
-
     var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
-        legendG = svg.selectAll('g').data([scale]);
+        legendG = svg.selectAll("g").data([scale]);
 
     if (cellFilter) {
       helper.d3_filterCells(type, cellFilter);
     }
 
-    legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
+    legendG.enter().append("g").attr("class", classPrefix + "legendCells");
 
-    var cell = svg.select('.' + classPrefix + 'legendCells').selectAll("." + classPrefix + "cell").data(type.data);
+    var cell = svg.select("." + classPrefix + "legendCells").selectAll("." + classPrefix + "cell").data(type.data);
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
@@ -801,6 +811,8 @@ function symbol() {
 
     //remove old shapes
     cell.exit().transition().style("opacity", 0).remove();
+    shapes.exit().transition().style("opacity", 0).remove();
+    shapes = shapes.merge(shapes);
 
     helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
     helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
@@ -830,23 +842,25 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(maxH, d.height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(maxH, d.height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ' )';
-      };
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (maxW + labelOffset) + ',\n              ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return "translate(0, " + (height + i * shapePadding) + " )";
+        };
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
-        return 'translate( ' + i * (maxW + shapePadding) + ',0)';
+        return "translate( " + i * (maxW + shapePadding) + ",0)";
       };
       textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width * textAlign + shapeSize[i].x) + ',\n              ' + (maxH + labelOffset) + ')';
+        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (maxH + labelOffset) + ")";
       };
     }
 
