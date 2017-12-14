@@ -89,7 +89,7 @@ export default function symbol() {
     cell = cellEnter.merge(cell)
 
     // sets placement
-    const text = cell.selectAll("text"),
+    const text = cell.select("text"),
       textSize = text.nodes().map(d => d.getBBox()),
       shapeSize = shapes.nodes().map(d => d.getBBox())
 
