@@ -289,7 +289,7 @@ function color() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape).data(type.data);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch").data(type.data);
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -333,20 +333,18 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(d.height, shapeSize[i].height);
-        });
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(d.height, shapeSize[i].height);
+      });
 
-        cellTrans = function cellTrans(d, i) {
-          var height = sum(cellSize.slice(0, i));
-          return 'translate(0, ' + (height + i * shapePadding) + ')';
-        };
+      cellTrans = function cellTrans(d, i) {
+        var height = sum(cellSize.slice(0, i));
+        return 'translate(0, ' + (height + i * shapePadding) + ')';
+      };
 
-        textTrans = function textTrans(d, i) {
-          return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-        };
-      })();
+      textTrans = function textTrans(d, i) {
+        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+      };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
@@ -550,7 +548,7 @@ function size() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch");
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -603,36 +601,32 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(d.height, shapeSize[i].height);
-        });
-        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-        cellTrans = function cellTrans(d, i) {
-          var height = sum(cellSize.slice(0, i));
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(d.height, shapeSize[i].height);
+      });
+      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+      cellTrans = function cellTrans(d, i) {
+        var height = sum(cellSize.slice(0, i));
 
-          return "translate(0, " + (y + height + i * shapePadding) + ")";
-        };
+        return "translate(0, " + (y + height + i * shapePadding) + ")";
+      };
 
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
-      (function () {
-        cellTrans = function cellTrans(d, i) {
-          var width = sum(shapeSize.slice(0, i), function (d) {
-            return d.width;
-          });
-          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
-          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
-        };
+      cellTrans = function cellTrans(d, i) {
+        var width = sum(shapeSize.slice(0, i), function (d) {
+          return d.width;
+        });
+        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+        return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+      };
 
-        var offset = shape == "line" ? maxH / 2 : maxH;
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
-        };
-      })();
+      var offset = shape == "line" ? maxH / 2 : maxH;
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+      };
     }
 
     helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -804,7 +798,7 @@ function symbol() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch");
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -842,19 +836,17 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(maxH, d.height);
-        });
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(maxH, d.height);
+      });
 
-        cellTrans = function cellTrans(d, i) {
-          var height = sum(cellSize.slice(0, i));
-          return "translate(0, " + (height + i * shapePadding) + " )";
-        };
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      cellTrans = function cellTrans(d, i) {
+        var height = sum(cellSize.slice(0, i));
+        return "translate(0, " + (height + i * shapePadding) + " )";
+      };
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return "translate( " + i * (maxW + shapePadding) + ",0)";
@@ -1005,5 +997,6 @@ var index = {
   legendHelpers: legendHelpers
 };
 
-export { color as legendColor, size as legendSize, symbol as legendSymbol, legendHelpers };export default index;
+export { color as legendColor, size as legendSize, symbol as legendSymbol, legendHelpers };
+export default index;
 //# sourceMappingURL=indexRollupNext.js.map

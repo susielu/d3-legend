@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-format'), require('d3-dispatch'), require('d3-scale'), require('d3-array')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'd3-selection', 'd3-format', 'd3-dispatch', 'd3-scale', 'd3-array'], factory) :
-	(factory((global.indexRollup = global.indexRollup || {}),global.d3Selection,global.d3Format,global.d3Dispatch,global.d3Scale,global.d3Array));
+	(factory((global.indexRollup = {}),global.d3Selection,global.d3Format,global.d3Dispatch,global.d3Scale,global.d3Array));
 }(this, (function (exports,d3Selection,d3Format,d3Dispatch,d3Scale,d3Array) { 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -289,7 +289,7 @@ function color() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape).data(type.data);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch").data(type.data);
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -333,20 +333,18 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(d.height, shapeSize[i].height);
-        });
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(d.height, shapeSize[i].height);
+      });
 
-        cellTrans = function cellTrans(d, i) {
-          var height = d3Array.sum(cellSize.slice(0, i));
-          return 'translate(0, ' + (height + i * shapePadding) + ')';
-        };
+      cellTrans = function cellTrans(d, i) {
+        var height = d3Array.sum(cellSize.slice(0, i));
+        return 'translate(0, ' + (height + i * shapePadding) + ')';
+      };
 
-        textTrans = function textTrans(d, i) {
-          return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-        };
-      })();
+      textTrans = function textTrans(d, i) {
+        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
+      };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
@@ -550,7 +548,7 @@ function size() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch");
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -603,36 +601,32 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(d.height, shapeSize[i].height);
-        });
-        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-        cellTrans = function cellTrans(d, i) {
-          var height = d3Array.sum(cellSize.slice(0, i));
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(d.height, shapeSize[i].height);
+      });
+      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+      cellTrans = function cellTrans(d, i) {
+        var height = d3Array.sum(cellSize.slice(0, i));
 
-          return "translate(0, " + (y + height + i * shapePadding) + ")";
-        };
+        return "translate(0, " + (y + height + i * shapePadding) + ")";
+      };
 
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
-      (function () {
-        cellTrans = function cellTrans(d, i) {
-          var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
-            return d.width;
-          });
-          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
-          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
-        };
+      cellTrans = function cellTrans(d, i) {
+        var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
+          return d.width;
+        });
+        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+        return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+      };
 
-        var offset = shape == "line" ? maxH / 2 : maxH;
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
-        };
-      })();
+      var offset = shape == "line" ? maxH / 2 : maxH;
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+      };
     }
 
     helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -804,7 +798,7 @@ function symbol() {
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
 
-    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape);
+    var shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch");
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher);
@@ -842,19 +836,17 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(maxH, d.height);
-        });
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(maxH, d.height);
+      });
 
-        cellTrans = function cellTrans(d, i) {
-          var height = d3Array.sum(cellSize.slice(0, i));
-          return "translate(0, " + (height + i * shapePadding) + " )";
-        };
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      cellTrans = function cellTrans(d, i) {
+        var height = d3Array.sum(cellSize.slice(0, i));
+        return "translate(0, " + (height + i * shapePadding) + " )";
+      };
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return "translate( " + i * (maxW + shapePadding) + ",0)";
