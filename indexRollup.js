@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-format'), require('d3-dispatch'), require('d3-scale'), require('d3-array')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'd3-selection', 'd3-format', 'd3-dispatch', 'd3-scale', 'd3-array'], factory) :
-	(factory((global.indexRollup = {}),global.d3Selection,global.d3Format,global.d3Dispatch,global.d3Scale,global.d3Array));
+	(factory((global.indexRollup = global.indexRollup || {}),global.d3Selection,global.d3Format,global.d3Dispatch,global.d3Scale,global.d3Array));
 }(this, (function (exports,d3Selection,d3Format,d3Dispatch,d3Scale,d3Array) { 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -248,7 +248,6 @@ var helper = {
 };
 
 function color() {
-
   var scale = d3Scale.scaleLinear(),
       shape = "rect",
       shapeWidth = 15,
@@ -274,17 +273,16 @@ function color() {
       legendDispatcher = d3Dispatch.dispatch("cellover", "cellout", "cellclick");
 
   function legend(svg) {
-
     var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
-        legendG = svg.selectAll('g').data([scale]);
+        legendG = svg.selectAll("g").data([scale]);
 
-    legendG.enter().append('g').attr('class', classPrefix + 'legendCells');
+    legendG.enter().append("g").attr("class", classPrefix + "legendCells");
 
     if (cellFilter) {
       helper.d3_filterCells(type, cellFilter);
     }
 
-    var cell = svg.select('.' + classPrefix + 'legendCells').selectAll("." + classPrefix + "cell").data(type.data);
+    var cell = svg.select("." + classPrefix + "legendCells").selectAll("." + classPrefix + "cell").data(type.data);
 
     var cellEnter = cell.enter().append("g").attr("class", classPrefix + "cell");
     cellEnter.append(shape).attr("class", classPrefix + "swatch");
@@ -300,14 +298,13 @@ function color() {
     shapes = shapes.merge(shapes);
 
     helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path);
-    helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
+    var text = helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
 
     // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
     cell = cellEnter.merge(cell);
 
     // sets placement
-    var text = cell.select("text"),
-        textSize = text.nodes().map(function (d) {
+    var textSize = text.nodes().map(function (d) {
       return d.getBBox();
     }),
         shapeSize = shapes.nodes().map(function (d) {
@@ -323,7 +320,7 @@ function color() {
       }
     } else {
       shapes.attr("class", function (d) {
-        return classPrefix + 'swatch ' + type.feature(d);
+        return classPrefix + "swatch " + type.feature(d);
       });
     }
 
@@ -333,24 +330,26 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-        return 'translate(0, ' + (height + i * shapePadding) + ')';
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return "translate(0, " + (height + i * shapePadding) + ")";
+        };
 
-      textTrans = function textTrans(d, i) {
-        return 'translate( ' + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ', ' + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ')';
-      };
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ", " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
-        return 'translate(' + i * (shapeSize[i].width + shapePadding) + ',0)';
+        return "translate(" + i * (shapeSize[i].width + shapePadding) + ",0)";
       };
       textTrans = function textTrans(d, i) {
-        return 'translate(' + (shapeSize[i].width * textAlign + shapeSize[i].x) + ',\n          ' + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ')';
+        return "translate(" + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n          " + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")";
       };
     }
 
@@ -382,7 +381,7 @@ function color() {
 
   legend.shape = function (_, d) {
     if (!arguments.length) return shape;
-    if (_ == "rect" || _ == "circle" || _ == "line" || _ == "path" && typeof d === 'string') {
+    if (_ == "rect" || _ == "circle" || _ == "line" || _ == "path" && typeof d === "string") {
       shape = _;
       path = d;
     }
@@ -601,32 +600,36 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(d.height, shapeSize[i].height);
-      });
-      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-
-        return "translate(0, " + (y + height + i * shapePadding) + ")";
-      };
-
-      textTrans = function textTrans(d, i) {
-        return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-      };
-    } else if (orient === "horizontal") {
-      cellTrans = function cellTrans(d, i) {
-        var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
-          return d.width;
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(d.height, shapeSize[i].height);
         });
-        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
-        return "translate(" + (width + i * shapePadding) + ", " + y + ")";
-      };
+        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
 
-      var offset = shape == "line" ? maxH / 2 : maxH;
-      textTrans = function textTrans(d, i) {
-        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
-      };
+          return "translate(0, " + (y + height + i * shapePadding) + ")";
+        };
+
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
+    } else if (orient === "horizontal") {
+      (function () {
+        cellTrans = function cellTrans(d, i) {
+          var width = d3Array.sum(shapeSize.slice(0, i), function (d) {
+            return d.width;
+          });
+          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+        };
+
+        var offset = shape == "line" ? maxH / 2 : maxH;
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+        };
+      })();
     }
 
     helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -809,14 +812,13 @@ function symbol() {
     shapes = shapes.merge(shapes);
 
     helper.d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, type.feature);
-    helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
+    var text = helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap);
 
     // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
     cell = cellEnter.merge(cell);
 
     // sets placement
-    var text = cell.select("text"),
-        textSize = text.nodes().map(function (d) {
+    var textSize = text.nodes().map(function (d) {
       return d.getBBox();
     }),
         shapeSize = shapes.nodes().map(function (d) {
@@ -836,17 +838,19 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      var cellSize = textSize.map(function (d, i) {
-        return Math.max(maxH, d.height);
-      });
+      (function () {
+        var cellSize = textSize.map(function (d, i) {
+          return Math.max(maxH, d.height);
+        });
 
-      cellTrans = function cellTrans(d, i) {
-        var height = d3Array.sum(cellSize.slice(0, i));
-        return "translate(0, " + (height + i * shapePadding) + " )";
-      };
-      textTrans = function textTrans(d, i) {
-        return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-      };
+        cellTrans = function cellTrans(d, i) {
+          var height = d3Array.sum(cellSize.slice(0, i));
+          return "translate(0, " + (height + i * shapePadding) + " )";
+        };
+        textTrans = function textTrans(d, i) {
+          return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+        };
+      })();
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return "translate( " + i * (maxW + shapePadding) + ",0)";
