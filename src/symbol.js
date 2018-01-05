@@ -83,14 +83,19 @@ export default function symbol() {
       shapeRadius,
       type.feature
     )
-    helper.d3_addText(svg, cellEnter, type.labels, classPrefix, labelWrap)
+    const text = helper.d3_addText(
+      svg,
+      cellEnter,
+      type.labels,
+      classPrefix,
+      labelWrap
+    )
 
     // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
     cell = cellEnter.merge(cell)
 
     // sets placement
-    const text = cell.select("text"),
-      textSize = text.nodes().map(d => d.getBBox()),
+    const textSize = text.nodes().map(d => d.getBBox()),
       shapeSize = shapes.nodes().map(d => d.getBBox())
 
     const maxH = max(shapeSize, d => d.height),
