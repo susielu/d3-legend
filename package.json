@@ -1,8 +1,7 @@
 {
   "name": "d3-svg-legend",
-  "version": "2.25.3",
-  "description":
-    "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
+  "version": "2.25.4",
+  "description": "A legend component for d3. Given a d3.scale it can create either a color legend, size legend, or symbol legend.",
   "main": "indexRollup.js",
   "jsnext:main": "indexRollupNext.js",
   "module": "indexRollupNext.js",
@@ -17,7 +16,11 @@
     "d3-legend.*",
     "types/*"
   ],
-  "keywords": ["d3", "d3-module", "legend"],
+  "keywords": [
+    "d3",
+    "d3-module",
+    "legend"
+  ],
   "directories": {
     "example": "examples",
     "test": "test"
@@ -49,7 +52,10 @@
     "test": "mocha"
   },
   "watch": {
-    "grunt": ["src/*.js ", "docs/legends.js"]
+    "grunt": [
+      "src/*.js ",
+      "docs/legends.js"
+    ]
   },
   "repository": {
     "type": "git",
