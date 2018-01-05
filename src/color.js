@@ -62,7 +62,9 @@ export default function color() {
     cellEnter.append(shape).attr("class", classPrefix + "swatch")
 
     let shapes = svg
-      .selectAll("g." + classPrefix + "cell " + shape)
+      .selectAll(
+        "g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch"
+      )
       .data(type.data)
 
     //add event handlers

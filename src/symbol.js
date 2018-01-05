@@ -57,7 +57,7 @@ export default function symbol() {
       .attr("class", classPrefix + "cell")
     cellEnter.append(shape).attr("class", classPrefix + "swatch")
 
-    let shapes = svg.selectAll("g." + classPrefix + "cell " + shape)
+    let shapes = svg.selectAll("g." + classPrefix + "cell " + shape + "." + classPrefix + "swatch")
 
     //add event handlers
     helper.d3_addEvents(cellEnter, legendDispatcher)
