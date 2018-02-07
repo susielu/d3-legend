@@ -981,11 +981,10 @@ var thresholdLabels = function thresholdLabels(_ref) {
       genLength = _ref.genLength,
       generatedLabels = _ref.generatedLabels;
 
-
   if (i === 0) {
-    return generatedLabels[i].replace('NaN to', 'Less than');
+    return generatedLabels[i].replace("NaN to", "Less than");
   } else if (i === genLength - 1) {
-    return 'More than ' + generatedLabels[genLength - 1].replace(' to NaN', '');
+    return generatedLabels[genLength - 1].replace(" to NaN", "") + " or more";
   }
   return generatedLabels[i];
 };
