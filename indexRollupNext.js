@@ -54,9 +54,9 @@ var d3_mergeLabels = function d3_mergeLabels() {
   var labels = arguments[1];
   var domain = arguments[2];
   var range = arguments[3];
+  var labelDelimiter = arguments[4];
 
-
-  if ((typeof labels === 'undefined' ? 'undefined' : _typeof(labels)) === "object") {
+  if ((typeof labels === "undefined" ? "undefined" : _typeof(labels)) === "object") {
     if (labels.length === 0) return gen;
 
     var i = labels.length;
@@ -73,7 +73,9 @@ var d3_mergeLabels = function d3_mergeLabels() {
         genLength: genLength,
         generatedLabels: gen,
         domain: domain,
-        range: range }));
+        range: range,
+        labelDelimiter: labelDelimiter
+      }));
     }
     return customLabels;
   }
@@ -97,11 +99,13 @@ var d3_linearLegend = function d3_linearLegend(scale, cells, labelFormat) {
   }
 
   var labels = data.map(labelFormat);
-  return { data: data,
+  return {
+    data: data,
     labels: labels,
     feature: function feature(d) {
       return scale(d);
-    } };
+    }
+  };
 };
 
 var d3_quantLegend = function d3_quantLegend(scale, labelFormat, labelDelimiter) {
@@ -110,18 +114,21 @@ var d3_quantLegend = function d3_quantLegend(scale, labelFormat, labelDelimiter)
     return labelFormat(invert[0]) + " " + labelDelimiter + " " + labelFormat(invert[1]);
   });
 
-  return { data: scale.range(),
+  return {
+    data: scale.range(),
     labels: labels,
     feature: d3_identity
   };
 };
 
 var d3_ordinalLegend = function d3_ordinalLegend(scale) {
-  return { data: scale.domain(),
+  return {
+    data: scale.domain(),
     labels: scale.domain(),
     feature: function feature(d) {
       return scale(d);
-    } };
+    }
+  };
 };
 
 var d3_cellOver = function d3_cellOver(cellDispatcher, d, obj) {
@@ -137,7 +144,6 @@ var d3_cellClick = function d3_cellClick(cellDispatcher, d, obj) {
 };
 
 var helper = {
-
   d3_drawShapes: function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
     if (shape === "rect") {
       shapes.attr("height", shapeHeight).attr("width", shapeWidth);
@@ -152,10 +158,10 @@ var helper = {
 
   d3_addText: function d3_addText(svg, enter, labels, classPrefix, labelWidth) {
     enter.append("text").attr("class", classPrefix + "label");
-    var text = svg.selectAll('g.' + classPrefix + 'cell text.' + classPrefix + 'label').data(labels).text(d3_identity);
+    var text = svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").data(labels).text(d3_identity);
 
     if (labelWidth) {
-      svg.selectAll('g.' + classPrefix + 'cell text.' + classPrefix + 'label').call(d3_textWrapping, labelWidth);
+      svg.selectAll("g." + classPrefix + "cell text." + classPrefix + "label").call(d3_textWrapping, labelWidth);
     }
 
     return text;
@@ -166,7 +172,7 @@ var helper = {
 
     //for d3.scaleSequential that doesn't have a range function
     var range = scale.range && scale.range() || scale.domain();
-    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), range);
+    type.labels = d3_mergeLabels(type.labels, labels, scale.domain(), range, labelDelimiter);
 
     if (ascending) {
       type.labels = d3_reverse(type.labels);
@@ -215,25 +221,24 @@ var helper = {
 
   d3_title: function d3_title(svg, title, classPrefix, titleWidth) {
     if (title !== "") {
+      var titleText = svg.selectAll("text." + classPrefix + "legendTitle");
 
-      var titleText = svg.selectAll('text.' + classPrefix + 'legendTitle');
+      titleText.data([title]).enter().append("text").attr("class", classPrefix + "legendTitle");
 
-      titleText.data([title]).enter().append('text').attr('class', classPrefix + 'legendTitle');
-
-      svg.selectAll('text.' + classPrefix + 'legendTitle').text(title);
+      svg.selectAll("text." + classPrefix + "legendTitle").text(title);
 
       if (titleWidth) {
-        svg.selectAll('text.' + classPrefix + 'legendTitle').call(d3_textWrapping, titleWidth);
+        svg.selectAll("text." + classPrefix + "legendTitle").call(d3_textWrapping, titleWidth);
       }
 
-      var cellsSvg = svg.select('.' + classPrefix + 'legendCells');
-      var yOffset = svg.select('.' + classPrefix + 'legendTitle').nodes().map(function (d) {
+      var cellsSvg = svg.select("." + classPrefix + "legendCells");
+      var yOffset = svg.select("." + classPrefix + "legendTitle").nodes().map(function (d) {
         return d.getBBox().height;
       })[0],
           xOffset = -cellsSvg.nodes().map(function (d) {
         return d.getBBox().x;
       })[0];
-      cellsSvg.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')');
+      cellsSvg.attr("transform", "translate(" + xOffset + "," + yOffset + ")");
     }
   },
 
@@ -242,9 +247,9 @@ var helper = {
     formatPrefix: formatPrefix
   },
 
-  d3_defaultFormatSpecifier: '.01f',
+  d3_defaultFormatSpecifier: ".01f",
 
-  d3_defaultDelimiter: 'to'
+  d3_defaultDelimiter: "to"
 };
 
 function color() {
@@ -979,12 +984,15 @@ function symbol() {
 var thresholdLabels = function thresholdLabels(_ref) {
   var i = _ref.i,
       genLength = _ref.genLength,
-      generatedLabels = _ref.generatedLabels;
+      generatedLabels = _ref.generatedLabels,
+      labelDelimiter = _ref.labelDelimiter;
 
   if (i === 0) {
-    return generatedLabels[i].replace("NaN to", "Less than");
+    var values = generatedLabels[i].split(" " + labelDelimiter + " ");
+    return "Less than " + values[1];
   } else if (i === genLength - 1) {
-    return generatedLabels[genLength - 1].replace(" to NaN", "") + " or more";
+    var _values = generatedLabels[i].split(" " + labelDelimiter + " ");
+    return _values[0] + " or more";
   }
   return generatedLabels[i];
 };
