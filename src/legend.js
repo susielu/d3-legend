@@ -163,19 +163,20 @@ export default {
   },
 
   d3_addText: function(svg, enter, labels, classPrefix, labelWidth) {
-    enter.append("text").attr("class", classPrefix + "label")
-    const text = svg
-      .selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
-      .data(labels)
-      .text(d3_identity)
-
-    if (labelWidth) {
-      svg
+    return Promise.all(labels).then(resolvedLabels => {
+      enter.append("text").attr("class", classPrefix + "label")
+      const text = svg
         .selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
-        .call(d3_textWrapping, labelWidth)
-    }
+        .data(resolvedLabels)
+        .text(d3_identity)
 
-    return text
+      if (labelWidth) {
+        svg
+          .selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+          .call(d3_textWrapping, labelWidth)
+      }
+      return text
+    })
   },
 
   d3_calcType: function(

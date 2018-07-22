@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
 body {
   margin: 0;
   overflow: hidden;
@@ -24,69 +23,133 @@ svg {
   shape-rendering: crispEdges;
 }
 
+.q0-9 {
+  fill: rgb(247, 251, 255);
+}
+
+.q1-9 {
+  fill: rgb(222, 235, 247);
+}
+
+.q2-9 {
+  fill: rgb(198, 219, 239);
+}
+
+.q3-9 {
+  fill: rgb(158, 202, 225);
+}
+
+.q4-9 {
+  fill: rgb(107, 174, 214);
+}
+
+.q5-9 {
+  fill: rgb(66, 146, 198);
+}
+
+.q6-9 {
+  fill: rgb(33, 113, 181);
+}
+
+.q7-9 {
+  fill: rgb(8, 81, 156);
+}
+
+.q8-9 {
+  fill: rgb(8, 48, 107);
+}
+
 </style>
+
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="../d3-legend.min.js"></script>
+  <svg id="legend">
+      <g transform="translate(20,20)" class="legend"></g>
+  </svg>
+  <svg id="promiseLegend">
+      <g transform="translate(20,20)" class="legend"></g>
+  </svg>
+</body>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script> -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="../d3-legend.js"></script>
 <script>
+var thresholdScale = d3.scaleThreshold()
+  .domain([0, 1000, 2500, 5000, 10000])
+  .range(d3.range(6)
+    .map(function(i) { return "q" + i + "-9" }));
 
-var width = 960,
-    height = 500,
-    formatPercent = d3.format(".0%"),
-    formatNumber = d3.format(".0f");
+var linear = d3.scaleLinear()
+  .domain([0, 10])
+  .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
 
-var threshold = d3.scale.threshold()
-    .domain([.11, .22, .33, .50])
-    .range(["#6e7c5a", "#a0b28f", "#d8b8b3", "#b45554", "#760000"]);
+// ----legendHelpers.thresholdLabels----
+const promiseHelper = function({
+  i,
+  genLength,
+  generatedLabels,
+  labelDelimiter
+}) {
 
-// A position encoding for the key only.
-var x = d3.scale.linear()
-    .domain([0, 1])
-    .range([0, 240]);
+  //
+  const promise =  Promise.resolve()
+    .then(function(string) {
+      return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          let res;
+          if (i === 0) {
+            const values = generatedLabels[i].split(` ${labelDelimiter} `);
+            return resolve(`Less than ${values[1]}`);
+          } else if (i === genLength - 1) {
+            const values = generatedLabels[i].split(` ${labelDelimiter} `);
+            return resolve(`${values[0]} or more`);
+          }
+          return resolve(generatedLabels[i]);
+        }, 100);
+      });
+    });
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .tickSize(13)
-    .tickValues(threshold.domain())
-    .tickFormat(function(d) { return d === .5 ? formatPercent(d) : formatNumber(100 * d); });
+  return promise;  
+};
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+// ----legendHelpers.thresholdLabels----
+const helper = function({
+  i,
+  genLength,
+  generatedLabels,
+  labelDelimiter
+}) {
 
-var g = svg.append("g")
-    .attr("class", "key")
-    .attr("transform", "translate(" + (width - 240) / 2 + "," + height / 2 + ")");
+  if (i === 0) {
+    const values = generatedLabels[i].split(` ${labelDelimiter} `);
+    return `Less than ${values[1]}`;
+  } else if (i === genLength - 1) {
+    const values = generatedLabels[i].split(` ${labelDelimiter} `);
+    return `${values[0]} or more`;
+  }
+  return generatedLabels[i];
+};
 
-var legend = d3.legend.color()
-      .scale(threshold)
-      .orient("horizontal")
-      .shapeWidth(60);
+const legend = d3.legendColor()
+  .labelFormat(d3.format('.2f'))
+  .title('Sync labels')
+  .labels(helper)
+  .useClass(true)
+  .scale(thresholdScale);
 
-svg.append("g")
-  .attr("class", "legend")
-  .attr("transform", "translate(20,20)");
+const promiseLegend = d3.legendColor()
+  .labelFormat(d3.format('.2f'))
+  .title('Async labels (Promise)')
+  .labels(promiseHelper)
+  .useClass(true)
+  .scale(thresholdScale);
 
-svg.select(".legend")
+
+
+d3.select('#legend .legend')
   .call(legend);
 
-g.selectAll("rect")
-    .data(threshold.range().map(function(color) {
-      var d = threshold.invertExtent(color);
-      if (d[0] == null) d[0] = x.domain()[0];
-      if (d[1] == null) d[1] = x.domain()[1];
-      return d;
-    }))
-  .enter().append("rect")
-    .attr("height", 8)
-    .attr("x", function(d) { return x(d[0]); })
-    .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-    .style("fill", function(d) { return threshold(d[0]); });
+d3.select('#promiseLegend .legend')
+  .call(promiseLegend);
 
-g.call(xAxis).append("text")
-    .attr("class", "caption")
-    .attr("y", -6)
-    .text("Percentage of stops that involved force");
 
 </script>
