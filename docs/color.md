@@ -70,6 +70,7 @@ This function is called for each generated label and gives you the options:
 - generatedLabels: array of generated labels
 - domain: array from input scale
 - range: array from input scale
+The function returns either the label **or** a Promise resolving into label text. 
 This allows you to make any custom functions to handle labels. An example: [Color - Threshold Scale, Custom Labels](#color-threshold)
 
 List of [helper functions](#helpers).
