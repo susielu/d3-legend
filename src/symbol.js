@@ -73,7 +73,10 @@ export default function symbol() {
       .transition()
       .style("opacity", 0)
       .remove()
+
     shapes = shapes.merge(shapes)
+    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+    cell = cellEnter.merge(cell)
 
     helper.d3_drawShapes(
       shape,
@@ -83,48 +86,48 @@ export default function symbol() {
       shapeRadius,
       type.feature
     )
-    const text = helper.d3_addText(
+    
+    helper.d3_addText(
       svg,
       cellEnter,
       type.labels,
       classPrefix,
       labelWrap
     )
+    .then(text => {
 
-    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
-    cell = cellEnter.merge(cell)
+      // sets placement
+      const textSize = text.nodes().map(d => d.getBBox()),
+        shapeSize = shapes.nodes().map(d => d.getBBox())
 
-    // sets placement
-    const textSize = text.nodes().map(d => d.getBBox()),
-      shapeSize = shapes.nodes().map(d => d.getBBox())
+      const maxH = max(shapeSize, d => d.height),
+        maxW = max(shapeSize, d => d.width)
 
-    const maxH = max(shapeSize, d => d.height),
-      maxW = max(shapeSize, d => d.width)
+      let cellTrans,
+        textTrans,
+        textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1
 
-    let cellTrans,
-      textTrans,
-      textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1
+      //positions cells and text
+      if (orient === "vertical") {
+        const cellSize = textSize.map((d, i) => Math.max(maxH, d.height))
 
-    //positions cells and text
-    if (orient === "vertical") {
-      const cellSize = textSize.map((d, i) => Math.max(maxH, d.height))
-
-      cellTrans = (d, i) => {
-        const height = sum(cellSize.slice(0, i))
-        return `translate(0, ${height + i * shapePadding} )`
+        cellTrans = (d, i) => {
+          const height = sum(cellSize.slice(0, i))
+          return `translate(0, ${height + i * shapePadding} )`
+        }
+        textTrans = (d, i) => `translate( ${maxW + labelOffset},
+                ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
+      } else if (orient === "horizontal") {
+        cellTrans = (d, i) => `translate( ${i * (maxW + shapePadding)},0)`
+        textTrans = (d, i) => `translate( ${shapeSize[i].width * textAlign +
+          shapeSize[i].x},
+                ${maxH + labelOffset})`
       }
-      textTrans = (d, i) => `translate( ${maxW + labelOffset},
-              ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
-    } else if (orient === "horizontal") {
-      cellTrans = (d, i) => `translate( ${i * (maxW + shapePadding)},0)`
-      textTrans = (d, i) => `translate( ${shapeSize[i].width * textAlign +
-        shapeSize[i].x},
-              ${maxH + labelOffset})`
-    }
 
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
-    helper.d3_title(svg, title, classPrefix, titleWidth)
-    cell.transition().style("opacity", 1)
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
+      helper.d3_title(svg, title, classPrefix, titleWidth)
+      cell.transition().style("opacity", 1)
+    })
   }
 
   legend.scale = function(_) {

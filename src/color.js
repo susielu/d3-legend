@@ -74,14 +74,17 @@ export default function color() {
       .exit()
       .transition()
       .style("opacity", 0)
-      .remove()
+      .remove();
+    
     shapes
       .exit()
       .transition()
       .style("opacity", 0)
-      .remove()
+      .remove();
 
-    shapes = shapes.merge(shapes)
+    shapes = shapes.merge(shapes);
+    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+    cell = cellEnter.merge(cell);
 
     helper.d3_drawShapes(
       shape,
@@ -90,64 +93,64 @@ export default function color() {
       shapeWidth,
       shapeRadius,
       path
-    )
-    const text = helper.d3_addText(
+    );
+    
+    helper.d3_addText(
       svg,
       cellEnter,
       type.labels,
       classPrefix,
       labelWrap
     )
+    .then(text => {
 
-    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
-    cell = cellEnter.merge(cell)
-
-    // sets placement
-    const textSize = text.nodes().map(d => d.getBBox()),
-      shapeSize = shapes.nodes().map(d => d.getBBox())
-    //sets scale
-    //everything is fill except for line which is stroke,
-    if (!useClass) {
-      if (shape == "line") {
-        shapes.style("stroke", type.feature)
+      // sets placement
+      const textSize = text.nodes().map(d => d.getBBox()),
+        shapeSize = shapes.nodes().map(d => d.getBBox());
+      //sets scale
+      //everything is fill except for line which is stroke,
+      if (!useClass) {
+        if (shape == "line") {
+          shapes.style("stroke", type.feature)
+        } else {
+          shapes.style("fill", type.feature)
+        }
       } else {
-        shapes.style("fill", type.feature)
-      }
-    } else {
-      shapes.attr("class", d => `${classPrefix}swatch ${type.feature(d)}`)
-    }
-
-    let cellTrans,
-      textTrans,
-      textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1
-
-    //positions cells and text
-    if (orient === "vertical") {
-      const cellSize = textSize.map((d, i) =>
-        Math.max(d.height, shapeSize[i].height)
-      )
-
-      cellTrans = (d, i) => {
-        const height = sum(cellSize.slice(0, i))
-        return `translate(0, ${height + i * shapePadding})`
+        shapes.attr("class", d => `${classPrefix}swatch ${type.feature(d)}`)
       }
 
-      textTrans = (d, i) =>
-        `translate( ${shapeSize[i].width +
-          shapeSize[i].x +
-          labelOffset}, ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
-    } else if (orient === "horizontal") {
-      cellTrans = (d, i) =>
-        `translate(${i * (shapeSize[i].width + shapePadding)},0)`
-      textTrans = (d, i) => `translate(${shapeSize[i].width * textAlign +
-        shapeSize[i].x},
-          ${shapeSize[i].height + shapeSize[i].y + labelOffset + 8})`
-    }
+      let cellTrans,
+        textTrans,
+        textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1
 
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
-    helper.d3_title(svg, title, classPrefix, titleWidth)
+      //positions cells and text
+      if (orient === "vertical") {
+        const cellSize = textSize.map((d, i) =>
+          Math.max(d.height, shapeSize[i].height)
+        )
 
-    cell.transition().style("opacity", 1)
+        cellTrans = (d, i) => {
+          const height = sum(cellSize.slice(0, i))
+          return `translate(0, ${height + i * shapePadding})`
+        }
+
+        textTrans = (d, i) =>
+          `translate( ${shapeSize[i].width +
+            shapeSize[i].x +
+            labelOffset}, ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
+      } else if (orient === "horizontal") {
+        cellTrans = (d, i) =>
+          `translate(${i * (shapeSize[i].width + shapePadding)},0)`
+        textTrans = (d, i) => `translate(${shapeSize[i].width * textAlign +
+          shapeSize[i].x},
+            ${shapeSize[i].height + shapeSize[i].y + labelOffset + 8})`
+      }
+
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
+      helper.d3_title(svg, title, classPrefix, titleWidth)
+
+      cell.transition().style("opacity", 1)
+    })
   }
 
   legend.scale = function(_) {

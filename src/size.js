@@ -74,7 +74,10 @@ export default function size() {
       .transition()
       .style("opacity", 0)
       .remove()
+    
     shapes = shapes.merge(shapes)
+    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
+    cell = cellEnter.merge(cell)
 
     //creates shape
     if (shape === "line") {
@@ -91,72 +94,70 @@ export default function size() {
       )
     }
 
-    const text = helper.d3_addText(
+    helper.d3_addText(
       svg,
       cellEnter,
       type.labels,
       classPrefix,
       labelWrap
     )
+    .then(text => {
 
-    // we need to merge the selection, otherwise changes in the legend (e.g. change of orientation) are applied only to the new cells and not the existing ones.
-    cell = cellEnter.merge(cell)
+      //sets placement
+      const textSize = text.nodes().map(d => d.getBBox()),
+        shapeSize = shapes.nodes().map((d, i) => {
+          const bbox = d.getBBox()
+          const stroke = scale(type.data[i])
 
-    //sets placement
+          if (shape === "line" && orient === "horizontal") {
+            bbox.height = bbox.height + stroke
+          } else if (shape === "line" && orient === "vertical") {
+            bbox.width = bbox.width
+          }
+          return bbox
+        })
 
-    const textSize = text.nodes().map(d => d.getBBox()),
-      shapeSize = shapes.nodes().map((d, i) => {
-        const bbox = d.getBBox()
-        const stroke = scale(type.data[i])
+      const maxH = max(shapeSize, d => d.height + d.y),
+        maxW = max(shapeSize, d => d.width + d.x)
 
-        if (shape === "line" && orient === "horizontal") {
-          bbox.height = bbox.height + stroke
-        } else if (shape === "line" && orient === "vertical") {
-          bbox.width = bbox.width
+      let cellTrans,
+        textTrans,
+        textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1
+
+      //positions cells and text
+      if (orient === "vertical") {
+        const cellSize = textSize.map((d, i) =>
+          Math.max(d.height, shapeSize[i].height)
+        )
+        const y =
+          shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0
+        cellTrans = (d, i) => {
+          const height = sum(cellSize.slice(0, i))
+
+          return `translate(0, ${y + height + i * shapePadding})`
         }
-        return bbox
-      })
 
-    const maxH = max(shapeSize, d => d.height + d.y),
-      maxW = max(shapeSize, d => d.width + d.x)
+        textTrans = (d, i) => `translate( ${maxW + labelOffset},
+            ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
+      } else if (orient === "horizontal") {
+        cellTrans = (d, i) => {
+          const width = sum(shapeSize.slice(0, i), d => d.width)
+          const y = shape == "circle" || shape == "line" ? maxH / 2 : 0
+          return `translate(${width + i * shapePadding}, ${y})`
+        }
 
-    let cellTrans,
-      textTrans,
-      textAlign = labelAlign == "start" ? 0 : labelAlign == "middle" ? 0.5 : 1
-
-    //positions cells and text
-    if (orient === "vertical") {
-      const cellSize = textSize.map((d, i) =>
-        Math.max(d.height, shapeSize[i].height)
-      )
-      const y =
-        shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0
-      cellTrans = (d, i) => {
-        const height = sum(cellSize.slice(0, i))
-
-        return `translate(0, ${y + height + i * shapePadding})`
+        const offset = shape == "line" ? maxH / 2 : maxH
+        textTrans = (d, i) => {
+          return `translate( ${shapeSize[i].width * textAlign + shapeSize[i].x},
+                ${offset + labelOffset})`
+        }
       }
 
-      textTrans = (d, i) => `translate( ${maxW + labelOffset},
-          ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
-    } else if (orient === "horizontal") {
-      cellTrans = (d, i) => {
-        const width = sum(shapeSize.slice(0, i), d => d.width)
-        const y = shape == "circle" || shape == "line" ? maxH / 2 : 0
-        return `translate(${width + i * shapePadding}, ${y})`
-      }
+      helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
+      helper.d3_title(svg, title, classPrefix, titleWidth)
 
-      const offset = shape == "line" ? maxH / 2 : maxH
-      textTrans = (d, i) => {
-        return `translate( ${shapeSize[i].width * textAlign + shapeSize[i].x},
-              ${offset + labelOffset})`
-      }
-    }
-
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
-    helper.d3_title(svg, title, classPrefix, titleWidth)
-
-    cell.transition().style("opacity", 1)
+      cell.transition().style("opacity", 1)
+     })
   }
 
   legend.scale = function(_) {
