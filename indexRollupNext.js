@@ -143,6 +143,10 @@ var d3_cellClick = function d3_cellClick(cellDispatcher, d, obj) {
   cellDispatcher.call("cellclick", obj, d);
 };
 
+var d3_contextmenu = function d3_contextmenu(cellDispatcher, d, obj) {
+  cellDispatcher.call("cellcontextmenu", obj, d);
+};
+
 var helper = {
   d3_drawShapes: function d3_drawShapes(shape, shapes, shapeHeight, shapeWidth, shapeRadius, path) {
     if (shape === "rect") {
@@ -201,10 +205,10 @@ var helper = {
     return type;
   },
 
-  d3_placement: function d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign) {
+  d3_placement: function d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign, labelPosition) {
     cell.attr("transform", cellTrans);
     text.attr("transform", textTrans);
-    if (orient === "horizontal") {
+    if (orient === "horizontal" && labelPosition === "below") {
       text.style("text-anchor", labelAlign);
     }
   },
@@ -216,6 +220,8 @@ var helper = {
       d3_cellOut(dispatcher, d, this);
     }).on("click.legend", function (d) {
       d3_cellClick(dispatcher, d, this);
+    }).on("contextmenu.legend", function (d) {
+      d3_contextmenu(dispatcher, d, this);
     });
   },
 
@@ -269,13 +275,14 @@ function color() {
       specifier = helper.d3_defaultFormatSpecifier,
       labelOffset = 10,
       labelAlign = "middle",
+      labelPosition = "below",
       labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
       path = void 0,
       titleWidth = void 0,
-      legendDispatcher = dispatch("cellover", "cellout", "cellclick");
+      legendDispatcher = dispatch("cellover", "cellout", "cellclick", "cellcontextmenu");
 
   function legend(svg) {
     var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
@@ -335,30 +342,33 @@ function color() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(d.height, shapeSize[i].height);
-        });
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(d.height, shapeSize[i].height);
+      });
 
-        cellTrans = function cellTrans(d, i) {
-          var height = sum(cellSize.slice(0, i));
-          return "translate(0, " + (height + i * shapePadding) + ")";
-        };
+      cellTrans = function cellTrans(d, i) {
+        var height = sum(cellSize.slice(0, i));
+        return "translate(0, " + (height + i * shapePadding) + ")";
+      };
 
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ", " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (shapeSize[i].width + shapeSize[i].x + labelOffset) + ", " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return "translate(" + i * (shapeSize[i].width + shapePadding) + ",0)";
       };
-      textTrans = function textTrans(d, i) {
-        return "translate(" + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n          " + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")";
-      };
+      if (labelPosition === "below") {
+        textTrans = function textTrans(d, i) {
+          return "translate(" + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n          " + (shapeSize[i].height + shapeSize[i].y + labelOffset + 8) + ")";
+        };
+      } else if (labelPosition === "right") {
+        textTrans = function textTrans(d, i) {
+          return "translate(" + (shapeSize[i].width + shapeSize[i].x + 4) + ",\n            " + (shapeSize[i].height + shapeSize[i].y) + ")";
+        };
+      }
     }
-
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
+    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign, labelPosition);
     helper.d3_title(svg, title, classPrefix, titleWidth);
 
     cell.transition().style("opacity", 1);
@@ -427,6 +437,14 @@ function color() {
     if (!arguments.length) return labelAlign;
     if (_ == "start" || _ == "end" || _ == "middle") {
       labelAlign = _;
+    }
+    return legend;
+  };
+
+  legend.labelPosition = function (_) {
+    if (!arguments.length) return labelPosition;
+    if (_ == "below" || _ == "right") {
+      labelPosition = _;
     }
     return legend;
   };
@@ -530,13 +548,14 @@ function size() {
       specifier = helper.d3_defaultFormatSpecifier,
       labelOffset = 10,
       labelAlign = "middle",
+      labelPosition = "below",
       labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
       path = void 0,
       titleWidth = void 0,
-      legendDispatcher = dispatch("cellover", "cellout", "cellclick");
+      legendDispatcher = dispatch("cellover", "cellout", "cellclick", "cellcontextmenu");
 
   function legend(svg) {
     var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
@@ -605,36 +624,32 @@ function size() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(d.height, shapeSize[i].height);
-        });
-        var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
-        cellTrans = function cellTrans(d, i) {
-          var height = sum(cellSize.slice(0, i));
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(d.height, shapeSize[i].height);
+      });
+      var y = shape == "circle" || shape == "line" ? shapeSize[0].height / 2 : 0;
+      cellTrans = function cellTrans(d, i) {
+        var height = sum(cellSize.slice(0, i));
 
-          return "translate(0, " + (y + height + i * shapePadding) + ")";
-        };
+        return "translate(0, " + (y + height + i * shapePadding) + ")";
+      };
 
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (maxW + labelOffset) + ",\n          " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
-      (function () {
-        cellTrans = function cellTrans(d, i) {
-          var width = sum(shapeSize.slice(0, i), function (d) {
-            return d.width;
-          });
-          var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
-          return "translate(" + (width + i * shapePadding) + ", " + y + ")";
-        };
+      cellTrans = function cellTrans(d, i) {
+        var width = sum(shapeSize.slice(0, i), function (d) {
+          return d.width;
+        });
+        var y = shape == "circle" || shape == "line" ? maxH / 2 : 0;
+        return "translate(" + (width + i * shapePadding) + ", " + y + ")";
+      };
 
-        var offset = shape == "line" ? maxH / 2 : maxH;
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
-        };
-      })();
+      var offset = shape == "line" ? maxH / 2 : maxH;
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (shapeSize[i].width * textAlign + shapeSize[i].x) + ",\n              " + (offset + labelOffset) + ")";
+      };
     }
 
     helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign);
@@ -784,13 +799,14 @@ function symbol() {
       locale = helper.d3_defaultLocale,
       specifier = helper.d3_defaultFormatSpecifier,
       labelAlign = "middle",
+      labelPosition = "below",
       labelOffset = 10,
       labelDelimiter = helper.d3_defaultDelimiter,
       labelWrap = void 0,
       orient = "vertical",
       ascending = false,
       titleWidth = void 0,
-      legendDispatcher = dispatch("cellover", "cellout", "cellclick");
+      legendDispatcher = dispatch("cellover", "cellout", "cellclick", "cellcontextmenu");
 
   function legend(svg) {
     var type = helper.d3_calcType(scale, ascending, cells, labels, locale.format(specifier), labelDelimiter),
@@ -843,19 +859,17 @@ function symbol() {
 
     //positions cells and text
     if (orient === "vertical") {
-      (function () {
-        var cellSize = textSize.map(function (d, i) {
-          return Math.max(maxH, d.height);
-        });
+      var cellSize = textSize.map(function (d, i) {
+        return Math.max(maxH, d.height);
+      });
 
-        cellTrans = function cellTrans(d, i) {
-          var height = sum(cellSize.slice(0, i));
-          return "translate(0, " + (height + i * shapePadding) + " )";
-        };
-        textTrans = function textTrans(d, i) {
-          return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
-        };
-      })();
+      cellTrans = function cellTrans(d, i) {
+        var height = sum(cellSize.slice(0, i));
+        return "translate(0, " + (height + i * shapePadding) + " )";
+      };
+      textTrans = function textTrans(d, i) {
+        return "translate( " + (maxW + labelOffset) + ",\n              " + (shapeSize[i].y + shapeSize[i].height / 2 + 5) + ")";
+      };
     } else if (orient === "horizontal") {
       cellTrans = function cellTrans(d, i) {
         return "translate( " + i * (maxW + shapePadding) + ",0)";

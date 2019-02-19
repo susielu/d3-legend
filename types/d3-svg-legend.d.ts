@@ -2,8 +2,9 @@ import { BaseType, Selection } from 'd3-selection';
 
 type Orientation = 'vertical' | 'horizontal';
 type Alignment = 'start' | 'middle' | 'end';
+type Position = 'below' | 'right';
 type Shape = 'rect' | 'circle' | 'line' | 'path';
-type EventType = 'cellover' | 'cellout' | 'cellclick';
+type EventType = 'cellover' | 'cellout' | 'cellclick' | 'cellcontextmenu';
 
 export interface LegendColor {
     scale(scale: (any)): (selection: Selection<BaseType, any, any, any>, ...args: any[]) => void;
@@ -24,6 +25,7 @@ export interface LegendColor {
     labels(labels: string[]): LegendColor;
     labels(labelGenerator: Function): LegendColor;
     labelAlign(alignment: Alignment): LegendColor;
+    labelPosition(position: Position): LegendColor;
     labelFormat(format: (n: number) => string): LegendColor;
     labelOffset(offset: number): LegendColor;
     labelDelimiter(delimiter: string): LegendColor;
@@ -46,6 +48,7 @@ export interface LegendSize {
     labels(labels: string[]): LegendColor;
     labels(labelGenerator: Function): LegendColor;
     labelAlign(alignment: Alignment): LegendColor;
+    labelPosition(position: Position): LegendColor;
     labelFormat(format: (n: number) => string): LegendColor;
     labelOffset(offset: number): LegendColor;
     labelDelimiter(delimiter: string): LegendColor;
@@ -66,6 +69,7 @@ export interface LegendSymbol {
     labels(labels: string[]): LegendColor;
     labels(labelGenerator: Function): LegendColor;
     labelAlign(alignment: Alignment): LegendColor;
+    labelPosition(position: Position): LegendColor;
     labelFormat(format: (n: number) => string): LegendColor;
     labelOffset(offset: number): LegendColor;
     labelDelimiter(delimiter: string): LegendColor;
