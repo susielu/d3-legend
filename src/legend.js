@@ -138,6 +138,10 @@ const d3_cellClick = (cellDispatcher, d, obj) => {
   cellDispatcher.call("cellclick", obj, d)
 }
 
+const d3_contextmenu = (cellDispatcher, d, obj) => {
+  cellDispatcher.call("cellcontextmenu", obj, d)
+}
+
 export default {
   d3_drawShapes: (
     shape,
@@ -221,11 +225,11 @@ export default {
     return type
   },
 
-  d3_placement: (orient, cell, cellTrans, text, textTrans, labelAlign) => {
-    cell.attr("transform", cellTrans)
-    text.attr("transform", textTrans)
-    if (orient === "horizontal") {
-      text.style("text-anchor", labelAlign)
+  d3_placement: (orient, cell, cellTrans, text, textTrans, labelAlign, labelPosition) => {
+    cell.attr("transform", cellTrans);
+    text.attr("transform", textTrans);
+    if (orient === "horizontal" && labelPosition === "below") {
+      text.style("text-anchor", labelAlign);
     }
   },
 
@@ -240,6 +244,9 @@ export default {
       .on("click.legend", function(d) {
         d3_cellClick(dispatcher, d, this)
       })
+      .on("contextmenu.legend", function(d) {
+        d3_contextmenu(dispatcher, d, this);
+      });
   },
 
   d3_title: (svg, title, classPrefix, titleWidth) => {

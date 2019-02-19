@@ -18,13 +18,14 @@ export default function size() {
     specifier = helper.d3_defaultFormatSpecifier,
     labelOffset = 10,
     labelAlign = "middle",
+    labelPosition = "below",
     labelDelimiter = helper.d3_defaultDelimiter,
     labelWrap,
     orient = "vertical",
     ascending = false,
     path,
     titleWidth,
-    legendDispatcher = dispatch("cellover", "cellout", "cellclick")
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick", "cellcontextmenu");
 
   function legend(svg) {
     const type = helper.d3_calcType(

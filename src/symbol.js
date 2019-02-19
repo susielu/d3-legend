@@ -19,13 +19,14 @@ export default function symbol() {
     locale = helper.d3_defaultLocale,
     specifier = helper.d3_defaultFormatSpecifier,
     labelAlign = "middle",
+    labelPosition = "below",
     labelOffset = 10,
     labelDelimiter = helper.d3_defaultDelimiter,
     labelWrap,
     orient = "vertical",
     ascending = false,
     titleWidth,
-    legendDispatcher = dispatch("cellover", "cellout", "cellclick")
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick", "cellcontextmenu")
 
   function legend(svg) {
     const type = helper.d3_calcType(

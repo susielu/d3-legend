@@ -22,13 +22,14 @@ export default function color() {
     specifier = helper.d3_defaultFormatSpecifier,
     labelOffset = 10,
     labelAlign = "middle",
+    labelPosition = "below",
     labelDelimiter = helper.d3_defaultDelimiter,
     labelWrap,
     orient = "vertical",
     ascending = false,
     path,
     titleWidth,
-    legendDispatcher = dispatch("cellover", "cellout", "cellclick")
+    legendDispatcher = dispatch("cellover", "cellout", "cellclick", "cellcontextmenu")
 
   function legend(svg) {
     const type = helper.d3_calcType(
@@ -134,17 +135,21 @@ export default function color() {
 
       textTrans = (d, i) =>
         `translate( ${shapeSize[i].width +
-          shapeSize[i].x +
-          labelOffset}, ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
+        shapeSize[i].x +
+        labelOffset}, ${shapeSize[i].y + shapeSize[i].height / 2 + 5})`
     } else if (orient === "horizontal") {
       cellTrans = (d, i) =>
         `translate(${i * (shapeSize[i].width + shapePadding)},0)`
-      textTrans = (d, i) => `translate(${shapeSize[i].width * textAlign +
-        shapeSize[i].x},
-          ${shapeSize[i].height + shapeSize[i].y + labelOffset + 8})`
+      if (labelPosition === "below") {
+        textTrans = (d, i) => `translate(${(shapeSize[i].width * textAlign +
+          shapeSize[i].x)},
+          ${(shapeSize[i].height + shapeSize[i].y + labelOffset + 8)})`
+      } else if (labelPosition === "right") {
+        textTrans = (d, i) => `translate(${(shapeSize[i].width + shapeSize[i].x + 4)},
+            ${(shapeSize[i].height + shapeSize[i].y)})`
+      }
     }
-
-    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
+    helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign, labelPosition)
     helper.d3_title(svg, title, classPrefix, titleWidth)
 
     cell.transition().style("opacity", 1)
@@ -218,6 +223,14 @@ export default function color() {
     if (!arguments.length) return labelAlign
     if (_ == "start" || _ == "end" || _ == "middle") {
       labelAlign = _
+    }
+    return legend
+  }
+
+  legend.labelPosition = function(_) {
+    if (!arguments.length) return labelPosition
+    if (_ == "below" || _ == "right") {
+      labelPosition = _
     }
     return legend
   }
