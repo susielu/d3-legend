@@ -3,14 +3,16 @@
 Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
 
 ## Looking for compatibility with d3 v3?
+
 - You can see the code for the d3 legend that works with d3 v3 in the [v3 branch](https://github.com/susielu/d3-legend/tree/v3)
 - [Documentation](http://d3-legend-v3.susielu.com) for the v3 version of the legend
 
 ## d3-legend v4 updates (npm version 2.0.0 and higher)
+
 - Flattened naming for accessing functions
-    - d3.legend.color => d3.legendColor
-    - d3.legend.size => d3.legendSize
-    - d3.legend.symbol => d3.legendSymbol
+  - d3.legend.color => d3.legendColor
+  - d3.legend.size => d3.legendSize
+  - d3.legend.symbol => d3.legendSymbol
 - NPM package no longer binds to global d3, is now just an object with the three legend functions
 
 ## Usage
@@ -58,5 +60,10 @@ svg.select(".legendQuant")
 
 ```
 
+## Local development
+
+This project uses npm and grunt, you will also need to run `npm install -g grunt-cli` for the scripts and watch commands to work.
+
 ## Feedback
-I would love to hear from you about any additional features that would be useful, please say hi on twitter [@DataToViz](https://www.twitter.com/DataToViz).
+
+This library is in maintence mode, and I do not plan on adding any additional features.

@@ -1,92 +1,154 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <style>
+  body {
+    margin: 0;
+    overflow: hidden;
+  }
 
-body {
-  margin: 0;
-  overflow: hidden;
-}
+  svg {
+    font: 10px sans-serif;
+  }
 
-svg {
-  font: 10px sans-serif;
-}
+  .caption {
+    font-weight: bold;
+  }
 
-.caption {
-  font-weight: bold;
-}
+  .key path {
+    display: none;
+  }
 
-.key path {
-  display: none;
-}
-
-.key line {
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
+  .key line {
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
 </style>
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="../d3-legend.min.js"></script>
-<script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="../d3-legend.min.js"></script>
+  <script>
+    var width = 960,
+      height = 500,
+      formatPercent = d3.format(".0%"),
+      formatNumber = d3.format(".0f")
 
-var width = 960,
-    height = 500,
-    formatPercent = d3.format(".0%"),
-    formatNumber = d3.format(".0f");
+    var svg = d3
+      .select("body")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
 
-var threshold = d3.scale.threshold()
-    .domain([.11, .22, .33, .50])
-    .range(["#6e7c5a", "#a0b28f", "#d8b8b3", "#b45554", "#760000"]);
+    // var g = svg
+    //   .append("g")
+    //   .attr("class", "key")
+    //   .attr(
+    //     "transform",
+    //     "translate(" + (width - 240) / 2 + "," + height / 2 + ")"
+    //   )
 
-// A position encoding for the key only.
-var x = d3.scale.linear()
-    .domain([0, 1])
-    .range([0, 240]);
+    // // var linear = d3
+    // //   .scaleLinear()
+    // //   .domain([0, 10])
+    // //   .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"])
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .tickSize(13)
-    .tickValues(threshold.domain())
-    .tickFormat(function(d) { return d === .5 ? formatPercent(d) : formatNumber(100 * d); });
+    // // var linear = d3
+    // //   .scaleTime()
+    // //   .domain([new Date(2000, 0, 1), new Date(2000, 0, 2)])
+    // //   .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"])
+    // // svg
+    // //   .append("g")
+    // //   .attr("class", "legendLinear")
+    // //   .attr("transform", "translate(20,20)")
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    // // var legendLinear = d3
+    // //   .legendColor()
+    // //   .shapeWidth(30)
+    // //   .orient("horizontal")
+    // //   // .labelFormat(d3.timeFormat("%B"))
+    // //   .scale(linear)
 
-var g = svg.append("g")
-    .attr("class", "key")
-    .attr("transform", "translate(" + (width - 240) / 2 + "," + height / 2 + ")");
+    // // console.log(d3.timeFormat("%B"), d3.timeFormat("%B")(new Date()))
+    // // console.log(d3.formatSpecifier(d3.timeFormat("%B")))
 
-var legend = d3.legend.color()
-      .scale(threshold)
-      .orient("horizontal")
-      .shapeWidth(60);
+    // // svg.select(".legendLinear").call(legendLinear)
 
-svg.append("g")
-  .attr("class", "legend")
-  .attr("transform", "translate(20,20)");
+    // var ordinal = d3
+    //   .scaleOrdinal()
+    //   .domain(["a"])
+    //   .range(["rgb(153, 107, 195)"])
 
-svg.select(".legend")
-  .call(legend);
+    // svg
+    //   .append("g")
+    //   .attr("class", "legendOrdinal")
+    //   .attr("transform", "translate(20,20)")
 
-g.selectAll("rect")
-    .data(threshold.range().map(function(color) {
-      var d = threshold.invertExtent(color);
-      if (d[0] == null) d[0] = x.domain()[0];
-      if (d[1] == null) d[1] = x.domain()[1];
-      return d;
-    }))
-  .enter().append("rect")
-    .attr("height", 8)
-    .attr("x", function(d) { return x(d[0]); })
-    .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-    .style("fill", function(d) { return threshold(d[0]); });
+    // var legendOrdinal = d3
+    //   .legendColor()
+    //   //d3 symbol creates a path-string, for example
+    //   //"M0,-8.059274488676564L9.306048591020996,
+    //   //8.059274488676564 -9.306048591020996,8.059274488676564Z"
+    //   .shape(
+    //     "path",
+    //     d3
+    //       .symbol()
+    //       .type(d3.symbolTriangle)
+    //       .size(150)()
+    //   )
+    //   .shapePadding(10)
+    //   //use cellFilter to hide the "e" cell
+    //   .cellFilter(function(d) {
+    //     return d.label !== "e"
+    //   })
+    //   .scale(ordinal)
 
-g.call(xAxis).append("text")
-    .attr("class", "caption")
-    .attr("y", -6)
-    .text("Percentage of stops that involved force");
+    // svg.select(".legendOrdinal").call(legendOrdinal)
 
-</script>
+    var colorLegendG__3 = d3
+      .select("svg")
+      .append("g")
+      .attr("class", "color-legend")
+      .attr("transform", "translate(40, 160)")
+    var colorScale__3 = d3.scaleOrdinal(d3.schemeCategory10).domain([0, 9])
+
+    var colorLegend__3 = d3
+      .legendColor()
+      .scale(colorScale__3)
+      .shapePadding(3)
+      .shapeWidth(10)
+      .shapeHeight(10)
+      .labelOffset(4)
+      .on("cellclick", function(d, e) {
+        // Determine if current line is visible
+        console.log(d, e)
+        var active = d.active ? false : true,
+          newOpacity = active ? 0 : 1
+        // Hide or show the elements based on the ID
+        d3.select("#tag" + d.key.replace(/\s+/g, ""))
+          .transition()
+          .duration(100)
+          .style("opacity", newOpacity)
+        // Update whether or not the elements are active
+        d.active = active
+      })
+
+    // var nested__3 = d3
+    //   .nest()
+    //   .key(function(d) {
+    //     return d.lineColumn__3
+    //   })
+    //   .entries(data.data)
+
+    // Loop through each symbol / key
+    // nested__3.forEach(function(d, i) {
+    //   //UUSI
+
+    //   colorScale__3.domain(
+    //     nested__3.map(function(d) {
+    //       return d.key
+    //     })
+    //   )
+
+    colorLegendG__3.call(colorLegend__3)
+    // })
+  </script>
+</body>
