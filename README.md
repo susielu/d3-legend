@@ -39,7 +39,7 @@ To use the version compatible with d3v3 run:
 
 Using the import syntax `import legend from 'd3-svg-legend'` gives access to the three legend types as an object. You can also import them independently for example `import { legendColor } from 'd3-svg-legend'`
 
-```
+```js
 var svg = d3.select("#svg-color-quant");
 
 var quantize = d3.scaleQuantize()

@@ -76,8 +76,8 @@ Change the default "to" text when working with a quant scale.
 
 legendColor.**labelWrap(number)**
 
-Add text wrapping to the cell labels. In orient horizontal you can use this in combination with shapePadding to get the desired spacing. An exampe: [Size - Linear Scale](#size-line). In orient vertical this will automatically scale the cells to fit the label.An example: [Symbol - Ordinal Scale](#symbol-ordinal) 
+Add text wrapping to the cell labels. In orient horizontal you can use this in combination with shapePadding to get the desired spacing. An example: [Size - Linear Scale](#size-line). In orient vertical this will automatically scale the cells to fit the label. An example: [Symbol - Ordinal Scale](#symbol-ordinal) 
 
 legendSymbol.**on(string, function)**
 
-There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An exampe: [Symbol - Ordinal Scale](#symbol-ordinal)
+There are three custom event types you can bind to the legend: "cellover", "cellout", and "cellclick" An example: [Symbol - Ordinal Scale](#symbol-ordinal)
